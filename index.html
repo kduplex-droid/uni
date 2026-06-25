@@ -900,8 +900,19 @@ select.form-input option{background:var(--surface);}
         <div class="aw-err" id="wall-err"></div>
         <button class="google-btn" id="wall-google-btn" onclick="wallGoogleSignIn()">
           <svg class="g-logo" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
-          Continue with Google
+          <span id="wall-google-btn-text">Continue with Google</span>
         </button>
+        <script>
+          // If a Google redirect is in flight, disable the button until result resolves
+          if (sessionStorage.getItem('ub_googlePending') || sessionStorage.getItem('ub_adminGateRedirect')) {
+            document.addEventListener('DOMContentLoaded', function() {
+              var btn = document.getElementById('wall-google-btn');
+              var txt = document.getElementById('wall-google-btn-text');
+              if (btn) btn.disabled = true;
+              if (txt) txt.textContent = 'Signing in with Google…';
+            });
+          }
+        </script>
         <div class="divider"><div class="div-line"></div><span class="div-text">OR</span><div class="div-line"></div></div>
         <div class="form-group">
           <label class="form-label">EMAIL ADDRESS</label>
@@ -1280,6 +1291,38 @@ const auth    = firebase.auth();
 const storage = firebase.storage();
 
 // ── GOOGLE REDIRECT RESULT ─────────────────────────────────
+// Fires once on page load after a signInWithRedirect() completes.
+auth.getRedirectResult()
+  .then(result => {
+    const wasAdminGate = sessionStorage.getItem('ub_adminGateRedirect');
+    sessionStorage.removeItem('ub_googlePending');
+    sessionStorage.removeItem('ub_adminGateRedirect');
+    if (result && result.user) {
+      if (wasAdminGate && result.user.email.toLowerCase() !== ADMIN_EMAIL) {
+        // Wrong Google account used for admin gate — sign them out immediately
+        auth.signOut();
+        // Re-open the admin gate modal to show the error
+        adminGateOpen = true;
+        document.getElementById('admin-gate-modal').classList.add('show');
+        showGateError('⛔ That Google account does not have admin access.');
+      }
+      // Otherwise onAuthStateChanged handles the rest — nothing else needed
+    }
+  })
+  .catch(err => {
+    sessionStorage.removeItem('ub_googlePending');
+    const wasAdminGate = sessionStorage.getItem('ub_adminGateRedirect');
+    sessionStorage.removeItem('ub_adminGateRedirect');
+    if (wasAdminGate) {
+      adminGateOpen = true;
+      document.getElementById('admin-gate-modal').classList.add('show');
+      showGateError(friendlyAuthError(err.code));
+      const btn = document.getElementById('agm-google-btn');
+      if (btn) btn.disabled = false;
+    } else {
+      showWallError(friendlyAuthError(err.code));
+    }
+  });
 
 
 // ── STATE ──────────────────────────────────────────────────
@@ -1344,12 +1387,17 @@ function hideWallError() {
 function wallGoogleSignIn() {
   const btn = document.getElementById('wall-google-btn');
   btn.disabled = true;
+  btn.textContent = 'Redirecting to Google…';
+  hideWallError();
   const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider)
+  sessionStorage.setItem('ub_googlePending', '1');
+  auth.signInWithRedirect(provider)
     .catch(err => {
-      if (err.code !== 'auth/popup-closed-by-user') showWallError(friendlyAuthError(err.code));
-    })
-    .finally(() => { btn.disabled = false; });
+      sessionStorage.removeItem('ub_googlePending');
+      showWallError(friendlyAuthError(err.code));
+      btn.disabled = false;
+      btn.textContent = 'Continue with Google';
+    });
 }
 
 // Sends a one-time sign-in link to the entered email — no password involved.
@@ -1539,19 +1587,16 @@ function adminGateGoogleSignIn() {
   const btn = document.getElementById('agm-google-btn');
   btn.disabled = true;
   document.getElementById('admin-gate-error').classList.remove('show');
+  // Store flag so getRedirectResult knows to enforce admin-email check
+  sessionStorage.setItem('ub_adminGateRedirect', '1');
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({ login_hint: ADMIN_EMAIL });
-  auth.signInWithPopup(provider)
-    .then(result => {
-      if (result.user.email.toLowerCase() !== ADMIN_EMAIL) {
-        auth.signOut();
-        showGateError('⛔ That Google account does not have admin access.');
-      }
-    })
+  auth.signInWithRedirect(provider)
     .catch(err => {
+      sessionStorage.removeItem('ub_adminGateRedirect');
       if (err.code !== 'auth/popup-closed-by-user') showGateError(friendlyAuthError(err.code));
-    })
-    .finally(() => { btn.disabled = false; });
+      btn.disabled = false;
+    });
 }
 
 // ── AUTH STATE OBSERVER ────────────────────────────────────
