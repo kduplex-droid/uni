@@ -12,32 +12,25 @@
 <style>
 /* ===================== TOKENS — Candy Crush × Lavender ===================== */
 :root{
-  /* Core palette */
   --bg:#0A0A12;
   --surface:#13131F;
   --s2:#1C1C2E;
   --border:#2A2A3D;
-  /* Lavender spectrum */
-  --lav:#C084FC;        /* primary accent */
-  --lav-light:#E9D5FF;  /* light tint */
-  --lav-dim:#7C3AED;    /* deep purple */
-  --lav-glow:#C084FC30; /* glow tint */
-  /* Supporting game-candy tones */
+  --lav:#C084FC;
+  --lav-light:#E9D5FF;
+  --lav-dim:#7C3AED;
+  --lav-glow:#C084FC30;
   --candy-pink:#F472B6;
   --candy-mint:#34D399;
   --candy-yellow:#FCD34D;
   --red:#F87171;
-  /* Text */
   --text:#F5F3FF;
   --muted:#7C7CA8;
   --dim:#3D3D5C;
-  /* Fonts */
   --font:'Nunito',system-ui,sans-serif;
-  /* Candy-crush bubble effect vars */
   --bubble-shadow:0 4px 0 0;
 }
 
-/* ─── GLOBAL ─────────────────────────────────────────────── */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{
   background:var(--bg);
@@ -47,7 +40,6 @@ body{
   max-width:430px;
   margin:0 auto;
   min-height:100vh;
-  /* subtle candy-crush style dotted background */
   background-image:radial-gradient(circle,#2A2A3D 1px,transparent 1px);
   background-size:28px 28px;
   background-attachment:fixed;
@@ -89,12 +81,22 @@ a{color:inherit;text-decoration:none;}
   padding:24px;
   box-shadow:0 0 40px #C084FC18;
 }
-.aw-tabs{display:flex;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:3px;margin-bottom:22px;}
-.aw-tab{flex:1;padding:8px;font-size:12px;font-weight:800;font-family:var(--font);border:none;border-radius:10px;cursor:pointer;background:transparent;color:var(--muted);transition:all .2s;}
-.aw-tab.active{background:linear-gradient(135deg,var(--lav-dim),var(--lav));color:#fff;box-shadow:0 3px 0 #5B21B6;}
 .aw-err{background:#F871711a;color:var(--red);border:1.5px solid #F8717130;border-radius:12px;padding:10px 12px;font-size:12px;margin-bottom:14px;display:none;line-height:1.5;}
 .aw-err.show{display:block;}
 .aw-terms{font-size:10px;color:var(--dim);text-align:center;margin-top:14px;line-height:1.6;border-top:1px solid var(--border);padding-top:14px;}
+
+/* ── Link-limit notice ── */
+.link-limit-notice{
+  background:#7C3AED18;
+  border:1.5px solid #7C3AED40;
+  border-radius:12px;
+  padding:14px;
+  text-align:center;
+  font-size:12px;
+  color:var(--lav-light);
+  line-height:1.7;
+}
+.link-limit-notice strong{color:var(--lav);display:block;font-size:14px;margin-bottom:4px;}
 
 /* ─── ADMIN GATE MODAL ───────────────────────────────────── */
 #admin-gate-modal{position:fixed;inset:0;z-index:9000;background:rgba(10,10,18,.94);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:20px;}
@@ -119,12 +121,7 @@ a{color:inherit;text-decoration:none;}
   box-shadow:0 2px 20px #C084FC0A;
 }
 .logo{display:flex;align-items:center;gap:8px;cursor:pointer;}
-.logo-dot{
-  width:10px;height:10px;
-  background:var(--lav);
-  border-radius:50%;
-  box-shadow:0 0 8px var(--lav),0 2px 0 var(--lav-dim);
-}
+.logo-dot{width:10px;height:10px;background:var(--lav);border-radius:50%;box-shadow:0 0 8px var(--lav),0 2px 0 var(--lav-dim);}
 .logo-name{font-size:18px;font-weight:900;letter-spacing:.06em;background:linear-gradient(135deg,var(--lav-light),var(--lav));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .nav-right{display:flex;align-items:center;gap:8px;}
 .cart-icon-btn{
@@ -163,18 +160,9 @@ a{color:inherit;text-decoration:none;}
 
 /* ─── UTILS ──────────────────────────────────────────────── */
 .section-label{font-size:10px;font-weight:800;letter-spacing:.15em;color:var(--muted);margin-bottom:12px;}
-.btn{
-  width:100%;border:none;border-radius:14px;
-  padding:13px;font-size:14px;font-weight:800;font-family:var(--font);
-  cursor:pointer;letter-spacing:.04em;
-  transition:transform .1s,box-shadow .1s;
-}
+.btn{width:100%;border:none;border-radius:14px;padding:13px;font-size:14px;font-weight:800;font-family:var(--font);cursor:pointer;letter-spacing:.04em;transition:transform .1s,box-shadow .1s;}
 .btn:active{transform:translateY(2px);}
-.btn-primary{
-  background:linear-gradient(135deg,var(--lav-dim),var(--lav));
-  color:#fff;
-  box-shadow:0 4px 0 #5B21B6;
-}
+.btn-primary{background:linear-gradient(135deg,var(--lav-dim),var(--lav));color:#fff;box-shadow:0 4px 0 #5B21B6;}
 .btn-primary:active{box-shadow:0 1px 0 #5B21B6;}
 .btn-primary:hover{filter:brightness(1.08);}
 .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
@@ -184,16 +172,7 @@ a{color:inherit;text-decoration:none;}
 .btn-danger{background:#F871711a;border:1.5px solid #F8717140;color:var(--red);}
 .form-group{margin-bottom:14px;}
 .form-label{font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--muted);margin-bottom:6px;display:block;}
-.form-input{
-  width:100%;
-  background:var(--s2);
-  border:1.5px solid var(--border);
-  border-radius:12px;
-  padding:11px 14px;
-  font-size:13px;font-family:var(--font);
-  color:var(--text);outline:none;
-  transition:border-color .15s,box-shadow .15s;
-}
+.form-input{width:100%;background:var(--s2);border:1.5px solid var(--border);border-radius:12px;padding:11px 14px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;transition:border-color .15s,box-shadow .15s;}
 .form-input:focus{border-color:var(--lav);box-shadow:0 0 0 3px var(--lav-glow);}
 .form-input::placeholder{color:var(--dim);}
 select.form-input option{background:var(--surface);}
@@ -207,10 +186,7 @@ select.form-input option{background:var(--surface);}
 .empty-state-sub{font-size:12px;color:var(--muted);line-height:1.6;}
 
 /* ─── HOME ───────────────────────────────────────────────── */
-.hero{
-  padding:28px 16px 24px;
-  background:radial-gradient(ellipse 80% 60% at 50% -10%,#7C3AED22,transparent);
-}
+.hero{padding:28px 16px 24px;background:radial-gradient(ellipse 80% 60% at 50% -10%,#7C3AED22,transparent);}
 .hero-eyebrow{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:.15em;color:var(--candy-mint);margin-bottom:14px;}
 .hero-eyebrow-line{width:20px;height:2px;background:var(--candy-mint);border-radius:2px;}
 .hero-headline{line-height:.92;margin-bottom:14px;}
@@ -219,161 +195,69 @@ select.form-input option{background:var(--surface);}
 .hl-accent{color:var(--lav);}
 .hero-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;}
 .hero-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
-.pill{
-  background:var(--s2);
-  border:1.5px solid var(--border);
-  font-size:11px;font-weight:700;
-  padding:5px 12px;border-radius:20px;color:#aaa;
-  box-shadow:0 2px 0 var(--dim);
-}
+.pill{background:var(--s2);border:1.5px solid var(--border);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;color:#aaa;box-shadow:0 2px 0 var(--dim);}
 .pill b{color:var(--lav-light);}
 .hero-btns{display:flex;gap:8px;}
-.btn-hero-main{
-  flex:1;
-  background:linear-gradient(135deg,var(--lav-dim),var(--lav));
-  color:#fff;border:none;border-radius:14px;
-  padding:13px;font-size:13px;font-weight:800;
-  font-family:var(--font);cursor:pointer;
-  box-shadow:0 4px 0 #5B21B6;
-  transition:transform .1s,box-shadow .1s;
-}
+.btn-hero-main{flex:1;background:linear-gradient(135deg,var(--lav-dim),var(--lav));color:#fff;border:none;border-radius:14px;padding:13px;font-size:13px;font-weight:800;font-family:var(--font);cursor:pointer;box-shadow:0 4px 0 #5B21B6;transition:transform .1s,box-shadow .1s;}
 .btn-hero-main:active{transform:translateY(2px);box-shadow:0 1px 0 #5B21B6;}
-.btn-hero-sec{
-  background:var(--s2);
-  border:1.5px solid var(--border);
-  color:var(--text);border-radius:14px;
-  padding:13px 18px;font-size:13px;font-weight:700;
-  font-family:var(--font);cursor:pointer;
-  box-shadow:0 3px 0 var(--dim);
-  transition:transform .1s,box-shadow .1s;
-}
+.btn-hero-sec{background:var(--s2);border:1.5px solid var(--border);color:var(--text);border-radius:14px;padding:13px 18px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;box-shadow:0 3px 0 var(--dim);transition:transform .1s,box-shadow .1s;}
 .btn-hero-sec:active{transform:translateY(2px);box-shadow:0 1px 0 var(--dim);}
 .cat-strip{display:flex;gap:10px;padding:0 16px 16px;overflow-x:auto;scrollbar-width:none;}
 .cat-strip::-webkit-scrollbar{display:none;}
-.cat-chip{
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  background:var(--surface);
-  border:1.5px solid var(--border);
-  border-radius:16px;padding:10px 14px;
-  cursor:pointer;flex-shrink:0;min-width:72px;
-  transition:all .2s;
-  box-shadow:0 3px 0 var(--dim);
-}
+.cat-chip{display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:10px 14px;cursor:pointer;flex-shrink:0;min-width:72px;transition:all .2s;box-shadow:0 3px 0 var(--dim);}
 .cat-chip:active{transform:translateY(2px);box-shadow:0 1px 0 var(--dim);}
-.cat-chip:hover,.cat-chip.active{
-  border-color:var(--lav);
-  background:var(--lav-glow);
-  box-shadow:0 3px 0 var(--lav-dim);
-}
+.cat-chip:hover,.cat-chip.active{border-color:var(--lav);background:var(--lav-glow);box-shadow:0 3px 0 var(--lav-dim);}
 .cat-chip-icon{font-size:22px;}
 .cat-chip-label{font-size:10px;font-weight:800;letter-spacing:.06em;color:var(--muted);white-space:nowrap;}
 .cat-chip.active .cat-chip-label{color:var(--lav);}
 
 /* ─── PRODUCT GRID ───────────────────────────────────────── */
 .products-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 12px 12px;}
-.prod-card{
-  background:var(--surface);
-  cursor:pointer;position:relative;overflow:hidden;
-  border-radius:18px;
-  border:1.5px solid var(--border);
-  box-shadow:0 4px 0 var(--dim);
-  transition:transform .15s,box-shadow .15s;
-}
+.prod-card{background:var(--surface);cursor:pointer;position:relative;overflow:hidden;border-radius:18px;border:1.5px solid var(--border);box-shadow:0 4px 0 var(--dim);transition:transform .15s,box-shadow .15s;}
 .prod-card:active{transform:translateY(3px);box-shadow:0 1px 0 var(--dim);}
 .prod-img{height:130px;display:flex;align-items:center;justify-content:center;font-size:42px;position:relative;overflow:hidden;background:var(--s2);}
 .prod-img img{width:100%;height:100%;object-fit:cover;}
-.prod-badge{
-  position:absolute;top:8px;left:8px;
-  background:linear-gradient(135deg,var(--candy-yellow),#F59E0B);
-  color:#1A1A00;font-size:8px;font-weight:800;
-  padding:3px 8px;border-radius:20px;
-  letter-spacing:.06em;z-index:1;
-  box-shadow:0 2px 0 #B45309;
-}
+.prod-badge{position:absolute;top:8px;left:8px;background:linear-gradient(135deg,var(--candy-yellow),#F59E0B);color:#1A1A00;font-size:8px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:.06em;z-index:1;box-shadow:0 2px 0 #B45309;}
 .prod-info{padding:10px 12px 14px;}
 .prod-brand{font-size:9px;color:var(--muted);font-weight:800;letter-spacing:.1em;margin-bottom:3px;}
 .prod-name{font-size:12px;font-weight:700;margin-bottom:8px;}
 .prod-row{display:flex;align-items:center;justify-content:space-between;}
 .prod-price{font-size:14px;font-weight:900;color:var(--lav);}
-.add-btn{
-  width:30px;height:30px;
-  background:linear-gradient(135deg,var(--lav-dim),var(--lav));
-  color:#fff;border:none;border-radius:8px;
-  font-size:20px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--font);
-  box-shadow:0 3px 0 #5B21B6;
-  transition:transform .1s,box-shadow .1s;
-}
+.add-btn{width:30px;height:30px;background:linear-gradient(135deg,var(--lav-dim),var(--lav));color:#fff;border:none;border-radius:8px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font);box-shadow:0 3px 0 #5B21B6;transition:transform .1s,box-shadow .1s;}
 .add-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #5B21B6;}
 .added-flash{background:linear-gradient(135deg,#059669,var(--candy-mint))!important;box-shadow:0 3px 0 #065F46!important;}
 
 /* ─── ACCOUNT SCREEN ─────────────────────────────────────── */
 .account-wrap{padding:32px 20px 20px;}
 .account-logo{display:flex;align-items:center;gap:8px;margin-bottom:28px;}
-.account-card{
-  background:var(--surface);
-  border:1.5px solid var(--border);
-  border-radius:18px;padding:20px;margin-bottom:14px;
-  box-shadow:0 4px 0 var(--dim);
-}
-.account-avatar{
-  width:56px;height:56px;border-radius:50%;
-  background:linear-gradient(135deg,var(--lav-dim),var(--candy-pink));
-  display:flex;align-items:center;justify-content:center;
-  font-size:24px;margin-bottom:14px;
-  box-shadow:0 4px 0 #5B21B6;
-}
+.account-card{background:var(--surface);border:1.5px solid var(--border);border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 4px 0 var(--dim);}
+.account-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--lav-dim),var(--candy-pink));display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px;box-shadow:0 4px 0 #5B21B6;}
 .account-name{font-size:17px;font-weight:800;margin-bottom:4px;}
 .account-email{font-size:12px;color:var(--muted);}
 
 /* ─── SHOP ───────────────────────────────────────────────── */
 .shop-header{padding:16px;}
 .shop-search{position:relative;}
-.shop-search-input{
-  width:100%;background:var(--surface);
-  border:1.5px solid var(--border);border-radius:14px;
-  padding:11px 14px 11px 38px;font-size:13px;
-  font-family:var(--font);color:var(--text);outline:none;
-  transition:border-color .15s,box-shadow .15s;
-}
+.shop-search-input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:11px 14px 11px 38px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;transition:border-color .15s,box-shadow .15s;}
 .shop-search-input:focus{border-color:var(--lav);box-shadow:0 0 0 3px var(--lav-glow);}
 .shop-search-input::placeholder{color:var(--dim);}
 .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--muted);}
 .filter-strip{display:flex;gap:8px;padding:0 16px 16px;overflow-x:auto;scrollbar-width:none;}
 .filter-strip::-webkit-scrollbar{display:none;}
-.filter-chip{
-  background:var(--surface);border:1.5px solid var(--border);
-  border-radius:20px;padding:6px 14px;
-  font-size:11px;font-weight:800;cursor:pointer;flex-shrink:0;
-  color:var(--muted);transition:all .15s;
-  box-shadow:0 2px 0 var(--dim);
-}
+.filter-chip{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:800;cursor:pointer;flex-shrink:0;color:var(--muted);transition:all .15s;box-shadow:0 2px 0 var(--dim);}
 .filter-chip:active{transform:translateY(1px);box-shadow:none;}
 .filter-chip.active{background:var(--lav-glow);border-color:var(--lav);color:var(--lav);box-shadow:0 2px 0 var(--lav-dim);}
 
 /* ─── CART ───────────────────────────────────────────────── */
 .cart-header{padding:20px 16px 8px;}
 .cart-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--s2);}
-.cart-thumb{
-  width:46px;height:46px;border-radius:12px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;flex-shrink:0;overflow:hidden;background:var(--s2);
-  border:1.5px solid var(--border);
-}
+.cart-thumb{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;background:var(--s2);border:1.5px solid var(--border);}
 .cart-thumb img{width:100%;height:100%;object-fit:cover;}
 .cart-item-info{flex:1;}
 .cart-item-brand{font-size:9px;color:var(--muted);font-weight:800;letter-spacing:.1em;}
 .cart-item-name{font-size:12px;font-weight:700;}
 .cart-item-controls{display:flex;align-items:center;gap:6px;}
-.qty-btn{
-  width:26px;height:26px;border-radius:8px;
-  border:1.5px solid var(--border);background:var(--s2);
-  color:var(--text);font-size:14px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--font);transition:all .15s;
-  box-shadow:0 2px 0 var(--dim);
-}
+.qty-btn{width:26px;height:26px;border-radius:8px;border:1.5px solid var(--border);background:var(--s2);color:var(--text);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font);transition:all .15s;box-shadow:0 2px 0 var(--dim);}
 .qty-btn:active{transform:translateY(1px);box-shadow:none;}
 .qty-btn:hover{border-color:var(--lav);color:var(--lav);}
 .qty-num{font-size:13px;font-weight:800;min-width:16px;text-align:center;}
@@ -399,11 +283,7 @@ select.form-input option{background:var(--surface);}
 .checkout-title{font-size:16px;font-weight:800;}
 .checkout-content{padding:16px;}
 .campus-toggle{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-.campus-opt{
-  padding:14px;border:1.5px solid var(--border);border-radius:16px;
-  cursor:pointer;background:var(--surface);transition:all .15s;text-align:center;
-  box-shadow:0 3px 0 var(--dim);
-}
+.campus-opt{padding:14px;border:1.5px solid var(--border);border-radius:16px;cursor:pointer;background:var(--surface);transition:all .15s;text-align:center;box-shadow:0 3px 0 var(--dim);}
 .campus-opt:active{transform:translateY(2px);box-shadow:none;}
 .campus-opt.selected{border-color:var(--lav);background:var(--lav-glow);box-shadow:0 3px 0 var(--lav-dim);}
 .campus-opt-icon{font-size:22px;margin-bottom:6px;display:block;}
@@ -411,12 +291,7 @@ select.form-input option{background:var(--surface);}
 .campus-opt-sub{font-size:10px;color:var(--muted);margin-top:2px;}
 .campus-opt.selected .campus-opt-name{color:var(--lav);}
 .pay-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
-.pay-opt{
-  display:flex;align-items:center;gap:12px;padding:12px 14px;
-  border:1.5px solid var(--border);border-radius:16px;
-  cursor:pointer;background:var(--surface);transition:all .15s;
-  box-shadow:0 3px 0 var(--dim);
-}
+.pay-opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:16px;cursor:pointer;background:var(--surface);transition:all .15s;box-shadow:0 3px 0 var(--dim);}
 .pay-opt:active{transform:translateY(2px);box-shadow:none;}
 .pay-opt.selected{border-color:var(--lav);background:var(--lav-glow);box-shadow:0 3px 0 var(--lav-dim);}
 .pay-icon{width:32px;height:32px;border-radius:10px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
@@ -434,15 +309,7 @@ select.form-input option{background:var(--surface);}
 
 /* ─── CONFIRM ────────────────────────────────────────────── */
 .confirm-wrap{padding:40px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;}
-.confirm-circle{
-  width:72px;height:72px;
-  background:var(--lav-glow);
-  border:2px solid var(--lav);
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:30px;margin-bottom:16px;
-  box-shadow:0 0 30px var(--lav-glow),0 4px 0 var(--lav-dim);
-}
+.confirm-circle{width:72px;height:72px;background:var(--lav-glow);border:2px solid var(--lav);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:16px;box-shadow:0 0 30px var(--lav-glow),0 4px 0 var(--lav-dim);}
 .confirm-order-badge{background:var(--s2);border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12px;color:#888;margin-bottom:10px;}
 .confirm-order-badge b{color:var(--lav-light);}
 .confirm-title{font-size:22px;font-weight:900;margin-bottom:6px;}
@@ -458,11 +325,7 @@ select.form-input option{background:var(--surface);}
 .order-meta-num{font-size:12px;color:var(--muted);}
 .order-meta-num b{color:var(--text);}
 .order-meta-time{font-size:11px;color:var(--dim);}
-.status-card{
-  background:var(--surface);border:1.5px solid var(--border);
-  border-radius:18px;padding:20px;text-align:center;margin-bottom:18px;
-  box-shadow:0 4px 0 var(--dim);
-}
+.status-card{background:var(--surface);border:1.5px solid var(--border);border-radius:18px;padding:20px;text-align:center;margin-bottom:18px;box-shadow:0 4px 0 var(--dim);}
 .status-emoji{font-size:36px;display:block;margin-bottom:10px;}
 .status-tag{font-size:10px;font-weight:800;letter-spacing:.15em;color:var(--muted);margin-bottom:4px;}
 .status-title{font-size:18px;font-weight:800;margin-bottom:4px;}
@@ -474,12 +337,7 @@ select.form-input option{background:var(--surface);}
 .steps-bg-line{position:absolute;top:14px;left:0;right:0;height:3px;background:var(--s2);z-index:0;border-radius:2px;}
 .steps-prog-line{position:absolute;top:14px;left:0;height:3px;background:linear-gradient(90deg,var(--lav-dim),var(--lav));z-index:1;transition:width .4s;border-radius:2px;}
 .step-node{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;position:relative;z-index:2;}
-.step-dot{
-  width:30px;height:30px;border-radius:50%;
-  border:2px solid var(--dim);background:var(--bg);
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;transition:all .3s;
-}
+.step-dot{width:30px;height:30px;border-radius:50%;border:2px solid var(--dim);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .3s;}
 .step-dot.done{background:linear-gradient(135deg,var(--lav-dim),var(--lav));border-color:var(--lav);color:#fff;box-shadow:0 3px 0 #5B21B6;}
 .step-dot.current{background:linear-gradient(135deg,#059669,var(--candy-mint));border-color:var(--candy-mint);color:#fff;box-shadow:0 0 0 4px #34D39930,0 3px 0 #065F46;}
 .step-label{font-size:9px;font-weight:700;color:var(--dim);text-align:center;line-height:1.3;}
@@ -599,133 +457,22 @@ select.form-input option{background:var(--surface);}
 .order-action-btn:hover{filter:brightness(1.1);}
 .order-complete-tag{font-size:10px;font-weight:800;color:var(--candy-mint);letter-spacing:.06em;}
 
-/* ─── GOOGLE BUTTON ──────────────────────────────────────── */
-.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--s2);border:1.5px solid var(--border);border-radius:14px;padding:12px;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;transition:all .15s;box-shadow:0 3px 0 var(--dim);}
-.google-btn:active{transform:translateY(2px);box-shadow:none;}
-.google-btn:hover{background:var(--dim);}
-.google-btn:disabled{opacity:.5;cursor:not-allowed;}
-.g-logo{width:18px;height:18px;flex-shrink:0;}
-.divider{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-.div-line{flex:1;height:1px;background:var(--border);}
-.div-text{font-size:11px;color:var(--muted);font-weight:700;}
-
 /* ===================== CINEMATIC LOADER ===================== */
-#cinematic-loader{
-  position:fixed;inset:0;z-index:99999;
-  background:#0A0A12;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  overflow:hidden;
-  opacity:1;
-  transition:opacity .7s cubic-bezier(.4,0,.2,1);
-}
-#cinematic-loader.fade-out{
-  opacity:0;
-  pointer-events:none;
-}
-
-/* ── Star-field particles ── */
+#cinematic-loader{position:fixed;inset:0;z-index:99999;background:#0A0A12;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;opacity:1;transition:opacity .7s cubic-bezier(.4,0,.2,1);}
+#cinematic-loader.fade-out{opacity:0;pointer-events:none;}
 .ldr-stars{position:absolute;inset:0;pointer-events:none;}
-.ldr-star{
-  position:absolute;border-radius:50%;
-  background:#C084FC;
-  will-change:opacity,transform;
-  animation:starPulse var(--dur,2s) ease-in-out infinite var(--delay,0s);
-}
-@keyframes starPulse{
-  0%,100%{opacity:.12;transform:scale(1);}
-  50%{opacity:.55;transform:scale(1.5);}
-}
-
-/* ── Scanline sweep — uses transform not top for GPU acceleration ── */
-.ldr-scan{
-  position:absolute;left:0;right:0;height:120px;
-  background:linear-gradient(180deg,transparent,#C084FC18,transparent);
-  transform:translateY(-120px);
-  animation:scanDown 2.6s cubic-bezier(.4,0,.6,1) infinite;
-  pointer-events:none;
-  will-change:transform;
-}
-@keyframes scanDown{
-  0%{transform:translateY(-120px);opacity:0;}
-  8%{opacity:1;}
-  92%{opacity:1;}
-  100%{transform:translateY(100vh);opacity:0;}
-}
-
-/* ── Letter stage ── */
-.ldr-word{
-  display:flex;align-items:center;
-  position:relative;z-index:2;
-  margin-bottom:6px;
-}
-.ldr-letter{
-  font-family:'Nunito',system-ui,sans-serif;
-  font-size:clamp(36px,10vw,64px);
-  font-weight:900;
-  letter-spacing:.05em;
-  color:#C084FC;
-  display:inline-block;
-  opacity:0;
-  will-change:transform,opacity;
-}
-
-/* ── Dash ── */
-.ldr-dash{
-  font-family:'Nunito',system-ui,sans-serif;
-  font-size:clamp(36px,10vw,64px);
-  font-weight:900;
-  color:#7C3AED;
-  opacity:0;
-  display:inline-block;
-  margin:0 6px;
-  will-change:transform,opacity;
-}
-
-/* ── Tagline ── */
-.ldr-tagline{
-  font-family:'Nunito',system-ui,sans-serif;
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:.26em;
-  color:#3D3D5C;
-  opacity:0;
-  position:relative;z-index:2;
-  margin-bottom:0;
-  will-change:opacity,transform;
-}
-
-/* ── Loading bar ── */
-.ldr-bar-wrap{
-  width:140px;height:2px;
-  background:#1C1C2E;
-  border-radius:2px;
-  overflow:hidden;
-  margin-top:32px;
-  opacity:0;
-  position:relative;z-index:2;
-  will-change:opacity;
-}
-.ldr-bar{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#7C3AED,#C084FC,#F472B6);
-  border-radius:2px;
-  will-change:width;
-}
-
-/* ── Glow rings ── */
-.ldr-ring{
-  position:absolute;
-  border-radius:50%;
-  border:1px solid #C084FC14;
-  will-change:transform,opacity;
-  animation:ringPulse 4s ease-in-out infinite;
-  pointer-events:none;
-}
-@keyframes ringPulse{
-  0%,100%{transform:scale(1);opacity:.4;}
-  50%{transform:scale(1.05);opacity:.9;}
-}
+.ldr-star{position:absolute;border-radius:50%;background:#C084FC;will-change:opacity,transform;animation:starPulse var(--dur,2s) ease-in-out infinite var(--delay,0s);}
+@keyframes starPulse{0%,100%{opacity:.12;transform:scale(1);}50%{opacity:.55;transform:scale(1.5);}}
+.ldr-scan{position:absolute;left:0;right:0;height:120px;background:linear-gradient(180deg,transparent,#C084FC18,transparent);transform:translateY(-120px);animation:scanDown 2.6s cubic-bezier(.4,0,.6,1) infinite;pointer-events:none;will-change:transform;}
+@keyframes scanDown{0%{transform:translateY(-120px);opacity:0;}8%{opacity:1;}92%{opacity:1;}100%{transform:translateY(100vh);opacity:0;}}
+.ldr-word{display:flex;align-items:center;position:relative;z-index:2;margin-bottom:6px;}
+.ldr-letter{font-family:'Nunito',system-ui,sans-serif;font-size:clamp(36px,10vw,64px);font-weight:900;letter-spacing:.05em;color:#C084FC;display:inline-block;opacity:0;will-change:transform,opacity;}
+.ldr-dash{font-family:'Nunito',system-ui,sans-serif;font-size:clamp(36px,10vw,64px);font-weight:900;color:#7C3AED;opacity:0;display:inline-block;margin:0 6px;will-change:transform,opacity;}
+.ldr-tagline{font-family:'Nunito',system-ui,sans-serif;font-size:11px;font-weight:800;letter-spacing:.26em;color:#3D3D5C;opacity:0;position:relative;z-index:2;margin-bottom:0;will-change:opacity,transform;}
+.ldr-bar-wrap{width:140px;height:2px;background:#1C1C2E;border-radius:2px;overflow:hidden;margin-top:32px;opacity:0;position:relative;z-index:2;will-change:opacity;}
+.ldr-bar{height:100%;width:0%;background:linear-gradient(90deg,#7C3AED,#C084FC,#F472B6);border-radius:2px;will-change:width;}
+.ldr-ring{position:absolute;border-radius:50%;border:1px solid #C084FC14;will-change:transform,opacity;animation:ringPulse 4s ease-in-out infinite;pointer-events:none;}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:.4;}50%{transform:scale(1.05);opacity:.9;}}
 </style>
 </head>
 <body>
@@ -745,11 +492,9 @@ select.form-input option{background:var(--surface);}
 
 <script>
 (function(){
-  // ── All animation driven by Web Animations API for buttery GPU compositing ──
-  const EASEOUT = 'cubic-bezier(0.22,1,0.36,1)';   // smooth decelerate
-  const EASEINOUT = 'cubic-bezier(0.4,0,0.2,1)';   // material standard
+  const EASEOUT   = 'cubic-bezier(0.22,1,0.36,1)';
+  const EASEINOUT = 'cubic-bezier(0.4,0,0.2,1)';
 
-  // ── Star particles ───────────────────────────────────────────────────
   const stars = document.getElementById('ldr-stars');
   for (let i = 0; i < 32; i++) {
     const s = document.createElement('div');
@@ -764,18 +509,10 @@ select.form-input option{background:var(--surface);}
     stars.appendChild(s);
   }
 
-  // ── Letters — Web Animations API, staggered, smooth spring bounce ────
-  // trajectories: [tx, ty, rotation, startDelay(ms)]
   const WORD = 'UNIBITES';
   const traj = [
-    [-180, -90, -20,   0],
-    [-110,  160,  16,  80],
-    [ -50, -140, -10, 150],
-    [  70,  170,  24, 220],
-    [ 150, -80,  -18, 290],
-    [ 190,   80,  13, 360],
-    [-160,   50, -28, 430],
-    [  90, -160,  20, 500],
+    [-180,-90,-20,0],[-110,160,16,80],[-50,-140,-10,150],[70,170,24,220],
+    [150,-80,-18,290],[190,80,13,360],[-160,50,-28,430],[90,-160,20,500],
   ];
 
   const wrap = document.getElementById('ldr-word');
@@ -787,67 +524,44 @@ select.form-input option{background:var(--surface);}
     el.textContent = ch;
     wrap.appendChild(el);
     letters.push(el);
-
     const [tx, ty, rot, delay] = traj[i];
-
-    // Phase 1: fly in and overshoot slightly
     el.animate([
-      { opacity: 0, transform: 'translate(' + tx + 'px,' + ty + 'px) rotate(' + rot + 'deg) scale(0.35)', offset: 0 },
-      { opacity: 1, transform: 'translate(0,0) rotate(0deg) scale(1.07)',                                  offset: 0.72 },
-      { opacity: 1, transform: 'translate(0,4px) rotate(0deg) scale(0.97)',                                offset: 0.86 },
-      { opacity: 1, transform: 'translate(0,0) rotate(0deg) scale(1)',                                     offset: 1 },
-    ], {
-      duration: 680,
-      delay: delay,
-      easing: EASEOUT,
-      fill: 'both',
-    });
+      { opacity:0, transform:'translate('+tx+'px,'+ty+'px) rotate('+rot+'deg) scale(0.35)', offset:0 },
+      { opacity:1, transform:'translate(0,0) rotate(0deg) scale(1.07)',                     offset:0.72 },
+      { opacity:1, transform:'translate(0,4px) rotate(0deg) scale(0.97)',                   offset:0.86 },
+      { opacity:1, transform:'translate(0,0) rotate(0deg) scale(1)',                        offset:1 },
+    ], { duration:680, delay, easing:EASEOUT, fill:'both' });
   });
 
-  // ── Dash ─────────────────────────────────────────────────────────────
-  const dash = document.getElementById('ldr-dash');
-  dash.animate([
-    { opacity: 0, transform: 'scale(0.2) rotate(60deg)' },
-    { opacity: 1, transform: 'scale(1.1) rotate(-4deg)' },
-    { opacity: 1, transform: 'scale(1) rotate(0deg)' },
-  ], { duration: 380, delay: 680, easing: EASEOUT, fill: 'both' });
+  document.getElementById('ldr-dash').animate([
+    { opacity:0, transform:'scale(0.2) rotate(60deg)' },
+    { opacity:1, transform:'scale(1.1) rotate(-4deg)' },
+    { opacity:1, transform:'scale(1) rotate(0deg)' },
+  ], { duration:380, delay:680, easing:EASEOUT, fill:'both' });
 
-  // ── Tagline ───────────────────────────────────────────────────────────
-  const tagline = document.getElementById('ldr-tagline');
-  tagline.animate([
-    { opacity: 0, transform: 'translateY(12px)' },
-    { opacity: 1, transform: 'translateY(0)' },
-  ], { duration: 500, delay: 900, easing: EASEINOUT, fill: 'both' });
+  document.getElementById('ldr-tagline').animate([
+    { opacity:0, transform:'translateY(12px)' },
+    { opacity:1, transform:'translateY(0)' },
+  ], { duration:500, delay:900, easing:EASEINOUT, fill:'both' });
 
-  // ── Progress bar ─────────────────────────────────────────────────────
   const barWrap = document.getElementById('ldr-bar-wrap');
   const bar     = document.getElementById('ldr-bar');
-
-  barWrap.animate(
-    [{ opacity: 0 }, { opacity: 1 }],
-    { duration: 300, delay: 1050, easing: EASEINOUT, fill: 'both' }
-  );
-
-  // Smooth three-phase fill: fast start, brief hesitation, complete
+  barWrap.animate([{ opacity:0 },{ opacity:1 }], { duration:300, delay:1050, easing:EASEINOUT, fill:'both' });
   bar.animate([
-    { width: '0%',   offset: 0    },
-    { width: '68%',  offset: 0.45 },
-    { width: '84%',  offset: 0.72 },
-    { width: '100%', offset: 1    },
-  ], { duration: 1400, delay: 1100, easing: EASEINOUT, fill: 'both' });
+    { width:'0%',  offset:0 },{ width:'68%', offset:0.45 },
+    { width:'84%', offset:0.72 },{ width:'100%', offset:1 },
+  ], { duration:1400, delay:1100, easing:EASEINOUT, fill:'both' });
 
-  // ── Subtle letter glow pulse once all landed ──────────────────────────
   setTimeout(() => {
     letters.forEach((el, i) => {
       el.animate([
-        { textShadow: '0 0 0px #C084FC00' },
-        { textShadow: '0 0 22px #C084FCaa' },
-        { textShadow: '0 0 0px #C084FC00' },
-      ], { duration: 900, delay: i * 40, easing: EASEINOUT, fill: 'none' });
+        { textShadow:'0 0 0px #C084FC00' },
+        { textShadow:'0 0 22px #C084FCaa' },
+        { textShadow:'0 0 0px #C084FC00' },
+      ], { duration:900, delay:i*40, easing:EASEINOUT, fill:'none' });
     });
   }, 1200);
 
-  // ── Dismiss — opacity transition (GPU composited, no jank) ───────────
   setTimeout(function() {
     const loader = document.getElementById('cinematic-loader');
     loader.classList.add('fade-out');
@@ -867,14 +581,14 @@ select.form-input option{background:var(--surface);}
     <p class="aw-tagline">UCT's campus snack shop 🎓<br>Sign in to order snacks delivered to your res.</p>
     <div class="aw-card">
 
-      <!-- state: completing sign-in (shown briefly after tapping the emailed link) -->
+      <!-- completing sign-in -->
       <div id="wall-completing" style="display:none;text-align:center;padding:30px 0;">
         <div style="font-size:32px;margin-bottom:12px;">🔐</div>
         <div style="font-weight:700;margin-bottom:6px;">Completing sign-in…</div>
         <div style="font-size:12px;color:var(--muted);">Just a moment.</div>
       </div>
 
-      <!-- state: confirm email (opened link on a different device) -->
+      <!-- confirm email (different device) -->
       <div id="wall-confirm-email" style="display:none;">
         <div style="font-size:32px;margin-bottom:12px;text-align:center;">📧</div>
         <div style="font-weight:800;margin-bottom:6px;text-align:center;">Confirm your email</div>
@@ -887,33 +601,29 @@ select.form-input option{background:var(--surface);}
         <button class="btn btn-primary" id="wall-confirm-btn" onclick="wallConfirmEmail()">Complete Sign-In</button>
       </div>
 
-      <!-- state: link sent confirmation -->
+      <!-- link sent -->
       <div id="wall-sent" style="display:none;text-align:center;">
         <div style="font-size:32px;margin-bottom:12px;">📬</div>
         <div style="font-weight:700;margin-bottom:6px;">Check your email</div>
         <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:18px;">We sent a sign-in link to<br><b id="wall-sent-email" style="color:var(--text)"></b><br>Tap it on this device to finish signing in.</div>
+        <div id="wall-link-uses-left" style="font-size:11px;color:var(--muted);margin-bottom:14px;"></div>
         <button class="btn btn-ghost" onclick="wallResetForm()">Use a different email</button>
       </div>
 
-      <!-- state: form -->
+      <!-- link limit reached -->
+      <div id="wall-link-limit" style="display:none;">
+        <div class="link-limit-notice">
+          <strong>🔒 Link limit reached</strong>
+          You've requested 3 sign-in links for this email in the last 24 hours.<br>
+          Please wait until the window resets, or use a different email address.
+        </div>
+        <div id="wall-limit-timer" style="text-align:center;font-size:12px;color:var(--muted);margin-top:14px;"></div>
+        <button class="btn btn-ghost" onclick="wallResetForm()" style="margin-top:16px;">Try a different email</button>
+      </div>
+
+      <!-- main form -->
       <div id="wall-form-state">
         <div class="aw-err" id="wall-err"></div>
-        <button class="google-btn" id="wall-google-btn" onclick="wallGoogleSignIn()">
-          <svg class="g-logo" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
-          <span id="wall-google-btn-text">Continue with Google</span>
-        </button>
-        <script>
-          // If a Google redirect is in flight, disable the button until result resolves
-          if (sessionStorage.getItem('ub_googlePending') || sessionStorage.getItem('ub_adminGateRedirect')) {
-            document.addEventListener('DOMContentLoaded', function() {
-              var btn = document.getElementById('wall-google-btn');
-              var txt = document.getElementById('wall-google-btn-text');
-              if (btn) btn.disabled = true;
-              if (txt) txt.textContent = 'Signing in with Google…';
-            });
-          }
-        </script>
-        <div class="divider"><div class="div-line"></div><span class="div-text">OR</span><div class="div-line"></div></div>
         <div class="form-group">
           <label class="form-label">EMAIL ADDRESS</label>
           <input class="form-input" type="email" id="wall-email" placeholder="you@email.com" onkeydown="if(event.key==='Enter')wallSendLink()">
@@ -1053,7 +763,6 @@ select.form-input option{background:var(--surface);}
     <div class="pay-opts">
       <div class="pay-opt selected" onclick="selectPay(this)"><div class="pay-icon">💳</div><div class="pay-info"><div class="pay-name">Card</div><div class="pay-sub">Card on delivery</div></div><div class="pay-radio"><div class="pay-radio-dot"></div></div></div>
       <div class="pay-opt" onclick="selectPay(this)"><div class="pay-icon">💵</div><div class="pay-info"><div class="pay-name">Cash</div><div class="pay-sub">Cash on delivery</div></div><div class="pay-radio"><div class="pay-radio-dot"></div></div></div>
-      </div>
     </div>
     <div class="section-label" style="margin-bottom:10px;">ORDER SUMMARY</div>
     <div class="compact-sum">
@@ -1180,11 +889,6 @@ select.form-input option{background:var(--surface);}
     <div class="agm-title">Admin Access</div>
     <div class="agm-sub">Restricted to authorised administrators only.</div>
     <div class="agm-err" id="admin-gate-error"></div>
-    <button class="google-btn" id="agm-google-btn" onclick="adminGateGoogleSignIn()">
-      <svg class="g-logo" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
-      Continue with Google
-    </button>
-    <div class="divider"><div class="div-line"></div><span class="div-text">OR</span><div class="div-line"></div></div>
     <div class="form-group">
       <label class="form-label">ADMIN EMAIL</label>
       <input class="form-input" type="email" id="admin-gate-email" placeholder="admin@email.com" onkeydown="if(event.key==='Enter')adminGateSignIn()">
@@ -1268,7 +972,7 @@ select.form-input option{background:var(--surface);}
  * UNI-BITES — Firebase-powered UCT campus snack shop
  * ============================================================ */
 
-// ── FIREBASE CONFIG (hardcoded) ────────────────────────────
+// ── FIREBASE CONFIG ────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyDRQMKVqJLsG2uRGKWAUNCyk0d14mGg42Q",
   authDomain: "uni-bites-398d9.firebaseapp.com",
@@ -1284,41 +988,6 @@ firebase.initializeApp(firebaseConfig);
 const db      = firebase.firestore();
 const auth    = firebase.auth();
 const storage = firebase.storage();
-
-// ── GOOGLE REDIRECT RESULT ─────────────────────────────────
-// Fires once on page load after a signInWithRedirect() completes.
-auth.getRedirectResult()
-  .then(result => {
-    const wasAdminGate = sessionStorage.getItem('ub_adminGateRedirect');
-    sessionStorage.removeItem('ub_googlePending');
-    sessionStorage.removeItem('ub_adminGateRedirect');
-    if (result && result.user) {
-      if (wasAdminGate && result.user.email.toLowerCase() !== ADMIN_EMAIL) {
-        // Wrong Google account used for admin gate — sign them out immediately
-        auth.signOut();
-        // Re-open the admin gate modal to show the error
-        adminGateOpen = true;
-        document.getElementById('admin-gate-modal').classList.add('show');
-        showGateError('⛔ That Google account does not have admin access.');
-      }
-      // Otherwise onAuthStateChanged handles the rest — nothing else needed
-    }
-  })
-  .catch(err => {
-    sessionStorage.removeItem('ub_googlePending');
-    const wasAdminGate = sessionStorage.getItem('ub_adminGateRedirect');
-    sessionStorage.removeItem('ub_adminGateRedirect');
-    if (wasAdminGate) {
-      adminGateOpen = true;
-      document.getElementById('admin-gate-modal').classList.add('show');
-      showGateError(friendlyAuthError(err.code));
-      const btn = document.getElementById('agm-google-btn');
-      if (btn) btn.disabled = false;
-    } else {
-      showWallError(friendlyAuthError(err.code));
-    }
-  });
-
 
 // ── STATE ──────────────────────────────────────────────────
 const APP = {
@@ -1337,92 +1006,157 @@ const RESIDENCES = {
 };
 
 // ── XSS SANITISER ─────────────────────────────────────────
-// Wrap every piece of Firestore/user data inserted via innerHTML with esc()
 function esc(str) {
   if (str === null || str === undefined) return '';
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;');
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
 }
 
 // ── FRIENDLY AUTH ERRORS ───────────────────────────────────
 function friendlyAuthError(code) {
   const msgs = {
-    'auth/user-not-found':      'No account found with this email.',
-    'auth/wrong-password':      'Incorrect password. Try again.',
-    'auth/invalid-credential':  'Incorrect email or password.',
-    'auth/email-already-in-use':'An account already exists with this email.',
-    'auth/weak-password':       'Password must be at least 6 characters.',
-    'auth/invalid-email':       'Please enter a valid email address.',
-    'auth/too-many-requests':   'Too many attempts — please wait and try again.',
+    'auth/user-not-found':        'No account found with this email.',
+    'auth/wrong-password':        'Incorrect password. Try again.',
+    'auth/invalid-credential':    'Incorrect email or password.',
+    'auth/email-already-in-use':  'An account already exists with this email.',
+    'auth/weak-password':         'Password must be at least 6 characters.',
+    'auth/invalid-email':         'Please enter a valid email address.',
+    'auth/too-many-requests':     'Too many attempts — please wait and try again.',
     'auth/network-request-failed':'Network error. Check your connection.',
-    'auth/popup-closed-by-user':'Sign-in popup was closed.',
-    'auth/invalid-action-code':  'This sign-in link is invalid or has already been used. Please request a new one.',
-    'auth/expired-action-code':  'This sign-in link has expired. Please request a new one.',
-    'auth/missing-email':        'Please enter your email address.',
+    'auth/invalid-action-code':   'This sign-in link is invalid or has already been used. Please request a new one.',
+    'auth/expired-action-code':   'This sign-in link has expired. Please request a new one.',
+    'auth/missing-email':         'Please enter your email address.',
   };
   return msgs[code] || 'Something went wrong. Please try again.';
 }
 
-// ── AUTH WALL (passwordless email-link sign-in) ────────────
+/* ============================================================
+ * LINK USAGE TRACKING
+ * Per email, stored in localStorage under ub_lu_{email}
+ * Shape: { count: number, windowStart: timestamp }
+ * Rules:
+ *   - Max 3 sends per 24-hour window
+ *   - Window resets automatically after 24 h
+ * ============================================================ */
+const LINK_MAX         = 3;
+const LINK_WINDOW_MS   = 24 * 60 * 60 * 1000; // 24 hours
+
+function linkUsageKey(email) {
+  // Use a hash-safe key (remove special chars but keep it unique)
+  return 'ub_lu_' + email.toLowerCase().replace(/[^a-z0-9]/g, '_');
+}
+
+function getLinkUsage(email) {
+  try {
+    const raw  = localStorage.getItem(linkUsageKey(email));
+    if (!raw) return { count: 0, windowStart: Date.now() };
+    const data = JSON.parse(raw);
+    // If window has expired, treat as fresh
+    if (Date.now() - data.windowStart >= LINK_WINDOW_MS) {
+      return { count: 0, windowStart: Date.now() };
+    }
+    return data;
+  } catch (_) {
+    return { count: 0, windowStart: Date.now() };
+  }
+}
+
+function setLinkUsage(email, data) {
+  try { localStorage.setItem(linkUsageKey(email), JSON.stringify(data)); } catch (_) {}
+}
+
+function incrementLinkUsage(email) {
+  const data = getLinkUsage(email);
+  // If starting fresh window, reset windowStart
+  const now = Date.now();
+  const isNewWindow = now - data.windowStart >= LINK_WINDOW_MS;
+  const next = {
+    count: isNewWindow ? 1 : data.count + 1,
+    windowStart: isNewWindow ? now : data.windowStart,
+  };
+  setLinkUsage(email, next);
+  return next;
+}
+
+// Returns ms until the window resets
+function linkWindowResetMs(email) {
+  const data = getLinkUsage(email);
+  return Math.max(0, LINK_WINDOW_MS - (Date.now() - data.windowStart));
+}
+
+function formatCountdown(ms) {
+  const totalSec = Math.ceil(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) return h + 'h ' + m + 'm';
+  if (m > 0) return m + 'm ' + s + 's';
+  return s + 's';
+}
+
+// Live countdown ticker for the limit screen
+let limitTimerInterval = null;
+function startLimitTimer(email) {
+  const el = document.getElementById('wall-limit-timer');
+  if (!el) return;
+  if (limitTimerInterval) clearInterval(limitTimerInterval);
+  const tick = () => {
+    const ms = linkWindowResetMs(email);
+    if (ms <= 0) {
+      clearInterval(limitTimerInterval);
+      // Window expired — go back to form automatically
+      wallResetForm();
+      return;
+    }
+    el.textContent = 'Try again in ' + formatCountdown(ms);
+  };
+  tick();
+  limitTimerInterval = setInterval(tick, 1000);
+}
+
+/* ============================================================
+ * AUTH WALL — email-link (passwordless) sign-in
+ * ============================================================ */
 const WALL_EMAIL_KEY = 'ub_emailForSignIn';
+const WALL_RATE_KEY  = 'ub_lastLinkSent';
+const WALL_RATE_MS   = 60 * 1000; // 60 s between sends (existing rate limit)
 
 function showWallError(msg) {
   const el = document.getElementById('wall-err');
-  el.textContent = msg;
-  el.classList.add('show');
+  el.textContent = msg; el.classList.add('show');
 }
-function hideWallError() {
-  document.getElementById('wall-err').classList.remove('show');
-}
-
-function wallGoogleSignIn() {
-  const btn = document.getElementById('wall-google-btn');
-  btn.disabled = true;
-  btn.textContent = 'Redirecting to Google…';
-  hideWallError();
-  const provider = new firebase.auth.GoogleAuthProvider();
-  sessionStorage.setItem('ub_googlePending', '1');
-  auth.signInWithRedirect(provider)
-    .catch(err => {
-      sessionStorage.removeItem('ub_googlePending');
-      showWallError(friendlyAuthError(err.code));
-      btn.disabled = false;
-      btn.textContent = 'Continue with Google';
-    });
-}
-
-// Sends a one-time sign-in link to the entered email — no password involved.
-// Rate-limit: track last send time in sessionStorage to prevent spam
-const WALL_RATE_KEY   = 'ub_lastLinkSent';
-const WALL_RATE_MS    = 60 * 1000; // 60 seconds between sends
+function hideWallError() { document.getElementById('wall-err').classList.remove('show'); }
 
 function wallSendLink() {
   const emailInput = document.getElementById('wall-email');
   const email      = emailInput.value.trim();
   hideWallError();
 
-  // FIX 8: Use checkValidity() for proper RFC-compliant email validation
   if (!email || !emailInput.checkValidity()) {
     showWallError('Please enter a valid email address.');
     return;
   }
 
-  // FIX 9: Client-side rate limit — prevent button spam
+  // ── Check 24-hour link usage cap ──────────────────────────
+  const usage = getLinkUsage(email);
+  if (usage.count >= LINK_MAX) {
+    wallShowState('wall-link-limit');
+    startLimitTimer(email);
+    return;
+  }
+
+  // ── Client-side 60-second cooldown ───────────────────────
   const lastSent = parseInt(sessionStorage.getItem(WALL_RATE_KEY) || '0', 10);
   const elapsed  = Date.now() - lastSent;
   if (elapsed < WALL_RATE_MS) {
     const secs = Math.ceil((WALL_RATE_MS - elapsed) / 1000);
-    showWallError(`Please wait ${secs}s before requesting another link.`);
+    showWallError('Please wait ' + secs + 's before requesting another link.');
     return;
   }
 
   const btn = document.getElementById('wall-action-btn');
-  btn.disabled = true;
-  btn.textContent = 'Sending…';
+  btn.disabled = true; btn.textContent = 'Sending…';
 
   const actionCodeSettings = {
     url: window.location.href.split('#')[0].split('?')[0],
@@ -1433,15 +1167,30 @@ function wallSendLink() {
     .then(() => {
       sessionStorage.setItem(WALL_RATE_KEY, String(Date.now()));
       window.localStorage.setItem(WALL_EMAIL_KEY, email);
+
+      // Increment the usage counter after a successful send
+      const updated = incrementLinkUsage(email);
+      const remaining = LINK_MAX - updated.count;
+
       document.getElementById('wall-sent-email').textContent = email;
-      document.getElementById('wall-form-state').style.display = 'none';
-      document.getElementById('wall-sent').style.display = 'block';
+
+      // Show how many links are left in this 24-hour window
+      const usesEl = document.getElementById('wall-link-uses-left');
+      if (remaining > 0) {
+        usesEl.textContent = remaining + ' sign-in link' + (remaining === 1 ? '' : 's') + ' remaining in the next 24 hours.';
+      } else {
+        usesEl.textContent = 'This was your last sign-in link for the next 24 hours.';
+        usesEl.style.color = 'var(--candy-yellow)';
+      }
+
+      wallShowState('wall-sent');
     })
     .catch(err => { showWallError(friendlyAuthError(err.code)); })
     .finally(() => { btn.disabled = false; btn.textContent = 'Email Me a Sign-In Link'; });
 }
 
 function wallResetForm() {
+  if (limitTimerInterval) { clearInterval(limitTimerInterval); limitTimerInterval = null; }
   wallShowState('wall-form-state');
   document.getElementById('wall-email').value = '';
   hideWallError();
@@ -1449,12 +1198,11 @@ function wallResetForm() {
 
 // Hide all auth wall states and show just one
 function wallShowState(id) {
-  ['wall-completing','wall-confirm-email','wall-sent','wall-form-state'].forEach(s => {
-    document.getElementById(s).style.display = s === id ? (id === 'wall-form-state' ? 'block' : 'block') : 'none';
+  ['wall-completing','wall-confirm-email','wall-sent','wall-link-limit','wall-form-state'].forEach(s => {
+    document.getElementById(s).style.display = s === id ? 'block' : 'none';
   });
 }
 
-// Called when user submits their email on the confirm-email state (different device flow)
 function wallConfirmEmail() {
   const input = document.getElementById('wall-confirm-email-input');
   const errEl = document.getElementById('wall-confirm-err');
@@ -1468,9 +1216,7 @@ function wallConfirmEmail() {
     return;
   }
 
-  btn.disabled = true;
-  btn.textContent = 'Signing in…';
-
+  btn.disabled = true; btn.textContent = 'Signing in…';
   const cleanUrl = () => window.history.replaceState({}, document.title, window.location.pathname);
 
   auth.signInWithEmailLink(email, window.location.href)
@@ -1478,23 +1224,21 @@ function wallConfirmEmail() {
     .catch(err => {
       errEl.textContent = friendlyAuthError(err.code);
       errEl.classList.add('show');
-      btn.disabled = false;
-      btn.textContent = 'Complete Sign-In';
+      btn.disabled = false; btn.textContent = 'Complete Sign-In';
       cleanUrl();
     });
 }
 
-// If this page load was opened via the link we emailed, finish signing the user in.
+// Complete sign-in if this page load was via the emailed link
 function completeEmailLinkSignIn() {
   if (!auth.isSignInWithEmailLink(window.location.href)) return;
 
   wallShowState('wall-completing');
 
-  const email = window.localStorage.getItem(WALL_EMAIL_KEY);
+  const email    = window.localStorage.getItem(WALL_EMAIL_KEY);
   const cleanUrl = () => window.history.replaceState({}, document.title, window.location.pathname);
 
   if (!email) {
-    // Link opened on a different device — show inline email confirmation UI
     wallShowState('wall-confirm-email');
     return;
   }
@@ -1514,25 +1258,20 @@ let adminGateOpen = false;
 let logoTapCount  = 0;
 let logoTapTimer  = null;
 
-// Triple-tap the logo (works on mobile)
 function handleLogoTap() {
-  if (currentScreen !== 'admin' && currentScreen !== 'home' && currentScreen !== 'shop' && currentScreen !== 'cart' && currentScreen !== 'auth') return;
+  if (!['admin','home','shop','cart','auth'].includes(currentScreen)) return;
   logoTapCount++;
   clearTimeout(logoTapTimer);
   logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 700);
   if (logoTapCount >= 3) { logoTapCount = 0; openAdminGate(); }
 }
 
-// Keyboard shortcut Ctrl+Shift+A
 window.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
-    e.preventDefault();
-    openAdminGate();
-  }
+  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') { e.preventDefault(); openAdminGate(); }
 });
 
 function openAdminGate() {
-  if (APP.isAdmin) { navigate('admin'); return; } // already admin, go straight in
+  if (APP.isAdmin) { navigate('admin'); return; }
   adminGateOpen = true;
   const modal = document.getElementById('admin-gate-modal');
   modal.classList.add('show');
@@ -1541,7 +1280,6 @@ function openAdminGate() {
   document.getElementById('admin-gate-password').value = '';
   document.getElementById('admin-gate-submit').disabled    = false;
   document.getElementById('admin-gate-submit').textContent = 'Sign In to Admin';
-  document.getElementById('agm-google-btn').disabled = false;
 }
 
 function closeAdminGate() {
@@ -1551,8 +1289,7 @@ function closeAdminGate() {
 
 function showGateError(msg) {
   const el = document.getElementById('admin-gate-error');
-  el.textContent = msg;
-  el.classList.add('show');
+  el.textContent = msg; el.classList.add('show');
 }
 
 function adminGateSignIn() {
@@ -1566,7 +1303,6 @@ function adminGateSignIn() {
   const btn = document.getElementById('admin-gate-submit');
   btn.disabled = true; btn.textContent = 'Signing in…';
 
-  // Sign out any existing non-admin session first, then sign in as admin
   const wasLoggedIn = !!APP.user;
   const doSignIn = () => {
     auth.signInWithEmailAndPassword(email, password)
@@ -1578,64 +1314,38 @@ function adminGateSignIn() {
   if (wasLoggedIn && !APP.isAdmin) { auth.signOut().then(doSignIn); } else { doSignIn(); }
 }
 
-function adminGateGoogleSignIn() {
-  const btn = document.getElementById('agm-google-btn');
-  btn.disabled = true;
-  document.getElementById('admin-gate-error').classList.remove('show');
-  // Store flag so getRedirectResult knows to enforce admin-email check
-  sessionStorage.setItem('ub_adminGateRedirect', '1');
-  const provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({ login_hint: ADMIN_EMAIL });
-  auth.signInWithRedirect(provider)
-    .catch(err => {
-      sessionStorage.removeItem('ub_adminGateRedirect');
-      if (err.code !== 'auth/popup-closed-by-user') showGateError(friendlyAuthError(err.code));
-      btn.disabled = false;
-    });
-}
-
 // ── AUTH STATE OBSERVER ────────────────────────────────────
 auth.onAuthStateChanged(user => {
   APP.user    = user;
   APP.isAdmin = !!(user && user.email && user.email.toLowerCase() === ADMIN_EMAIL);
 
   if (user) {
-    // Show app chrome
     document.getElementById('auth-wall').classList.add('hidden');
-    document.getElementById('top-nav').style.display    = '';
+    document.getElementById('top-nav').style.display     = '';
     document.getElementById('marquee-bar').style.display = '';
     document.getElementById('bottom-nav').style.display  = '';
 
-    // Update account screen
     document.getElementById('user-display-name').textContent  = user.displayName || 'UCT Student';
     document.getElementById('user-display-email').textContent = user.email;
     document.getElementById('admin-user-email').textContent   = user.email;
 
-    // Handle admin gate redirect
     if (adminGateOpen) {
-      if (APP.isAdmin) {
-        closeAdminGate();
-        navigate('admin');
-      } else {
+      if (APP.isAdmin) { closeAdminGate(); navigate('admin'); }
+      else {
         showGateError('⛔ This account does not have admin access.');
         document.getElementById('admin-gate-submit').disabled    = false;
         document.getElementById('admin-gate-submit').textContent = 'Sign In to Admin';
       }
     }
 
-    // Start data listeners (each user gets their own cart, keyed by uid)
     startProductListener();
     startCartListener(user.uid);
   } else {
-    // Show auth wall, hide chrome
     document.getElementById('auth-wall').classList.remove('hidden');
-    document.getElementById('top-nav').style.display    = 'none';
+    document.getElementById('top-nav').style.display     = 'none';
     document.getElementById('marquee-bar').style.display = 'none';
     document.getElementById('bottom-nav').style.display  = 'none';
-    // Detach the previous user's cart and clear it from memory so the next
-    // person to sign in on this device never sees someone else's bag.
     stopCartListener();
-    // If admin screen is showing, go back to home screen
     if (currentScreen === 'admin') {
       currentScreen = 'home';
       CUSTOMER_SCREENS.forEach(s => {
@@ -1648,8 +1358,6 @@ auth.onAuthStateChanged(user => {
 });
 
 function signOut() {
-  // Make sure the latest cart state is safely saved before the auth
-  // session goes away, so it's there waiting next time they sign in.
   const finish = () => auth.signOut().then(() => { currentScreen = 'home'; });
   saveCart().then(finish, finish);
 }
@@ -1686,13 +1394,11 @@ function navigate(screen, filterCat) {
 }
 
 // ── CART (per-user, synced to Firestore) ───────────────────
-// Each signed-in user's bag lives at carts/{uid} so it's their own — it
-// follows them across devices and never leaks into another user's session.
 let cartUnsub = null;
 let cartListenerUid = null;
 
 function startCartListener(uid) {
-  if (cartListenerUid === uid && cartUnsub) return; // already synced to this user
+  if (cartListenerUid === uid && cartUnsub) return;
   stopCartListener();
   cartListenerUid = uid;
   cartUnsub = db.collection('carts').doc(uid).onSnapshot(doc => {
@@ -1704,22 +1410,16 @@ function startCartListener(uid) {
     if (currentScreen === 'checkout') renderCheckoutSummary();
   }, err => {
     console.error('Cart listener error:', err.code, err.message);
-    // If permission denied, the user's cart doc may not exist yet — that's fine,
-    // treat it as an empty cart rather than a crash
     if (err.code === 'permission-denied') {
-      APP.cart = [];
-      APP.promoApplied = false;
-      updateCartBadge();
+      APP.cart = []; APP.promoApplied = false; updateCartBadge();
     }
   });
 }
 
 function stopCartListener() {
   if (cartUnsub) cartUnsub();
-  cartUnsub = null;
-  cartListenerUid = null;
-  APP.cart = [];
-  APP.promoApplied = false;
+  cartUnsub = null; cartListenerUid = null;
+  APP.cart = []; APP.promoApplied = false;
   updateCartBadge();
 }
 
@@ -1730,13 +1430,10 @@ function saveCart() {
     emoji: i.emoji || '', imageUrl: i.imageUrl || '', brand: i.brand || '',
   }));
   return db.collection('carts').doc(APP.user.uid).set({
-    items,
-    promoApplied: APP.promoApplied,
+    items, promoApplied: APP.promoApplied,
     userId: APP.user.uid,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-  }).catch(err => {
-    console.error('Cart save failed:', err.code, err.message);
-  });
+  }).catch(err => { console.error('Cart save failed:', err.code, err.message); });
 }
 
 // ── PRODUCTS (Firestore) ───────────────────────────────────
@@ -1816,7 +1513,7 @@ function filterProducts(val) {
 
 // ── CART ───────────────────────────────────────────────────
 function addToCart(productId) {
-  if (!APP.user) return; // must be signed in
+  if (!APP.user) return;
   const prod = APP.products.find(p => p.id === productId);
   if (!prod) return;
   const ex = APP.cart.find(i => i.id === productId);
@@ -1889,27 +1586,19 @@ function applyPromo() {
   const input = document.getElementById('promo-input');
   const btn   = document.getElementById('promo-apply');
   const val   = input.value.trim().toUpperCase();
-
   if (!val) return;
-
-  btn.disabled = true;
-  btn.textContent = '...';
+  btn.disabled = true; btn.textContent = '...';
   input.style.borderColor = '';
-
   db.collection('config').doc('promoCodes').get()
     .then(doc => {
       const codes = (doc.exists && Array.isArray(doc.data().codes))
-        ? doc.data().codes.map(c => c.toUpperCase())
-        : [];
-
+        ? doc.data().codes.map(c => c.toUpperCase()) : [];
       const valid = codes.includes(val) || val.endsWith('.AC.ZA');
-
       if (valid) {
         APP.promoApplied = true;
         document.getElementById('promo-ok').style.display = 'block';
         input.style.borderColor = 'var(--candy-mint)';
-        updateCartSummary();
-        saveCart();
+        updateCartSummary(); saveCart();
       } else {
         input.style.borderColor = 'var(--red)';
         setTimeout(() => { input.style.borderColor = ''; }, 1500);
@@ -1919,10 +1608,7 @@ function applyPromo() {
       input.style.borderColor = 'var(--red)';
       setTimeout(() => { input.style.borderColor = ''; }, 1500);
     })
-    .finally(() => {
-      btn.disabled = false;
-      btn.textContent = 'Apply';
-    });
+    .finally(() => { btn.disabled = false; btn.textContent = 'Apply'; });
 }
 
 // ── CHECKOUT ───────────────────────────────────────────────
@@ -1960,7 +1646,6 @@ function placeOrder() {
   APP.orderNum = '#UNI-' + n;
   const eta = new Date(); eta.setMinutes(eta.getMinutes() + 35); APP.etaTime = eta;
   const { sub, delivery, discount, total } = getCartTotals();
-  // Snapshot what was ordered before we empty the (now persisted) cart.
   APP.lastOrder = { items: APP.cart.map(i => ({ ...i })), total };
   if (db) {
     const residence = document.getElementById('res-select')?.value || '';
@@ -1977,12 +1662,8 @@ function placeOrder() {
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     }).catch(err => console.warn('Order save failed:', err.message));
   }
-  // Bag is now persisted per-user, so clear it once the order is placed
-  // (otherwise it would still be sitting there next time they sign in).
-  APP.cart = [];
-  APP.promoApplied = false;
-  updateCartBadge();
-  saveCart();
+  APP.cart = []; APP.promoApplied = false;
+  updateCartBadge(); saveCart();
   document.getElementById('confirm-order-num').textContent = APP.orderNum;
   document.getElementById('confirm-eta').textContent = eta.toLocaleTimeString('en-ZA', { hour:'2-digit', minute:'2-digit' });
   navigate('confirm');
@@ -2150,11 +1831,11 @@ function openDrawer() {
   document.getElementById('p-category').value = '';
   document.getElementById('p-price').value    = '';
   document.getElementById('p-hot').checked    = false;
-  document.getElementById('drawer-error').style.display     = 'none';
-  document.getElementById('save-product-btn').disabled      = false;
-  document.getElementById('save-product-btn').textContent   = 'Save Product';
-  document.getElementById('upload-spinner').style.display   = 'none';
-  document.getElementById('upload-progress').style.display  = 'none';
+  document.getElementById('drawer-error').style.display   = 'none';
+  document.getElementById('save-product-btn').disabled    = false;
+  document.getElementById('save-product-btn').textContent = 'Save Product';
+  document.getElementById('upload-spinner').style.display  = 'none';
+  document.getElementById('upload-progress').style.display = 'none';
 }
 
 function closeDrawer() {
@@ -2177,7 +1858,7 @@ function handleFileSelect(input) {
 }
 
 function uploadImageToStorage(file) {
-  const spinner     = document.getElementById('upload-spinner');
+  const spinner      = document.getElementById('upload-spinner');
   const progressWrap = document.getElementById('upload-progress');
   const progressBar  = document.getElementById('upload-progress-bar');
   spinner.style.display = 'block'; progressWrap.style.display = 'block';
