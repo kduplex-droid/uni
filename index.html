@@ -352,22 +352,22 @@ select.form-input option{background:var(--surface);}
 .step-label.done-lbl{color:var(--lav);}
 .step-label.current-lbl{color:var(--candy-mint);}
 
-/* ─── ETA BOX — with loading state ──────────────────────── */
+/* ─── ETA BOX ─────────────────────────────────────────────── */
 .eta-box-sm{background:#34D3991a;border:1.5px solid #34D39930;border-radius:14px;padding:12px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
-.eta-box-sm.eta-pending{background:var(--lav-glow);border-color:var(--border);}
+.eta-box-sm.eta-pending{background:var(--s2);border-color:var(--border);}
 .eta-lbl{font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--candy-mint);margin-bottom:4px;}
 .eta-box-sm.eta-pending .eta-lbl{color:var(--muted);}
 .eta-t{font-size:20px;font-weight:900;color:var(--candy-mint);}
 .eta-cd-lbl{font-size:10px;color:var(--muted);text-align:right;margin-bottom:4px;}
 .eta-cd{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;text-align:right;}
 
-/* ETA skeleton shimmer */
-.eta-skeleton{display:flex;flex-direction:column;gap:6px;}
-.eta-skel-line{height:10px;border-radius:6px;background:linear-gradient(90deg,var(--border) 25%,var(--dim) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;}
-.eta-skel-line.wide{width:90px;}
-.eta-skel-line.narrow{width:50px;}
+/* ─── ETA SKELETON SHIMMER ──────────────────────────────── */
+.eta-skeleton{display:flex;flex-direction:column;gap:7px;padding:2px 0;}
+.eta-skel-line{height:11px;border-radius:6px;background:linear-gradient(90deg,var(--border) 25%,var(--dim) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.4s ease-in-out infinite;}
+.eta-skel-line.wide{width:88px;}
+.eta-skel-line.narrow{width:52px;}
 @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
-.eta-pending-label{font-size:11px;color:var(--muted);font-weight:700;font-style:italic;}
+.eta-pending-label{font-size:10px;color:var(--muted);font-weight:700;font-style:italic;margin-top:5px;}
 
 .ordered-items{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;}
 .ord-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--s2);}
@@ -467,42 +467,76 @@ select.form-input option{background:var(--surface);}
 .drawer-overlay.show{display:block;}
 .upload-spinner{display:none;font-size:12px;color:var(--muted);text-align:center;margin-bottom:12px;}
 
-/* ─── ADMIN ORDERS — COLLAPSIBLE ─────────────────────────── */
+/* ─── ADMIN ORDERS — COLLAPSIBLE CARDS ───────────────────── */
 .admin-orders-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
 .orders-filter-strip{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
 .orders-filter-strip::-webkit-scrollbar{display:none;}
 .orders-filter-chip{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:10px;font-weight:800;cursor:pointer;flex-shrink:0;color:var(--muted);letter-spacing:.06em;white-space:nowrap;box-shadow:0 2px 0 var(--dim);}
 .orders-filter-chip.active{background:var(--lav-glow);border-color:var(--lav);color:var(--lav);box-shadow:0 2px 0 var(--lav-dim);}
 
-/* ─── ORDER CARD (collapsible) ───────────────────────────── */
-.order-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;margin-bottom:10px;overflow:hidden;box-shadow:0 3px 0 var(--dim);transition:border-color .2s;}
-.order-card.expanded{border-color:var(--lav);box-shadow:0 3px 0 var(--lav-dim),0 0 0 1px var(--lav-glow);}
-/* ── collapsed header (always visible) ── */
-.order-card-summary{display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer;user-select:none;transition:background .15s;}
+/* ── ORDER CARD ─────────────────────────────────────────── */
+.order-card{
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  /* Left accent stripe — colour set inline via --order-accent */
+  border-left:4px solid var(--order-accent,var(--border));
+  border-radius:16px;
+  margin-bottom:10px;
+  overflow:hidden;
+  box-shadow:0 3px 0 var(--dim);
+  transition:border-color .2s,box-shadow .2s;
+}
+.order-card.expanded{
+  border-color:var(--border);
+  border-left-color:var(--order-accent,var(--lav));
+  box-shadow:0 4px 0 color-mix(in srgb,var(--order-accent,var(--lav)) 40%,transparent),
+             0 0 0 1px color-mix(in srgb,var(--order-accent,var(--lav)) 20%,transparent);
+}
+
+/* ── collapsed header ── */
+.order-card-summary{display:flex;align-items:flex-start;gap:10px;padding:13px 14px;cursor:pointer;user-select:none;transition:background .15s;}
 .order-card-summary:hover{background:var(--s2);}
+
+/* Customer initials avatar */
+.ocs-initials{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:900;color:#fff;
+  flex-shrink:0;margin-top:1px;
+  box-shadow:0 2px 0 rgba(0,0,0,.25);
+  /* background set inline */
+}
+
 .ocs-left{flex:1;min-width:0;}
-.ocs-num{font-size:13px;font-weight:800;margin-bottom:2px;}
-.ocs-meta{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ocs-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.ocs-total{font-size:14px;font-weight:900;color:var(--lav);}
-.ocs-chevron{font-size:12px;color:var(--dim);transition:transform .25s;display:inline-block;}
+.ocs-num{font-size:13px;font-weight:800;margin-bottom:3px;}
+.ocs-meta{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;}
+
+/* Item emoji preview strip */
+.ocs-emoji-strip{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:2px;}
+.ocs-emoji-pill{font-size:10px;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:2px 6px;color:var(--text);white-space:nowrap;}
+
+.ocs-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
+.ocs-total{font-size:15px;font-weight:900;color:var(--lav);}
+.ocs-chevron{font-size:11px;color:var(--dim);transition:transform .25s;display:inline-block;margin-top:2px;}
 .order-card.expanded .ocs-chevron{transform:rotate(180deg);}
+
 .order-status-badge{font-size:9px;font-weight:800;padding:3px 8px;border-radius:10px;letter-spacing:.06em;white-space:nowrap;}
 .status-pending{background:var(--lav-glow);color:var(--lav);border:1.5px solid #C084FC40;}
 .status-confirmed{background:#FCD34D1a;color:var(--candy-yellow);border:1.5px solid #FCD34D40;}
 .status-packing{background:#F472B61a;color:var(--candy-pink);border:1.5px solid #F472B640;}
 .status-delivering{background:#34D3991a;color:var(--candy-mint);border:1.5px solid #34D39930;}
 .status-delivered{background:var(--s2);color:var(--muted);border:1.5px solid var(--border);}
-/* ── expanded body (hidden by default) ── */
+
+/* ── expanded body ── */
 .order-card-body{
   border-top:1px solid var(--border);
   max-height:0;
   overflow:hidden;
-  transition:max-height .3s cubic-bezier(.4,0,.2,1);
+  transition:max-height .35s cubic-bezier(.4,0,.2,1);
 }
-.order-card.expanded .order-card-body{max-height:700px;}
+.order-card.expanded .order-card-body{max-height:1400px;}
 .order-body-inner{padding:14px;}
-.order-customer{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.7;}
+.order-customer{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.8;}
 .order-customer b{color:var(--text);}
 .order-items-list{background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px;}
 .order-item-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border);}
@@ -518,7 +552,8 @@ select.form-input option{background:var(--surface);}
 .order-action-btn{font-size:11px;font-weight:800;padding:8px 14px;border-radius:10px;border:none;cursor:pointer;font-family:var(--font);letter-spacing:.04em;background:linear-gradient(135deg,var(--lav-dim),var(--lav));color:#fff;box-shadow:0 3px 0 #5B21B6;transition:transform .1s,box-shadow .1s;}
 .order-action-btn:active{transform:translateY(2px);box-shadow:none;}
 .order-complete-tag{font-size:10px;font-weight:800;color:var(--candy-mint);letter-spacing:.06em;}
-/* ── ETA setter inside order ── */
+
+/* ── ETA setter ── */
 .eta-set-row{display:flex;align-items:center;gap:6px;margin-top:10px;background:var(--s2);border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;}
 .eta-set-label{font-size:10px;color:var(--muted);font-weight:800;white-space:nowrap;}
 .eta-set-input{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;font-family:var(--font);color:var(--text);outline:none;min-width:0;}
@@ -526,8 +561,6 @@ select.form-input option{background:var(--surface);}
 .eta-set-btn{background:var(--lav-glow);border:1.5px solid var(--lav);border-radius:8px;padding:5px 10px;font-size:10px;font-weight:800;font-family:var(--font);color:var(--lav);cursor:pointer;white-space:nowrap;}
 .eta-set-btn:hover{background:var(--lav);color:#fff;}
 .eta-current-val{font-size:10px;color:var(--muted);margin-top:5px;text-align:right;}
-
-/* ─── ADMIN ETA SET ──────────────────────────────────────── */
 
 /* ===================== CINEMATIC LOADER ===================== */
 #cinematic-loader{position:fixed;inset:0;z-index:99999;background:#0A0A12;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;opacity:1;transition:opacity .7s cubic-bezier(.4,0,.2,1);}
@@ -798,15 +831,15 @@ select.form-input option{background:var(--surface);}
           <div class="step-node"><div class="step-dot" id="td-4">5</div><div class="step-label" id="tl-4">Delivered</div></div>
         </div>
       </div>
-      <!-- ETA box — shows skeleton until admin sets ETA -->
+      <!-- ETA box: shows shimmer skeleton until admin sets ETA -->
       <div class="eta-box-sm" id="t-eta-box">
         <div id="t-eta-left">
           <div class="eta-lbl">ARRIVING AROUND</div>
-          <div class="eta-t" id="t-eta-time">—</div>
+          <div class="eta-t">—</div>
         </div>
         <div id="t-eta-right">
           <div class="eta-cd-lbl">Time remaining</div>
-          <div class="eta-cd" id="t-countdown">--:--</div>
+          <div class="eta-cd">--:--</div>
         </div>
       </div>
       <div class="section-label">YOUR ORDER</div>
@@ -985,23 +1018,25 @@ function toggleTheme(){
 (function(){try{const t=localStorage.getItem('ub_theme');if(t==='light'){isLightMode=true;document.body.classList.add('light-mode');}}catch(_){}})();
 
 /* ══════════════════════════════════════════════════════════
- * RATE LIMITING — fixed to use localStorage with expiry
- * so tab-close / session reset can't bypass the cooldown.
+ * RATE LIMITING
+ * – Per-email: max 3 sign-in link requests per 24-hour window
+ * – Per-device: 60-second cooldown between any sends
+ * Both stored in localStorage with real expiry timestamps
+ * so closing the tab / session can NEVER bypass the limits.
  * ══════════════════════════════════════════════════════════ */
 const LINK_MAX=3;
-const LINK_WINDOW_MS=24*60*60*1000; // 24 h per-email link window
-const SEND_COOLDOWN_MS=60*1000;     // 60 s global cooldown between sends
+const LINK_WINDOW_MS=24*60*60*1000; // 24 h per-email window
+const SEND_COOLDOWN_MS=60*1000;     // 60 s global cooldown
 
 function linkUsageKey(e){return 'ub_lu_'+btoa(e.toLowerCase()).replace(/[^a-zA-Z0-9]/g,'');}
 function sendCooldownKey(){return 'ub_send_cd';}
 
-/* Per-email: how many links sent + when the 24-h window opened */
 function getLinkUsage(email){
   try{
     const raw=localStorage.getItem(linkUsageKey(email));
     if(!raw)return{count:0,windowStart:Date.now()};
     const d=JSON.parse(raw);
-    // Window expired → fresh slate
+    // Window expired → treat as fresh slate (don't save yet; only save on increment)
     if(Date.now()-d.windowStart>=LINK_WINDOW_MS)return{count:0,windowStart:Date.now()};
     return d;
   }catch(_){return{count:0,windowStart:Date.now()};}
@@ -1021,7 +1056,7 @@ function linkWindowResetMs(email){
   return Math.max(0,LINK_WINDOW_MS-(Date.now()-d.windowStart));
 }
 
-/* Global send cooldown (survives tab close) */
+/* Global per-device send cooldown (survives tab close) */
 function getLastSentMs(){
   try{return parseInt(localStorage.getItem(sendCooldownKey())||'0',10);}catch(_){return 0;}
 }
@@ -1063,7 +1098,7 @@ function wallSendLink(){
   hideWallError();
   if(!email||!emailInput.checkValidity()){showWallError('Please enter a valid email address.');return;}
 
-  // 1. Per-email 24-h limit
+  // 1. Per-email 24-h limit check (localStorage-backed, survives tab close)
   const usage=getLinkUsage(email);
   if(usage.count>=LINK_MAX){
     wallShowState('wall-link-limit');
@@ -1071,7 +1106,7 @@ function wallSendLink(){
     return;
   }
 
-  // 2. Global per-device cooldown (survives tab close)
+  // 2. Global per-device cooldown (also localStorage-backed)
   const cooldown=sendCooldownRemaining();
   if(cooldown>0){
     showWallError('Please wait '+formatCountdown(cooldown)+' before requesting another link.');
@@ -1086,7 +1121,8 @@ function wallSendLink(){
     handleCodeInApp:true
   })
   .then(()=>{
-    setLastSentMs(); // start cooldown only on success
+    // Only record usage + start cooldown AFTER a successful send
+    setLastSentMs();
     localStorage.setItem(WALL_EMAIL_KEY,email);
     const updated=incrementLinkUsage(email);
     const remaining=LINK_MAX-updated.count;
@@ -1322,7 +1358,7 @@ function filterProducts(val){
   container.innerHTML=prods.length?'<div class="products-grid">'+prods.map(productCardHTML).join('')+'</div>':'<div class="empty-state"><span class="empty-state-icon">🔍</span><div class="empty-state-title">No results</div></div>';
 }
 
-/* ── CART ─────────────────────────────────────────────────── */
+/* ── CART LOGIC ───────────────────────────────────────────── */
 function addToCart(productId){
   if(!APP.user)return;
   const prod=APP.products.find(p=>p.id===productId);if(!prod)return;
@@ -1399,7 +1435,6 @@ function renderCheckoutSummary(){
 function placeOrder(){
   const arr=new Uint32Array(1);crypto.getRandomValues(arr);
   const n=(arr[0]%90000)+10000;APP.orderNum='#UNI-'+n;
-  const eta=new Date();eta.setMinutes(eta.getMinutes()+35);APP.etaTime=eta;
   const{sub,discount,total}=getCartTotals();
   APP.lastOrder={items:APP.cart.map(i=>({...i})),total};
   const residence=document.getElementById('res-select')?.value||'';
@@ -1410,7 +1445,7 @@ function placeOrder(){
     items:APP.cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty,emoji:i.emoji||'',imageUrl:i.imageUrl||''})),
     subtotal:sub,delivery:0,discount,total,campus:APP.currentCampus,residence,room,phone,
     status:'pending',
-    // Note: NO default eta saved — admin must set it explicitly
+    // adminEta is NOT set here — admin must set it explicitly; client shows skeleton until then
     createdAt:firebase.firestore.FieldValue.serverTimestamp(),
   }).then(ref=>{
     APP.activeOrderId=ref.id;
@@ -1425,7 +1460,7 @@ function placeOrder(){
   }).catch(err=>console.warn('Order save failed:',err.message));
   APP.cart=[];APP.promoApplied=false;updateCartBadge();saveCart();
   document.getElementById('confirm-order-num').textContent=APP.orderNum;
-  document.getElementById('confirm-eta').textContent='Admin will set your ETA shortly';
+  document.getElementById('confirm-eta').textContent='Admin will set your ETA shortly ⏳';
   navigate('confirm');
 }
 
@@ -1460,7 +1495,7 @@ function renderTracking(){
   }
 }
 
-/* ETA box states */
+/* ── ETA box state helpers ─────────────────────────────────── */
 function showEtaSkeleton(){
   const box=document.getElementById('t-eta-box');
   box.classList.add('eta-pending');
@@ -1470,13 +1505,14 @@ function showEtaSkeleton(){
       <div class="eta-skel-line wide"></div>
       <div class="eta-skel-line narrow"></div>
     </div>
-    <div class="eta-pending-label" style="margin-top:6px;">Admin is setting your ETA…</div>`;
+    <div class="eta-pending-label">Admin is setting your ETA…</div>`;
   document.getElementById('t-eta-right').innerHTML=`
     <div class="eta-cd-lbl">Time remaining</div>
     <div class="eta-cd" style="color:var(--dim);">--:--</div>`;
 }
 
 function showEtaLive(eta){
+  if(cdInterval){clearInterval(cdInterval);cdInterval=null;}
   const box=document.getElementById('t-eta-box');
   box.classList.remove('eta-pending');
   document.getElementById('t-eta-left').innerHTML=`
@@ -1485,7 +1521,6 @@ function showEtaLive(eta){
   document.getElementById('t-eta-right').innerHTML=`
     <div class="eta-cd-lbl">Time remaining</div>
     <div class="eta-cd" id="t-countdown">--:--</div>`;
-  if(cdInterval)clearInterval(cdInterval);
   let sec=Math.max(0,Math.floor((eta-new Date())/1000));
   const tick=()=>{
     const m=Math.floor(sec/60),s=sec%60;
@@ -1511,17 +1546,16 @@ function updateTrackingUI(data){
     else{dot.textContent=i+1;}
   }
 
-  // ETA — use admin-set eta; if none, show skeleton
+  // ETA: show skeleton until admin explicitly sets adminEta
   const etaStr=data.adminEta||null;
   if(etaStr){
     const eta=new Date(etaStr);
-    if(!isNaN(eta))showEtaLive(eta);
+    if(!isNaN(eta.getTime()))showEtaLive(eta);
     else showEtaSkeleton();
   }else{
     showEtaSkeleton();
   }
 
-  // Items
   const items=(data.items&&data.items.length)?data.items:[{emoji:'🍜',name:'Your snacks',price:0,qty:1}];
   document.getElementById('tracking-items').innerHTML=items.map(i=>`<div class="ord-item">
     <div class="ord-thumb">${i.imageUrl?`<img src="${esc(i.imageUrl)}" alt="${esc(i.name)}">`:`<span style="font-size:18px">${esc(i.emoji)||'🍬'}</span>`}</div>
@@ -1582,17 +1616,35 @@ function saveStockQty(id){
 function toggleProductField(id,field,currentVal){db.collection('products').doc(id).update({[field]:!currentVal}).catch(err=>alert('Update failed: '+err.message));}
 function deleteProduct(id){if(!confirm('Delete this product?'))return;db.collection('products').doc(id).delete().catch(err=>alert('Delete failed: '+err.message));}
 
-/* ── ADMIN ORDERS — COLLAPSIBLE ───────────────────────────── */
+/* ══════════════════════════════════════════════════════════
+ * ADMIN ORDERS — COLLAPSIBLE WITH INDIVIDUALITY
+ * ══════════════════════════════════════════════════════════ */
 let adminOrdersUnsub=null,APP_ORDERS_FILTER='all';
-// Track which order cards are expanded
-const expandedOrders=new Set();
+const expandedOrders=new Set(); // persists across re-renders
 
 const ORDER_STATUS_NEXT={pending:'confirmed',confirmed:'packing',packing:'delivering',delivering:'delivered',delivered:null};
 const ORDER_STATUS_LABELS={pending:'⏳ PENDING',confirmed:'✓ CONFIRMED',packing:'📦 PACKING',delivering:'🛵 DELIVERING',delivered:'✅ DELIVERED'};
 const ORDER_STATUS_CSS={pending:'status-pending',confirmed:'status-confirmed',packing:'status-packing',delivering:'status-delivering',delivered:'status-delivered'};
 const ORDER_NEXT_LABELS={pending:'Confirm Order',confirmed:'Start Packing',packing:'Out for Delivery',delivering:'Mark Delivered'};
-
 const STATUS_ICON={pending:'⏳',confirmed:'✅',packing:'📦',delivering:'🛵',delivered:'🎉'};
+
+/* Deterministic accent colour per order — derived from Firestore doc ID */
+function orderAccent(id){
+  let h=0;
+  for(let i=0;i<id.length;i++)h=id.charCodeAt(i)+((h<<5)-h);
+  const palette=['#C084FC','#F472B6','#34D399','#FCD34D','#60A5FA','#F97316','#A78BFA','#2DD4BF','#FB7185','#4ADE80'];
+  return palette[Math.abs(h)%palette.length];
+}
+
+/* Extract up to 2 initials from a display name or email */
+function getInitials(name){
+  if(!name||!name.trim())return '?';
+  // If it looks like an email, use first two chars before the @
+  if(name.includes('@'))return name.split('@')[0].slice(0,2).toUpperCase();
+  const parts=name.trim().split(/\s+/);
+  if(parts.length>=2)return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
+  return name.trim().slice(0,2).toUpperCase();
+}
 
 function startOrdersListener(){
   if(adminOrdersUnsub)return;
@@ -1635,11 +1687,12 @@ function renderAdminOrders(){
   }
 
   container.innerHTML=orders.map(o=>{
+    const accent=orderAccent(o.id);
+    const initials=getInitials(o.userDisplayName||o.userEmail||'?');
     const t=o.createdAt?.toDate?o.createdAt.toDate():new Date();
     const timeStr=t.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})+', '+t.toLocaleDateString('en-ZA',{day:'numeric',month:'short'});
     const campusLabel=o.campus==='upper'?'🏛 Upper':'📚 Middle';
     const itemCount=(o.items||[]).reduce((a,i)=>a+i.qty,0);
-    const itemNames=(o.items||[]).map(i=>esc(i.name)).join(', ')||'—';
     const next=ORDER_STATUS_NEXT[o.status];
     const isExpanded=expandedOrders.has(o.id);
     const adminEtaTime=o.adminEtaTime||'';
@@ -1647,22 +1700,34 @@ function renderAdminOrders(){
       ?new Date(o.adminEta).toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})
       :'Not set';
 
-    // Build item rows for expanded view
+    /* Mini emoji strip for collapsed view — shows what's in the bag */
+    const emojiPills=(o.items||[]).slice(0,4).map(i=>`<span class="ocs-emoji-pill">${i.imageUrl?'📦':(i.emoji||'🍬')} ×${i.qty}</span>`).join('');
+    const extraPill=(o.items||[]).length>4?`<span class="ocs-emoji-pill">+${(o.items||[]).length-4} more</span>`:'';
+
+    /* Item rows for expanded view */
     const itemRows=(o.items||[]).map(i=>`
       <div class="order-item-row">
-        <span class="order-item-emoji">${i.imageUrl?`<img src="${esc(i.imageUrl)}" style="width:20px;height:20px;border-radius:4px;object-fit:cover;" alt="">`:`${esc(i.emoji)||'🍬'}`}</span>
+        <span class="order-item-emoji">${i.imageUrl?`<img src="${esc(i.imageUrl)}" style="width:20px;height:20px;border-radius:4px;object-fit:cover;" alt="">`:(esc(i.emoji)||'🍬')}</span>
         <span class="order-item-name">${esc(i.name)}</span>
         <span class="order-item-qty">×${i.qty}</span>
         <span class="order-item-price">R${esc(i.price*i.qty)}</span>
       </div>`).join('');
 
-    return `<div class="order-card${isExpanded?' expanded':''}" id="ocard-${esc(o.id)}">
-      <!-- Collapsed header (always visible) -->
+    return `<div class="order-card${isExpanded?' expanded':''}" id="ocard-${esc(o.id)}" style="--order-accent:${accent}">
+
+      <!-- ── Collapsed header (always visible) ── -->
       <div class="order-card-summary" onclick="toggleOrderCard('${esc(o.id)}')">
+
+        <!-- Customer avatar with unique colour -->
+        <div class="ocs-initials" style="background:${accent}">${esc(initials)}</div>
+
         <div class="ocs-left">
-          <div class="ocs-num">${esc(o.orderNum||'—')} <span style="font-size:10px;color:var(--muted);font-weight:600;">${STATUS_ICON[o.status]||''}</span></div>
-          <div class="ocs-meta">${campusLabel}${o.residence?' · '+esc(o.residence):''}${o.room?' · '+esc(o.room):''} · ${itemCount} item${itemCount!==1?'s':''} · ${timeStr}</div>
+          <div class="ocs-num">${esc(o.orderNum||'—')}</div>
+          <!-- Emoji preview of what they ordered -->
+          <div class="ocs-emoji-strip">${emojiPills}${extraPill}</div>
+          <div class="ocs-meta">${campusLabel}${o.residence?' · '+esc(o.residence):''}${o.room?' · Rm '+esc(o.room):''} · ${timeStr}</div>
         </div>
+
         <div class="ocs-right">
           <span class="order-status-badge ${ORDER_STATUS_CSS[o.status]||''}">${ORDER_STATUS_LABELS[o.status]||esc(o.status)}</span>
           <span class="ocs-total">R${esc(o.total||0)}</span>
@@ -1670,19 +1735,19 @@ function renderAdminOrders(){
         </div>
       </div>
 
-      <!-- Expanded body -->
+      <!-- ── Expanded body ── -->
       <div class="order-card-body">
         <div class="order-body-inner">
 
           <!-- Customer details -->
           <div class="order-customer">
-            👤 <b>${esc(o.userDisplayName||o.userEmail||'Guest')}</b><br>
+            👤 <b>${esc(o.userDisplayName||'Guest')}</b><br>
             ${o.userEmail?`📧 ${esc(o.userEmail)}<br>`:''}
             ${o.phone?`📱 ${esc(o.phone)}<br>`:''}
-            ${campusLabel}${o.residence?' · '+esc(o.residence):''}${o.room?' · '+esc(o.room):''}
+            ${campusLabel}${o.residence?' · '+esc(o.residence):''}${o.room?' · Room '+esc(o.room):''}
           </div>
 
-          <!-- Items breakdown -->
+          <!-- Items -->
           <div class="order-items-list">${itemRows||'<div class="order-item-row"><span class="order-item-name" style="color:var(--muted)">No items</span></div>'}</div>
 
           <!-- Totals -->
@@ -1694,19 +1759,20 @@ function renderAdminOrders(){
 
           <!-- ETA setter -->
           <div class="eta-set-row">
-            <span class="eta-set-label">🕐 ETA</span>
+            <span class="eta-set-label">🕐 SET ETA</span>
             <input class="eta-set-input" type="time" id="eta-inp-${esc(o.id)}" value="${adminEtaTime}">
-            <button class="eta-set-btn" onclick="setAdminEta('${esc(o.id)}')">Set</button>
+            <button class="eta-set-btn" onclick="setAdminEta('${esc(o.id)}')">Send</button>
           </div>
-          <div class="eta-current-val">Currently: <b style="color:var(--lav)">${currentEtaDisplay}</b></div>
+          <div class="eta-current-val">Currently: <b style="color:${accent}">${currentEtaDisplay}</b></div>
 
-          <!-- Action button -->
+          <!-- Advance status -->
           <div class="order-card-actions">
             <span style="font-size:11px;color:var(--muted);">${timeStr}</span>
             ${next
-              ?`<button class="order-action-btn" onclick="advanceOrder('${esc(o.id)}','${next}')">${ORDER_NEXT_LABELS[o.status]} →</button>`
+              ?`<button class="order-action-btn" style="background:linear-gradient(135deg,${accent}cc,${accent})" onclick="advanceOrder('${esc(o.id)}','${next}')">${ORDER_NEXT_LABELS[o.status]} →</button>`
               :`<span class="order-complete-tag">✅ COMPLETE</span>`}
           </div>
+
         </div>
       </div>
     </div>`;
@@ -1723,6 +1789,7 @@ function setAdminEta(orderId){
   if(!inp||!inp.value)return;
   const[h,m]=inp.value.split(':').map(Number);
   const eta=new Date();eta.setHours(h,m,0,0);
+  // If the chosen time is in the past today, assume they mean tomorrow
   if(eta<new Date())eta.setDate(eta.getDate()+1);
   db.collection('orders').doc(orderId).update({
     adminEta:eta.toISOString(),
