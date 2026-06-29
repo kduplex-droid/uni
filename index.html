@@ -474,66 +474,27 @@ select.form-input option{background:var(--surface);}
 .orders-filter-chip{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:10px;font-weight:800;cursor:pointer;flex-shrink:0;color:var(--muted);letter-spacing:.06em;white-space:nowrap;box-shadow:0 2px 0 var(--dim);}
 .orders-filter-chip.active{background:var(--lav-glow);border-color:var(--lav);color:var(--lav);box-shadow:0 2px 0 var(--lav-dim);}
 
-/* ── ORDER CARD ─────────────────────────────────────────── */
-.order-card{
-  background:var(--surface);
-  border:1.5px solid var(--border);
-  /* Left accent stripe — colour set inline via --order-accent */
-  border-left:4px solid var(--order-accent,var(--border));
-  border-radius:16px;
-  margin-bottom:10px;
-  overflow:hidden;
-  box-shadow:0 3px 0 var(--dim);
-  transition:border-color .2s,box-shadow .2s;
-}
-.order-card.expanded{
-  border-color:var(--border);
-  border-left-color:var(--order-accent,var(--lav));
-  box-shadow:0 4px 0 color-mix(in srgb,var(--order-accent,var(--lav)) 40%,transparent),
-             0 0 0 1px color-mix(in srgb,var(--order-accent,var(--lav)) 20%,transparent);
-}
-
-/* ── collapsed header ── */
+.order-card{background:var(--surface);border:1.5px solid var(--border);border-left:4px solid var(--order-accent,var(--border));border-radius:16px;margin-bottom:10px;overflow:hidden;box-shadow:0 3px 0 var(--dim);transition:border-color .2s,box-shadow .2s;}
+.order-card.expanded{border-color:var(--border);border-left-color:var(--order-accent,var(--lav));box-shadow:0 4px 0 color-mix(in srgb,var(--order-accent,var(--lav)) 40%,transparent),0 0 0 1px color-mix(in srgb,var(--order-accent,var(--lav)) 20%,transparent);}
 .order-card-summary{display:flex;align-items:flex-start;gap:10px;padding:13px 14px;cursor:pointer;user-select:none;transition:background .15s;}
 .order-card-summary:hover{background:var(--s2);}
-
-/* Customer initials avatar */
-.ocs-initials{
-  width:36px;height:36px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:900;color:#fff;
-  flex-shrink:0;margin-top:1px;
-  box-shadow:0 2px 0 rgba(0,0,0,.25);
-  /* background set inline */
-}
-
+.ocs-initials{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;flex-shrink:0;margin-top:1px;box-shadow:0 2px 0 rgba(0,0,0,.25);}
 .ocs-left{flex:1;min-width:0;}
 .ocs-num{font-size:13px;font-weight:800;margin-bottom:3px;}
 .ocs-meta{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;}
-
-/* Item emoji preview strip */
 .ocs-emoji-strip{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:2px;}
 .ocs-emoji-pill{font-size:10px;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:2px 6px;color:var(--text);white-space:nowrap;}
-
 .ocs-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
 .ocs-total{font-size:15px;font-weight:900;color:var(--lav);}
 .ocs-chevron{font-size:11px;color:var(--dim);transition:transform .25s;display:inline-block;margin-top:2px;}
 .order-card.expanded .ocs-chevron{transform:rotate(180deg);}
-
 .order-status-badge{font-size:9px;font-weight:800;padding:3px 8px;border-radius:10px;letter-spacing:.06em;white-space:nowrap;}
 .status-pending{background:var(--lav-glow);color:var(--lav);border:1.5px solid #C084FC40;}
 .status-confirmed{background:#FCD34D1a;color:var(--candy-yellow);border:1.5px solid #FCD34D40;}
 .status-packing{background:#F472B61a;color:var(--candy-pink);border:1.5px solid #F472B640;}
 .status-delivering{background:#34D3991a;color:var(--candy-mint);border:1.5px solid #34D39930;}
 .status-delivered{background:var(--s2);color:var(--muted);border:1.5px solid var(--border);}
-
-/* ── expanded body ── */
-.order-card-body{
-  border-top:1px solid var(--border);
-  max-height:0;
-  overflow:hidden;
-  transition:max-height .35s cubic-bezier(.4,0,.2,1);
-}
+.order-card-body{border-top:1px solid var(--border);max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1);}
 .order-card.expanded .order-card-body{max-height:1400px;}
 .order-body-inner{padding:14px;}
 .order-customer{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.8;}
@@ -552,8 +513,6 @@ select.form-input option{background:var(--surface);}
 .order-action-btn{font-size:11px;font-weight:800;padding:8px 14px;border-radius:10px;border:none;cursor:pointer;font-family:var(--font);letter-spacing:.04em;background:linear-gradient(135deg,var(--lav-dim),var(--lav));color:#fff;box-shadow:0 3px 0 #5B21B6;transition:transform .1s,box-shadow .1s;}
 .order-action-btn:active{transform:translateY(2px);box-shadow:none;}
 .order-complete-tag{font-size:10px;font-weight:800;color:var(--candy-mint);letter-spacing:.06em;}
-
-/* ── ETA setter ── */
 .eta-set-row{display:flex;align-items:center;gap:6px;margin-top:10px;background:var(--s2);border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;}
 .eta-set-label{font-size:10px;color:var(--muted);font-weight:800;white-space:nowrap;}
 .eta-set-input{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;font-family:var(--font);color:var(--text);outline:none;min-width:0;}
@@ -579,17 +538,7 @@ select.form-input option{background:var(--surface);}
 @keyframes ringPulse{0%,100%{transform:scale(1);opacity:.4;}50%{transform:scale(1.05);opacity:.9;}}
 
 /* ─── TRACK LIVE NAV DOT ─────────────────────────────────── */
-#track-live-dot{
-  display:none;
-  position:absolute;
-  top:4px;
-  right:calc(50% - 16px);
-  width:7px;height:7px;
-  border-radius:50%;
-  background:var(--candy-mint);
-  box-shadow:0 0 6px var(--candy-mint);
-  animation:pulse-dot 1.5s ease-in-out infinite;
-}
+#track-live-dot{display:none;position:absolute;top:4px;right:calc(50% - 16px);width:7px;height:7px;border-radius:50%;background:var(--candy-mint);box-shadow:0 0 6px var(--candy-mint);animation:pulse-dot 1.5s ease-in-out infinite;}
 </style>
 </head>
 <body>
@@ -768,8 +717,8 @@ select.form-input option{background:var(--surface);}
       <div class="campus-opt selected" id="campus-upper" onclick="setCampus('upper')"><span class="campus-opt-icon">🏛️</span><div class="campus-opt-name">Upper Campus</div><div class="campus-opt-sub">Jammie Plaza area</div></div>
       <div class="campus-opt" id="campus-middle" onclick="setCampus('middle')"><span class="campus-opt-icon">📚</span><div class="campus-opt-name">Middle Campus</div><div class="campus-opt-sub">Sports Centre area</div></div>
     </div>
-    <div class="form-group"><label class="form-label">RESIDENCE</label><select class="form-input" id="res-select"><option value="">Select your residence</option></select></div>
-    <div class="form-group"><label class="form-label">ROOM / FLOOR</label><input class="form-input" type="text" id="co-room" placeholder="e.g. Room 214"></div>
+    <div class="form-group"><label class="form-label">DELIVERY VENUE</label><select class="form-input" id="res-select"><option value="">Select a delivery venue</option></select></div>
+    <div class="form-group"><label class="form-label">ROOM / FLOOR (optional)</label><input class="form-input" type="text" id="co-room" placeholder="e.g. Room 214"></div>
     <div class="form-group"><label class="form-label">WHATSAPP NUMBER</label><input class="form-input" type="tel" id="co-phone" placeholder="+27 82 000 0000"></div>
     <div class="section-label" style="margin-top:4px;margin-bottom:10px;">DELIVERY TIME</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
@@ -831,7 +780,6 @@ select.form-input option{background:var(--surface);}
           <div class="step-node"><div class="step-dot" id="td-4">5</div><div class="step-label" id="tl-4">Delivered</div></div>
         </div>
       </div>
-      <!-- ETA box: shows shimmer skeleton until admin sets ETA -->
       <div class="eta-box-sm" id="t-eta-box">
         <div id="t-eta-left">
           <div class="eta-lbl">ARRIVING AROUND</div>
@@ -995,9 +943,10 @@ const APP={
   activeOrderUnsub:null,
 };
 
+/* ── UPDATED DELIVERY VENUES ─────────────────────────────── */
 const RESIDENCES={
-  upper:['Smuts Hall','Fuller Hall','Kopano','Tugwell Hall','Hlanganani Hall','Liesbeeck Gardens','Rouwkuil','Leo Marquard Hall','Edith Stephen Hall','Graça Machel Hall'],
-  middle:['Properties House','Groote Schuur','De Waal House'],
+  upper:['UCR','Fuller Hall','Hlanganani','Leslie Social','Chris Hani','Oppenheimer Library','Sarah Baartman Stairs'],
+  middle:['School of Economics','Kramer Library','Woolsack'],
 };
 
 function esc(str){if(str===null||str===undefined)return '';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');}
@@ -1017,163 +966,48 @@ function toggleTheme(){
 }
 (function(){try{const t=localStorage.getItem('ub_theme');if(t==='light'){isLightMode=true;document.body.classList.add('light-mode');}}catch(_){}})();
 
-/* ══════════════════════════════════════════════════════════
- * RATE LIMITING
- * – Per-email: max 3 sign-in link requests per 24-hour window
- * – Per-device: 60-second cooldown between any sends
- * Both stored in localStorage with real expiry timestamps
- * so closing the tab / session can NEVER bypass the limits.
- * ══════════════════════════════════════════════════════════ */
+/* ── RATE LIMITING ────────────────────────────────────────── */
 const LINK_MAX=3;
-const LINK_WINDOW_MS=24*60*60*1000; // 24 h per-email window
-const SEND_COOLDOWN_MS=60*1000;     // 60 s global cooldown
+const LINK_WINDOW_MS=24*60*60*1000;
+const SEND_COOLDOWN_MS=60*1000;
 
 function linkUsageKey(e){return 'ub_lu_'+btoa(e.toLowerCase()).replace(/[^a-zA-Z0-9]/g,'');}
 function sendCooldownKey(){return 'ub_send_cd';}
-
-function getLinkUsage(email){
-  try{
-    const raw=localStorage.getItem(linkUsageKey(email));
-    if(!raw)return{count:0,windowStart:Date.now()};
-    const d=JSON.parse(raw);
-    // Window expired → treat as fresh slate (don't save yet; only save on increment)
-    if(Date.now()-d.windowStart>=LINK_WINDOW_MS)return{count:0,windowStart:Date.now()};
-    return d;
-  }catch(_){return{count:0,windowStart:Date.now()};}
-}
-function setLinkUsage(email,d){
-  try{localStorage.setItem(linkUsageKey(email),JSON.stringify(d));}catch(_){}
-}
-function incrementLinkUsage(email){
-  const d=getLinkUsage(email),now=Date.now();
-  const isNew=now-d.windowStart>=LINK_WINDOW_MS;
-  const next={count:isNew?1:d.count+1,windowStart:isNew?now:d.windowStart};
-  setLinkUsage(email,next);
-  return next;
-}
-function linkWindowResetMs(email){
-  const d=getLinkUsage(email);
-  return Math.max(0,LINK_WINDOW_MS-(Date.now()-d.windowStart));
-}
-
-/* Global per-device send cooldown (survives tab close) */
-function getLastSentMs(){
-  try{return parseInt(localStorage.getItem(sendCooldownKey())||'0',10);}catch(_){return 0;}
-}
-function setLastSentMs(){
-  try{localStorage.setItem(sendCooldownKey(),String(Date.now()));}catch(_){}
-}
-function sendCooldownRemaining(){
-  return Math.max(0,SEND_COOLDOWN_MS-(Date.now()-getLastSentMs()));
-}
-
-function formatCountdown(ms){
-  const s=Math.ceil(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
-  if(h>0)return h+'h '+m+'m';
-  if(m>0)return m+'m '+sec+'s';
-  return sec+'s';
-}
+function getLinkUsage(email){try{const raw=localStorage.getItem(linkUsageKey(email));if(!raw)return{count:0,windowStart:Date.now()};const d=JSON.parse(raw);if(Date.now()-d.windowStart>=LINK_WINDOW_MS)return{count:0,windowStart:Date.now()};return d;}catch(_){return{count:0,windowStart:Date.now()};}}
+function setLinkUsage(email,d){try{localStorage.setItem(linkUsageKey(email),JSON.stringify(d));}catch(_){}}
+function incrementLinkUsage(email){const d=getLinkUsage(email),now=Date.now();const isNew=now-d.windowStart>=LINK_WINDOW_MS;const next={count:isNew?1:d.count+1,windowStart:isNew?now:d.windowStart};setLinkUsage(email,next);return next;}
+function linkWindowResetMs(email){const d=getLinkUsage(email);return Math.max(0,LINK_WINDOW_MS-(Date.now()-d.windowStart));}
+function getLastSentMs(){try{return parseInt(localStorage.getItem(sendCooldownKey())||'0',10);}catch(_){return 0;}}
+function setLastSentMs(){try{localStorage.setItem(sendCooldownKey(),String(Date.now()));}catch(_){}}
+function sendCooldownRemaining(){return Math.max(0,SEND_COOLDOWN_MS-(Date.now()-getLastSentMs()));}
+function formatCountdown(ms){const s=Math.ceil(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;if(h>0)return h+'h '+m+'m';if(m>0)return m+'m '+sec+'s';return sec+'s';}
 
 let limitTimerInterval=null;
-function startLimitTimer(email){
-  const el=document.getElementById('wall-limit-timer');if(!el)return;
-  if(limitTimerInterval)clearInterval(limitTimerInterval);
-  const tick=()=>{
-    const ms=linkWindowResetMs(email);
-    if(ms<=0){clearInterval(limitTimerInterval);limitTimerInterval=null;wallResetForm();return;}
-    el.textContent='You can try again in '+formatCountdown(ms)+'.';
-  };
-  tick();
-  limitTimerInterval=setInterval(tick,1000);
-}
+function startLimitTimer(email){const el=document.getElementById('wall-limit-timer');if(!el)return;if(limitTimerInterval)clearInterval(limitTimerInterval);const tick=()=>{const ms=linkWindowResetMs(email);if(ms<=0){clearInterval(limitTimerInterval);limitTimerInterval=null;wallResetForm();return;}el.textContent='You can try again in '+formatCountdown(ms)+'.';};tick();limitTimerInterval=setInterval(tick,1000);}
 
 /* ── AUTH WALL ────────────────────────────────────────────── */
 const WALL_EMAIL_KEY='ub_emailForSignIn';
-
 function showWallError(msg){const el=document.getElementById('wall-err');el.textContent=msg;el.classList.add('show');}
 function hideWallError(){document.getElementById('wall-err').classList.remove('show');}
-
 function wallSendLink(){
   const emailInput=document.getElementById('wall-email'),email=emailInput.value.trim();
   hideWallError();
   if(!email||!emailInput.checkValidity()){showWallError('Please enter a valid email address.');return;}
-
-  // 1. Per-email 24-h limit check (localStorage-backed, survives tab close)
   const usage=getLinkUsage(email);
-  if(usage.count>=LINK_MAX){
-    wallShowState('wall-link-limit');
-    startLimitTimer(email);
-    return;
-  }
-
-  // 2. Global per-device cooldown (also localStorage-backed)
+  if(usage.count>=LINK_MAX){wallShowState('wall-link-limit');startLimitTimer(email);return;}
   const cooldown=sendCooldownRemaining();
-  if(cooldown>0){
-    showWallError('Please wait '+formatCountdown(cooldown)+' before requesting another link.');
-    return;
-  }
-
+  if(cooldown>0){showWallError('Please wait '+formatCountdown(cooldown)+' before requesting another link.');return;}
   const btn=document.getElementById('wall-action-btn');
   btn.disabled=true;btn.textContent='Sending…';
-
-  auth.sendSignInLinkToEmail(email,{
-    url:window.location.href.split('#')[0].split('?')[0],
-    handleCodeInApp:true
-  })
-  .then(()=>{
-    // Only record usage + start cooldown AFTER a successful send
-    setLastSentMs();
-    localStorage.setItem(WALL_EMAIL_KEY,email);
-    const updated=incrementLinkUsage(email);
-    const remaining=LINK_MAX-updated.count;
-    document.getElementById('wall-sent-email').textContent=email;
-    const usesEl=document.getElementById('wall-link-uses-left');
-    if(remaining>0){
-      usesEl.textContent=remaining+' sign-in link'+(remaining===1?'':'s')+' remaining in the next 24 hours.';
-      usesEl.style.color='';
-    }else{
-      usesEl.textContent='This was your last sign-in link for the next 24 hours.';
-      usesEl.style.color='var(--candy-yellow)';
-    }
-    wallShowState('wall-sent');
-  })
+  auth.sendSignInLinkToEmail(email,{url:window.location.href.split('#')[0].split('?')[0],handleCodeInApp:true})
+  .then(()=>{setLastSentMs();localStorage.setItem(WALL_EMAIL_KEY,email);const updated=incrementLinkUsage(email);const remaining=LINK_MAX-updated.count;document.getElementById('wall-sent-email').textContent=email;const usesEl=document.getElementById('wall-link-uses-left');if(remaining>0){usesEl.textContent=remaining+' sign-in link'+(remaining===1?'':'s')+' remaining in the next 24 hours.';usesEl.style.color='';}else{usesEl.textContent='This was your last sign-in link for the next 24 hours.';usesEl.style.color='var(--candy-yellow)';}wallShowState('wall-sent');})
   .catch(err=>{showWallError(friendlyAuthError(err.code));})
   .finally(()=>{btn.disabled=false;btn.textContent='Email Me a Sign-In Link';});
 }
-
-function wallResetForm(){
-  if(limitTimerInterval){clearInterval(limitTimerInterval);limitTimerInterval=null;}
-  wallShowState('wall-form-state');
-  document.getElementById('wall-email').value='';
-  hideWallError();
-}
-
-function wallShowState(id){
-  ['wall-completing','wall-confirm-email','wall-sent','wall-link-limit','wall-form-state']
-    .forEach(s=>{document.getElementById(s).style.display=s===id?'block':'none';});
-}
-
-function wallConfirmEmail(){
-  const input=document.getElementById('wall-confirm-email-input'),errEl=document.getElementById('wall-confirm-err'),btn=document.getElementById('wall-confirm-btn'),email=input.value.trim();
-  errEl.classList.remove('show');
-  if(!email||!input.checkValidity()){errEl.textContent='Please enter a valid email address.';errEl.classList.add('show');return;}
-  btn.disabled=true;btn.textContent='Signing in…';
-  const cleanUrl=()=>window.history.replaceState({},document.title,window.location.pathname);
-  auth.signInWithEmailLink(email,window.location.href)
-    .then(()=>{localStorage.removeItem(WALL_EMAIL_KEY);cleanUrl();})
-    .catch(err=>{errEl.textContent=friendlyAuthError(err.code);errEl.classList.add('show');btn.disabled=false;btn.textContent='Complete Sign-In';cleanUrl();});
-}
-
-function completeEmailLinkSignIn(){
-  if(!auth.isSignInWithEmailLink(window.location.href))return;
-  wallShowState('wall-completing');
-  const email=localStorage.getItem(WALL_EMAIL_KEY);
-  const cleanUrl=()=>window.history.replaceState({},document.title,window.location.pathname);
-  if(!email){wallShowState('wall-confirm-email');return;}
-  auth.signInWithEmailLink(email,window.location.href)
-    .then(()=>{localStorage.removeItem(WALL_EMAIL_KEY);cleanUrl();})
-    .catch(err=>{wallShowState('wall-form-state');showWallError(friendlyAuthError(err.code));cleanUrl();});
-}
+function wallResetForm(){if(limitTimerInterval){clearInterval(limitTimerInterval);limitTimerInterval=null;}wallShowState('wall-form-state');document.getElementById('wall-email').value='';hideWallError();}
+function wallShowState(id){['wall-completing','wall-confirm-email','wall-sent','wall-link-limit','wall-form-state'].forEach(s=>{document.getElementById(s).style.display=s===id?'block':'none';});}
+function wallConfirmEmail(){const input=document.getElementById('wall-confirm-email-input'),errEl=document.getElementById('wall-confirm-err'),btn=document.getElementById('wall-confirm-btn'),email=input.value.trim();errEl.classList.remove('show');if(!email||!input.checkValidity()){errEl.textContent='Please enter a valid email address.';errEl.classList.add('show');return;}btn.disabled=true;btn.textContent='Signing in…';const cleanUrl=()=>window.history.replaceState({},document.title,window.location.pathname);auth.signInWithEmailLink(email,window.location.href).then(()=>{localStorage.removeItem(WALL_EMAIL_KEY);cleanUrl();}).catch(err=>{errEl.textContent=friendlyAuthError(err.code);errEl.classList.add('show');btn.disabled=false;btn.textContent='Complete Sign-In';cleanUrl();});}
+function completeEmailLinkSignIn(){if(!auth.isSignInWithEmailLink(window.location.href))return;wallShowState('wall-completing');const email=localStorage.getItem(WALL_EMAIL_KEY);const cleanUrl=()=>window.history.replaceState({},document.title,window.location.pathname);if(!email){wallShowState('wall-confirm-email');return;}auth.signInWithEmailLink(email,window.location.href).then(()=>{localStorage.removeItem(WALL_EMAIL_KEY);cleanUrl();}).catch(err=>{wallShowState('wall-form-state');showWallError(friendlyAuthError(err.code));cleanUrl();});}
 completeEmailLinkSignIn();
 
 /* ── ADMIN GATE ───────────────────────────────────────────── */
@@ -1221,14 +1055,12 @@ auth.onAuthStateChanged(user=>{
     if(currentScreen==='admin'){currentScreen='home';CUSTOMER_SCREENS.forEach(s=>{const el=document.getElementById(s+'-screen');if(el)el.classList.toggle('active',s==='home');});document.getElementById('admin-screen').style.display='none';}
   }
 });
-
 function signOut(){const finish=()=>auth.signOut().then(()=>{currentScreen='home';});saveCart().then(finish,finish);}
 
 /* ── NAVIGATION ───────────────────────────────────────────── */
 const CUSTOMER_SCREENS=['home','auth','shop','cart','checkout','confirm','tracking'];
 const BNAV_MAP={home:'bnav-home',shop:'bnav-shop',cart:'bnav-cart',tracking:'bnav-tracking',auth:'bnav-auth'};
 let currentScreen='home';
-
 function navigate(screen,filterCat){
   if(screen==='admin'&&!APP.isAdmin){openAdminGate();return;}
   currentScreen=screen;
@@ -1292,10 +1124,7 @@ function loadActiveOrder(uid){
     }
   },err=>console.error('Active order listener:',err));
 }
-function stopActiveOrderListener(){
-  if(APP.activeOrderUnsub){APP.activeOrderUnsub();APP.activeOrderUnsub=null;}
-  APP.activeOrderId=null;
-}
+function stopActiveOrderListener(){if(APP.activeOrderUnsub){APP.activeOrderUnsub();APP.activeOrderUnsub=null;}APP.activeOrderId=null;}
 
 /* ── PRODUCTS ─────────────────────────────────────────────── */
 let productListenerActive=false;
@@ -1308,17 +1137,8 @@ function startProductListener(){
     if(currentScreen==='admin')renderAdminPanel();
   },err=>console.error('Products listener:',err));
 }
-
 function getCatBg(cat){return{chips:'#1a1206',drinks:'#0d1a10',sweets:'#1a0e00',meals:'#1a0a00'}[cat]||'#1a1a1a';}
-
-function getStockBadge(p){
-  const qty=p.stockQty;
-  if(qty===undefined||qty===null)return '';
-  if(qty===0)return '<span class="stock-badge stock-out">OUT OF STOCK</span>';
-  if(qty<=5)return '<span class="stock-badge stock-low">'+qty+' LEFT</span>';
-  return '<span class="stock-badge stock-high">'+qty+' IN STOCK</span>';
-}
-
+function getStockBadge(p){const qty=p.stockQty;if(qty===undefined||qty===null)return '';if(qty===0)return '<span class="stock-badge stock-out">OUT OF STOCK</span>';if(qty<=5)return '<span class="stock-badge stock-low">'+qty+' LEFT</span>';return '<span class="stock-badge stock-high">'+qty+' IN STOCK</span>';}
 function productCardHTML(p){
   const outOfStock=p.stockQty===0;
   const img=p.imageUrl?`<img src="${esc(p.imageUrl)}" alt="${esc(p.name)}" loading="lazy">`:`<span style="font-size:42px">${esc(p.emoji)||'🍬'}</span>`;
@@ -1339,7 +1159,6 @@ function productCardHTML(p){
     </div>
   </div>`;
 }
-
 function renderProductGrid(containerId,hotOnly){
   const container=document.getElementById(containerId);if(!container)return;
   let prods=APP.products.filter(p=>p.inStock!==false);
@@ -1347,7 +1166,6 @@ function renderProductGrid(containerId,hotOnly){
   if(APP.currentFilter!=='all'&&!hotOnly)prods=prods.filter(p=>p.category===APP.currentFilter);
   container.innerHTML=prods.length?'<div class="products-grid">'+prods.map(productCardHTML).join('')+'</div>':'<div class="empty-state"><span class="empty-state-icon">🕐</span><div class="empty-state-title">No snacks here yet</div><div class="empty-state-sub">Check back soon!</div></div>';
 }
-
 function setFilter(cat,el){APP.currentFilter=cat;document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderProductGrid('shop-products',false);}
 function setFilterByKey(cat){APP.currentFilter=cat;document.querySelectorAll('.filter-chip').forEach(c=>{c.classList.remove('active');if(c.textContent.toLowerCase().includes(cat))c.classList.add('active');});if(cat==='all')document.querySelector('.filter-chip').classList.add('active');}
 function filterProducts(val){
@@ -1359,22 +1177,53 @@ function filterProducts(val){
 }
 
 /* ── CART LOGIC ───────────────────────────────────────────── */
+
+/* ── STOCK OVER-ORDER TOAST ───────────────────────────────── */
+let _stockToastTimer=null;
+function showStockToast(name,qty){
+  let toast=document.getElementById('stock-toast');
+  if(!toast){
+    toast=document.createElement('div');
+    toast.id='stock-toast';
+    toast.style.cssText='position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1.5px solid var(--candy-yellow);border-radius:14px;padding:10px 18px;font-size:12px;font-weight:800;color:var(--candy-yellow);z-index:500;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.4);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:300px;';
+    document.body.appendChild(toast);
+  }
+  clearTimeout(_stockToastTimer);
+  toast.textContent='\u26a0\ufe0f Only '+qty+' \u00d7 '+name+' available \u2014 can\'t add more!';
+  toast.style.opacity='1';
+  toast.style.transform='translateX(-50%) translateY(0)';
+  _stockToastTimer=setTimeout(()=>{toast.style.opacity='0';toast.style.transform='translateX(-50%) translateY(8px)';},2800);
+}
+
+function updateCartBadge(){const t=APP.cart.reduce((a,i)=>a+i.qty,0);const b=document.getElementById('cart-badge');b.textContent=t;b.classList.toggle('hidden',t===0);}
+
 function addToCart(productId){
   if(!APP.user)return;
   const prod=APP.products.find(p=>p.id===productId);if(!prod)return;
   if(prod.stockQty===0)return;
   const ex=APP.cart.find(i=>i.id===productId);
+  const currentInCart=ex?ex.qty:0;
+  // Guard: don't let the cart exceed available stock
+  if(prod.stockQty!==undefined&&prod.stockQty!==null&&currentInCart>=prod.stockQty){
+    const btn=document.getElementById('add-'+productId);
+    if(btn){
+      const orig=btn.textContent;
+      btn.textContent='Max';
+      btn.style.background='linear-gradient(135deg,var(--candy-yellow),#F59E0B)';
+      btn.style.color='#1A1A00';
+      setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.color='';},1200);
+    }
+    showStockToast(prod.name,prod.stockQty);
+    return;
+  }
   if(ex)ex.qty++;else APP.cart.push({...prod,qty:1});
   updateCartBadge();saveCart();
   const btn=document.getElementById('add-'+productId);
   if(btn){btn.textContent='✓';btn.classList.add('added-flash');setTimeout(()=>{btn.textContent='+';btn.classList.remove('added-flash');},700);}
 }
-function updateCartBadge(){const t=APP.cart.reduce((a,i)=>a+i.qty,0);const b=document.getElementById('cart-badge');b.textContent=t;b.classList.toggle('hidden',t===0);}
-function getCartTotals(){
-  const sub=APP.cart.reduce((a,i)=>a+i.price*i.qty,0);
-  const discount=APP.promoApplied?Math.round(sub*0.1):0;
-  return{sub,delivery:0,discount,total:sub-discount};
-}
+
+function getCartTotals(){const sub=APP.cart.reduce((a,i)=>a+i.price*i.qty,0);const discount=APP.promoApplied?Math.round(sub*0.1):0;return{sub,delivery:0,discount,total:sub-discount};}
+
 function renderCart(){
   const list=document.getElementById('cart-items-list'),empty=document.getElementById('cart-empty'),full=document.getElementById('cart-full');
   const qty=APP.cart.reduce((a,i)=>a+i.qty,0);
@@ -1392,6 +1241,7 @@ function renderCart(){
     updateCartSummary();
   }
 }
+
 function updateCartSummary(){
   const{sub,discount,total}=getCartTotals();
   document.getElementById('sum-sub').textContent='R'+sub;
@@ -1399,8 +1249,21 @@ function updateCartSummary(){
   if(APP.promoApplied)document.getElementById('sum-disc').textContent='-R'+discount;
   document.getElementById('sum-total').textContent='R'+total;
 }
-function changeQty(idx,delta){APP.cart[idx].qty=Math.max(1,APP.cart[idx].qty+delta);updateCartBadge();renderCart();saveCart();}
+
+function changeQty(idx,delta){
+  const item=APP.cart[idx];
+  const prod=APP.products.find(p=>p.id===item.id);
+  const newQty=Math.max(1,item.qty+delta);
+  // Guard: don't exceed stock when incrementing
+  if(delta>0&&prod&&prod.stockQty!==undefined&&prod.stockQty!==null&&newQty>prod.stockQty){
+    showStockToast(item.name,prod.stockQty);
+    return;
+  }
+  item.qty=newQty;updateCartBadge();renderCart();saveCart();
+}
+
 function removeFromCart(idx){APP.cart.splice(idx,1);updateCartBadge();renderCart();saveCart();}
+
 function applyPromo(){
   const input=document.getElementById('promo-input'),btn=document.getElementById('promo-apply'),val=input.value.trim().toUpperCase();
   if(!val)return;btn.disabled=true;btn.textContent='...';input.style.borderColor='';
@@ -1418,7 +1281,7 @@ function setCampus(campus){
   document.getElementById('campus-upper').classList.toggle('selected',campus==='upper');
   document.getElementById('campus-middle').classList.toggle('selected',campus==='middle');
   const sel=document.getElementById('res-select');
-  sel.innerHTML='<option value="">Select your residence</option>'+RESIDENCES[campus].map(r=>`<option>${r}</option>`).join('');
+  sel.innerHTML='<option value="">Select a delivery venue</option>'+RESIDENCES[campus].map(r=>`<option>${r}</option>`).join('');
 }
 function setTime(t){document.getElementById('time-asap').classList.toggle('selected',t==='asap');document.getElementById('time-sched').classList.toggle('selected',t==='sched');}
 function selectPay(el){document.querySelectorAll('.pay-opt').forEach(e=>e.classList.remove('selected'));el.classList.add('selected');}
@@ -1445,7 +1308,6 @@ function placeOrder(){
     items:APP.cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty,emoji:i.emoji||'',imageUrl:i.imageUrl||''})),
     subtotal:sub,delivery:0,discount,total,campus:APP.currentCampus,residence,room,phone,
     status:'pending',
-    // adminEta is NOT set here — admin must set it explicitly; client shows skeleton until then
     createdAt:firebase.firestore.FieldValue.serverTimestamp(),
   }).then(ref=>{
     APP.activeOrderId=ref.id;
@@ -1472,7 +1334,6 @@ const STATUS_CONFIG={
   delivering:{emoji:'🛵',title:'On Its Way!',desc:'Your delivery is heading to you',prog:'80%',step:3},
   delivered:{emoji:'🎉',title:'Delivered!',desc:'Enjoy your snacks!',prog:'100%',step:4},
 };
-
 let cdInterval=null;
 
 function renderTracking(){
@@ -1485,7 +1346,6 @@ function renderTracking(){
   document.getElementById('tracking-no-order').style.display='none';
   document.getElementById('tracking-active').style.display='block';
   if(APP.orderNum)document.getElementById('track-order-num').textContent=APP.orderNum;
-
   if(APP.activeOrderId){
     if(APP.activeOrderUnsub)APP.activeOrderUnsub();
     APP.activeOrderUnsub=db.collection('orders').doc(APP.activeOrderId).onSnapshot(doc=>{
@@ -1495,39 +1355,21 @@ function renderTracking(){
   }
 }
 
-/* ── ETA box state helpers ─────────────────────────────────── */
 function showEtaSkeleton(){
   const box=document.getElementById('t-eta-box');
   box.classList.add('eta-pending');
-  document.getElementById('t-eta-left').innerHTML=`
-    <div class="eta-lbl">ARRIVING AROUND</div>
-    <div class="eta-skeleton">
-      <div class="eta-skel-line wide"></div>
-      <div class="eta-skel-line narrow"></div>
-    </div>
-    <div class="eta-pending-label">Admin is setting your ETA…</div>`;
-  document.getElementById('t-eta-right').innerHTML=`
-    <div class="eta-cd-lbl">Time remaining</div>
-    <div class="eta-cd" style="color:var(--dim);">--:--</div>`;
+  document.getElementById('t-eta-left').innerHTML=`<div class="eta-lbl">ARRIVING AROUND</div><div class="eta-skeleton"><div class="eta-skel-line wide"></div><div class="eta-skel-line narrow"></div></div><div class="eta-pending-label">Admin is setting your ETA…</div>`;
+  document.getElementById('t-eta-right').innerHTML=`<div class="eta-cd-lbl">Time remaining</div><div class="eta-cd" style="color:var(--dim);">--:--</div>`;
 }
 
 function showEtaLive(eta){
   if(cdInterval){clearInterval(cdInterval);cdInterval=null;}
   const box=document.getElementById('t-eta-box');
   box.classList.remove('eta-pending');
-  document.getElementById('t-eta-left').innerHTML=`
-    <div class="eta-lbl">ARRIVING AROUND</div>
-    <div class="eta-t">${eta.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})}</div>`;
-  document.getElementById('t-eta-right').innerHTML=`
-    <div class="eta-cd-lbl">Time remaining</div>
-    <div class="eta-cd" id="t-countdown">--:--</div>`;
+  document.getElementById('t-eta-left').innerHTML=`<div class="eta-lbl">ARRIVING AROUND</div><div class="eta-t">${eta.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})}</div>`;
+  document.getElementById('t-eta-right').innerHTML=`<div class="eta-cd-lbl">Time remaining</div><div class="eta-cd" id="t-countdown">--:--</div>`;
   let sec=Math.max(0,Math.floor((eta-new Date())/1000));
-  const tick=()=>{
-    const m=Math.floor(sec/60),s=sec%60;
-    const el=document.getElementById('t-countdown');
-    if(el)el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-    if(sec>0)sec--;
-  };
+  const tick=()=>{const m=Math.floor(sec/60),s=sec%60;const el=document.getElementById('t-countdown');if(el)el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(sec>0)sec--;};
   tick();cdInterval=setInterval(tick,1000);
 }
 
@@ -1537,32 +1379,11 @@ function updateTrackingUI(data){
   document.getElementById('t-title').textContent=cfg.title;
   document.getElementById('t-desc').textContent=cfg.desc;
   document.getElementById('t-prog').style.width=cfg.prog;
-
-  for(let i=0;i<5;i++){
-    const dot=document.getElementById('td-'+i);const lbl=document.getElementById('tl-'+i);
-    dot.className='step-dot';lbl.className='step-label';
-    if(i<cfg.step){dot.classList.add('done');dot.textContent='✓';lbl.classList.add('done-lbl');}
-    else if(i===cfg.step){dot.classList.add('current');dot.textContent=(['📦','✅','📦','🛵','🎉'])[i];lbl.classList.add('current-lbl');}
-    else{dot.textContent=i+1;}
-  }
-
-  // ETA: show skeleton until admin explicitly sets adminEta
+  for(let i=0;i<5;i++){const dot=document.getElementById('td-'+i);const lbl=document.getElementById('tl-'+i);dot.className='step-dot';lbl.className='step-label';if(i<cfg.step){dot.classList.add('done');dot.textContent='✓';lbl.classList.add('done-lbl');}else if(i===cfg.step){dot.classList.add('current');dot.textContent=(['📦','✅','📦','🛵','🎉'])[i];lbl.classList.add('current-lbl');}else{dot.textContent=i+1;}}
   const etaStr=data.adminEta||null;
-  if(etaStr){
-    const eta=new Date(etaStr);
-    if(!isNaN(eta.getTime()))showEtaLive(eta);
-    else showEtaSkeleton();
-  }else{
-    showEtaSkeleton();
-  }
-
+  if(etaStr){const eta=new Date(etaStr);if(!isNaN(eta.getTime()))showEtaLive(eta);else showEtaSkeleton();}else{showEtaSkeleton();}
   const items=(data.items&&data.items.length)?data.items:[{emoji:'🍜',name:'Your snacks',price:0,qty:1}];
-  document.getElementById('tracking-items').innerHTML=items.map(i=>`<div class="ord-item">
-    <div class="ord-thumb">${i.imageUrl?`<img src="${esc(i.imageUrl)}" alt="${esc(i.name)}">`:`<span style="font-size:18px">${esc(i.emoji)||'🍬'}</span>`}</div>
-    <div class="ord-name">${esc(i.name)} × ${i.qty}</div>
-    <div class="ord-price">R${esc(i.price*i.qty)}</div>
-  </div>`).join('')+`<div class="ord-item" style="background:var(--s2)"><span style="flex:1;font-size:12px;font-weight:700">Total paid</span><div class="ord-price">R${data.total||0}</div></div>`;
-
+  document.getElementById('tracking-items').innerHTML=items.map(i=>`<div class="ord-item"><div class="ord-thumb">${i.imageUrl?`<img src="${esc(i.imageUrl)}" alt="${esc(i.name)}">`:`<span style="font-size:18px">${esc(i.emoji)||'🍬'}</span>`}</div><div class="ord-name">${esc(i.name)} × ${i.qty}</div><div class="ord-price">R${esc(i.price*i.qty)}</div></div>`).join('')+`<div class="ord-item" style="background:var(--s2)"><span style="flex:1;font-size:12px;font-weight:700">Total paid</span><div class="ord-price">R${data.total||0}</div></div>`;
   document.getElementById('track-time').textContent=data.createdAt?.toDate?'Placed '+data.createdAt.toDate().toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'}):'—';
 }
 
@@ -1574,7 +1395,6 @@ function setAdminTab(tab){
   document.getElementById('admin-orders-content').style.display=tab==='orders'?'block':'none';
   if(tab==='orders'){startOrdersListener();renderAdminOrders();}
 }
-
 function renderAdminPanel(){
   const prods=APP.products;
   document.getElementById('stat-total').textContent=prods.length;
@@ -1585,87 +1405,25 @@ function renderAdminPanel(){
     const img=p.imageUrl?`<img src="${esc(p.imageUrl)}" alt="${esc(p.name)}">`:`<span style="font-size:36px">${esc(p.emoji)||'🍬'}</span>`;
     const bg=p.imageUrl?'':`style="background:${getCatBg(p.category)}"`;
     const stockQty=p.stockQty!==undefined&&p.stockQty!==null?p.stockQty:'?';
-    return `<div class="admin-prod-card">
-      <div class="admin-prod-img" ${bg}>${img}</div>
-      <div class="admin-prod-info">
-        <div class="admin-prod-brand">${esc(p.brand)}</div>
-        <div class="admin-prod-name">${esc(p.name)}</div>
-        <div class="admin-prod-price">R${esc(p.price)}</div>
-      </div>
-      <div class="admin-prod-controls">
-        <button class="toggle-pill ${p.isHot?'on-hot':''}" onclick="toggleProductField('${esc(p.id)}','isHot',${!!p.isHot})">${p.isHot?'🔥 HOT':'HOT: off'}</button>
-        <button class="toggle-pill ${p.inStock!==false?'on-stock':''}" onclick="toggleProductField('${esc(p.id)}','inStock',${p.inStock!==false})">${p.inStock!==false?'✓ IN STOCK':'OUT'}</button>
-        <button class="admin-del-btn" onclick="deleteProduct('${esc(p.id)}')">🗑</button>
-      </div>
-      <div style="padding:0 10px 10px;">
-        <div class="stock-ctrl">
-          <span class="stock-ctrl-label">QTY:</span>
-          <input class="stock-num-input" type="number" min="0" value="${stockQty}" id="stock-inp-${esc(p.id)}" placeholder="0">
-          <button class="stock-save-btn" onclick="saveStockQty('${esc(p.id)}')">Save</button>
-        </div>
-      </div>
-    </div>`;
+    return `<div class="admin-prod-card"><div class="admin-prod-img" ${bg}>${img}</div><div class="admin-prod-info"><div class="admin-prod-brand">${esc(p.brand)}</div><div class="admin-prod-name">${esc(p.name)}</div><div class="admin-prod-price">R${esc(p.price)}</div></div><div class="admin-prod-controls"><button class="toggle-pill ${p.isHot?'on-hot':''}" onclick="toggleProductField('${esc(p.id)}','isHot',${!!p.isHot})">${p.isHot?'🔥 HOT':'HOT: off'}</button><button class="toggle-pill ${p.inStock!==false?'on-stock':''}" onclick="toggleProductField('${esc(p.id)}','inStock',${p.inStock!==false})">${p.inStock!==false?'✓ IN STOCK':'OUT'}</button><button class="admin-del-btn" onclick="deleteProduct('${esc(p.id)}')">🗑</button></div><div style="padding:0 10px 10px;"><div class="stock-ctrl"><span class="stock-ctrl-label">QTY:</span><input class="stock-num-input" type="number" min="0" value="${stockQty}" id="stock-inp-${esc(p.id)}" placeholder="0"><button class="stock-save-btn" onclick="saveStockQty('${esc(p.id)}')">Save</button></div></div></div>`;
   }).join('')+'</div>';
 }
-
-function saveStockQty(id){
-  const inp=document.getElementById('stock-inp-'+id);if(!inp)return;
-  const qty=parseInt(inp.value,10);if(isNaN(qty)||qty<0)return;
-  db.collection('products').doc(id).update({stockQty:qty,inStock:qty>0}).catch(err=>alert('Update failed: '+err.message));
-}
+function saveStockQty(id){const inp=document.getElementById('stock-inp-'+id);if(!inp)return;const qty=parseInt(inp.value,10);if(isNaN(qty)||qty<0)return;db.collection('products').doc(id).update({stockQty:qty,inStock:qty>0}).catch(err=>alert('Update failed: '+err.message));}
 function toggleProductField(id,field,currentVal){db.collection('products').doc(id).update({[field]:!currentVal}).catch(err=>alert('Update failed: '+err.message));}
 function deleteProduct(id){if(!confirm('Delete this product?'))return;db.collection('products').doc(id).delete().catch(err=>alert('Delete failed: '+err.message));}
 
-/* ══════════════════════════════════════════════════════════
- * ADMIN ORDERS — COLLAPSIBLE WITH INDIVIDUALITY
- * ══════════════════════════════════════════════════════════ */
+/* ── ADMIN ORDERS ─────────────────────────────────────────── */
 let adminOrdersUnsub=null,APP_ORDERS_FILTER='all';
-const expandedOrders=new Set(); // persists across re-renders
-
+const expandedOrders=new Set();
 const ORDER_STATUS_NEXT={pending:'confirmed',confirmed:'packing',packing:'delivering',delivering:'delivered',delivered:null};
 const ORDER_STATUS_LABELS={pending:'⏳ PENDING',confirmed:'✓ CONFIRMED',packing:'📦 PACKING',delivering:'🛵 DELIVERING',delivered:'✅ DELIVERED'};
 const ORDER_STATUS_CSS={pending:'status-pending',confirmed:'status-confirmed',packing:'status-packing',delivering:'status-delivering',delivered:'status-delivered'};
 const ORDER_NEXT_LABELS={pending:'Confirm Order',confirmed:'Start Packing',packing:'Out for Delivery',delivering:'Mark Delivered'};
-const STATUS_ICON={pending:'⏳',confirmed:'✅',packing:'📦',delivering:'🛵',delivered:'🎉'};
-
-/* Deterministic accent colour per order — derived from Firestore doc ID */
-function orderAccent(id){
-  let h=0;
-  for(let i=0;i<id.length;i++)h=id.charCodeAt(i)+((h<<5)-h);
-  const palette=['#C084FC','#F472B6','#34D399','#FCD34D','#60A5FA','#F97316','#A78BFA','#2DD4BF','#FB7185','#4ADE80'];
-  return palette[Math.abs(h)%palette.length];
-}
-
-/* Extract up to 2 initials from a display name or email */
-function getInitials(name){
-  if(!name||!name.trim())return '?';
-  // If it looks like an email, use first two chars before the @
-  if(name.includes('@'))return name.split('@')[0].slice(0,2).toUpperCase();
-  const parts=name.trim().split(/\s+/);
-  if(parts.length>=2)return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
-  return name.trim().slice(0,2).toUpperCase();
-}
-
-function startOrdersListener(){
-  if(adminOrdersUnsub)return;
-  adminOrdersUnsub=db.collection('orders').orderBy('createdAt','desc').limit(100).onSnapshot(snapshot=>{
-    APP.orders=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
-    if(currentScreen==='admin')renderAdminOrders();
-  },err=>console.error('Orders listener:',err));
-}
-
-function setOrdersFilter(filter,el){
-  APP_ORDERS_FILTER=filter;
-  document.querySelectorAll('.orders-filter-chip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');renderAdminOrders();
-}
-
-function toggleOrderCard(orderId){
-  if(expandedOrders.has(orderId))expandedOrders.delete(orderId);
-  else expandedOrders.add(orderId);
-  const card=document.getElementById('ocard-'+orderId);
-  if(card)card.classList.toggle('expanded',expandedOrders.has(orderId));
-}
+function orderAccent(id){let h=0;for(let i=0;i<id.length;i++)h=id.charCodeAt(i)+((h<<5)-h);const palette=['#C084FC','#F472B6','#34D399','#FCD34D','#60A5FA','#F97316','#A78BFA','#2DD4BF','#FB7185','#4ADE80'];return palette[Math.abs(h)%palette.length];}
+function getInitials(name){if(!name||!name.trim())return '?';if(name.includes('@'))return name.split('@')[0].slice(0,2).toUpperCase();const parts=name.trim().split(/\s+/);if(parts.length>=2)return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();return name.trim().slice(0,2).toUpperCase();}
+function startOrdersListener(){if(adminOrdersUnsub)return;adminOrdersUnsub=db.collection('orders').orderBy('createdAt','desc').limit(100).onSnapshot(snapshot=>{APP.orders=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));if(currentScreen==='admin')renderAdminOrders();},err=>console.error('Orders listener:',err));}
+function setOrdersFilter(filter,el){APP_ORDERS_FILTER=filter;document.querySelectorAll('.orders-filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderAdminOrders();}
+function toggleOrderCard(orderId){if(expandedOrders.has(orderId))expandedOrders.delete(orderId);else expandedOrders.add(orderId);const card=document.getElementById('ocard-'+orderId);if(card)card.classList.toggle('expanded',expandedOrders.has(orderId));}
 
 function renderAdminOrders(){
   const allOrders=APP.orders||[];
@@ -1676,167 +1434,71 @@ function renderAdminOrders(){
   document.getElementById('stat-revenue').textContent='R'+revenue;
   const tab=document.getElementById('atab-orders');
   tab.textContent=pending?'Orders ('+pending+')':'Orders';
-
   let orders=allOrders;
   if(APP_ORDERS_FILTER!=='all')orders=orders.filter(o=>o.status===APP_ORDERS_FILTER);
-
   const container=document.getElementById('admin-order-list');
-  if(!orders.length){
-    container.innerHTML=`<div class="empty-state"><span class="empty-state-icon">📭</span><div class="empty-state-title">${APP_ORDERS_FILTER!=='all'?'No orders here':'No orders yet'}</div></div>`;
-    return;
-  }
-
+  if(!orders.length){container.innerHTML=`<div class="empty-state"><span class="empty-state-icon">📭</span><div class="empty-state-title">${APP_ORDERS_FILTER!=='all'?'No orders here':'No orders yet'}</div></div>`;return;}
   container.innerHTML=orders.map(o=>{
     const accent=orderAccent(o.id);
     const initials=getInitials(o.userDisplayName||o.userEmail||'?');
     const t=o.createdAt?.toDate?o.createdAt.toDate():new Date();
     const timeStr=t.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})+', '+t.toLocaleDateString('en-ZA',{day:'numeric',month:'short'});
     const campusLabel=o.campus==='upper'?'🏛 Upper':'📚 Middle';
-    const itemCount=(o.items||[]).reduce((a,i)=>a+i.qty,0);
     const next=ORDER_STATUS_NEXT[o.status];
     const isExpanded=expandedOrders.has(o.id);
     const adminEtaTime=o.adminEtaTime||'';
-    const currentEtaDisplay=o.adminEta
-      ?new Date(o.adminEta).toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})
-      :'Not set';
-
-    /* Mini emoji strip for collapsed view — shows what's in the bag */
+    const currentEtaDisplay=o.adminEta?new Date(o.adminEta).toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'}):'Not set';
     const emojiPills=(o.items||[]).slice(0,4).map(i=>`<span class="ocs-emoji-pill">${i.imageUrl?'📦':(i.emoji||'🍬')} ×${i.qty}</span>`).join('');
     const extraPill=(o.items||[]).length>4?`<span class="ocs-emoji-pill">+${(o.items||[]).length-4} more</span>`:'';
-
-    /* Item rows for expanded view */
-    const itemRows=(o.items||[]).map(i=>`
-      <div class="order-item-row">
-        <span class="order-item-emoji">${i.imageUrl?`<img src="${esc(i.imageUrl)}" style="width:20px;height:20px;border-radius:4px;object-fit:cover;" alt="">`:(esc(i.emoji)||'🍬')}</span>
-        <span class="order-item-name">${esc(i.name)}</span>
-        <span class="order-item-qty">×${i.qty}</span>
-        <span class="order-item-price">R${esc(i.price*i.qty)}</span>
-      </div>`).join('');
-
+    const itemRows=(o.items||[]).map(i=>`<div class="order-item-row"><span class="order-item-emoji">${i.imageUrl?`<img src="${esc(i.imageUrl)}" style="width:20px;height:20px;border-radius:4px;object-fit:cover;" alt="">`:(esc(i.emoji)||'🍬')}</span><span class="order-item-name">${esc(i.name)}</span><span class="order-item-qty">×${i.qty}</span><span class="order-item-price">R${esc(i.price*i.qty)}</span></div>`).join('');
     return `<div class="order-card${isExpanded?' expanded':''}" id="ocard-${esc(o.id)}" style="--order-accent:${accent}">
-
-      <!-- ── Collapsed header (always visible) ── -->
       <div class="order-card-summary" onclick="toggleOrderCard('${esc(o.id)}')">
-
-        <!-- Customer avatar with unique colour -->
         <div class="ocs-initials" style="background:${accent}">${esc(initials)}</div>
-
         <div class="ocs-left">
           <div class="ocs-num">${esc(o.orderNum||'—')}</div>
-          <!-- Emoji preview of what they ordered -->
           <div class="ocs-emoji-strip">${emojiPills}${extraPill}</div>
           <div class="ocs-meta">${campusLabel}${o.residence?' · '+esc(o.residence):''}${o.room?' · Rm '+esc(o.room):''} · ${timeStr}</div>
         </div>
-
         <div class="ocs-right">
           <span class="order-status-badge ${ORDER_STATUS_CSS[o.status]||''}">${ORDER_STATUS_LABELS[o.status]||esc(o.status)}</span>
           <span class="ocs-total">R${esc(o.total||0)}</span>
           <span class="ocs-chevron">▼</span>
         </div>
       </div>
-
-      <!-- ── Expanded body ── -->
       <div class="order-card-body">
         <div class="order-body-inner">
-
-          <!-- Customer details -->
-          <div class="order-customer">
-            👤 <b>${esc(o.userDisplayName||'Guest')}</b><br>
-            ${o.userEmail?`📧 ${esc(o.userEmail)}<br>`:''}
-            ${o.phone?`📱 ${esc(o.phone)}<br>`:''}
-            ${campusLabel}${o.residence?' · '+esc(o.residence):''}${o.room?' · Room '+esc(o.room):''}
-          </div>
-
-          <!-- Items -->
+          <div class="order-customer">👤 <b>${esc(o.userDisplayName||'Guest')}</b><br>${o.userEmail?`📧 ${esc(o.userEmail)}<br>`:''}${o.phone?`📱 ${esc(o.phone)}<br>`:''}${campusLabel}${o.residence?' · '+esc(o.residence):''}${o.room?' · Room '+esc(o.room):''}</div>
           <div class="order-items-list">${itemRows||'<div class="order-item-row"><span class="order-item-name" style="color:var(--muted)">No items</span></div>'}</div>
-
-          <!-- Totals -->
           <div class="order-totals-row"><span>Subtotal</span><span>R${esc(o.subtotal||o.total||0)}</span></div>
           ${o.discount?`<div class="order-totals-row"><span>Discount</span><span style="color:var(--candy-mint)">−R${esc(o.discount)}</span></div>`:''}
           <div class="order-totals-row"><span>Delivery</span><span style="color:var(--candy-mint)">FREE</span></div>
           <hr class="order-divider">
           <div class="order-totals-row big"><span>Total</span><span style="color:var(--lav)">R${esc(o.total||0)}</span></div>
-
-          <!-- ETA setter -->
           <div class="eta-set-row">
             <span class="eta-set-label">🕐 SET ETA</span>
             <input class="eta-set-input" type="time" id="eta-inp-${esc(o.id)}" value="${adminEtaTime}">
             <button class="eta-set-btn" onclick="setAdminEta('${esc(o.id)}')">Send</button>
           </div>
           <div class="eta-current-val">Currently: <b style="color:${accent}">${currentEtaDisplay}</b></div>
-
-          <!-- Advance status -->
           <div class="order-card-actions">
             <span style="font-size:11px;color:var(--muted);">${timeStr}</span>
-            ${next
-              ?`<button class="order-action-btn" style="background:linear-gradient(135deg,${accent}cc,${accent})" onclick="advanceOrder('${esc(o.id)}','${next}')">${ORDER_NEXT_LABELS[o.status]} →</button>`
-              :`<span class="order-complete-tag">✅ COMPLETE</span>`}
+            ${next?`<button class="order-action-btn" style="background:linear-gradient(135deg,${accent}cc,${accent})" onclick="advanceOrder('${esc(o.id)}','${next}')">${ORDER_NEXT_LABELS[o.status]} →</button>`:`<span class="order-complete-tag">✅ COMPLETE</span>`}
           </div>
-
         </div>
       </div>
     </div>`;
   }).join('');
 }
 
-function advanceOrder(orderId,newStatus){
-  db.collection('orders').doc(orderId).update({status:newStatus})
-    .catch(err=>alert('Update failed: '+err.message));
-}
-
-function setAdminEta(orderId){
-  const inp=document.getElementById('eta-inp-'+orderId);
-  if(!inp||!inp.value)return;
-  const[h,m]=inp.value.split(':').map(Number);
-  const eta=new Date();eta.setHours(h,m,0,0);
-  // If the chosen time is in the past today, assume they mean tomorrow
-  if(eta<new Date())eta.setDate(eta.getDate()+1);
-  db.collection('orders').doc(orderId).update({
-    adminEta:eta.toISOString(),
-    adminEtaTime:inp.value
-  }).catch(err=>alert('ETA update failed: '+err.message));
-}
+function advanceOrder(orderId,newStatus){db.collection('orders').doc(orderId).update({status:newStatus}).catch(err=>alert('Update failed: '+err.message));}
+function setAdminEta(orderId){const inp=document.getElementById('eta-inp-'+orderId);if(!inp||!inp.value)return;const[h,m]=inp.value.split(':').map(Number);const eta=new Date();eta.setHours(h,m,0,0);if(eta<new Date())eta.setDate(eta.getDate()+1);db.collection('orders').doc(orderId).update({adminEta:eta.toISOString(),adminEtaTime:inp.value}).catch(err=>alert('ETA update failed: '+err.message));}
 
 /* ── DRAWER ───────────────────────────────────────────────── */
-function openDrawer(){
-  document.getElementById('add-product-drawer').classList.add('open');
-  document.getElementById('drawer-overlay').classList.add('show');
-  APP.pendingImageUrl=null;
-  document.getElementById('upload-preview').style.display='none';
-  document.getElementById('upload-area').style.display='block';
-  ['p-name','p-brand','p-emoji'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('p-category').value='';
-  document.getElementById('p-price').value='';
-  document.getElementById('p-stock').value='';
-  document.getElementById('p-hot').checked=false;
-  document.getElementById('drawer-error').style.display='none';
-  document.getElementById('save-product-btn').disabled=false;
-  document.getElementById('save-product-btn').textContent='Save Product';
-  document.getElementById('upload-spinner').style.display='none';
-  document.getElementById('upload-progress').style.display='none';
-}
+function openDrawer(){document.getElementById('add-product-drawer').classList.add('open');document.getElementById('drawer-overlay').classList.add('show');APP.pendingImageUrl=null;document.getElementById('upload-preview').style.display='none';document.getElementById('upload-area').style.display='block';['p-name','p-brand','p-emoji'].forEach(id=>document.getElementById(id).value='');document.getElementById('p-category').value='';document.getElementById('p-price').value='';document.getElementById('p-stock').value='';document.getElementById('p-hot').checked=false;document.getElementById('drawer-error').style.display='none';document.getElementById('save-product-btn').disabled=false;document.getElementById('save-product-btn').textContent='Save Product';document.getElementById('upload-spinner').style.display='none';document.getElementById('upload-progress').style.display='none';}
 function closeDrawer(){document.getElementById('add-product-drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('show');}
-function handleFileSelect(input){
-  const file=input.files[0];if(!file)return;
-  if(file.size>5*1024*1024){alert('Image must be under 5MB');return;}
-  const reader=new FileReader();reader.onload=e=>{const preview=document.getElementById('upload-preview');preview.src=e.target.result;preview.style.display='block';document.getElementById('upload-area').style.display='none';};reader.readAsDataURL(file);
-  uploadImageToStorage(file);
-}
-function uploadImageToStorage(file){
-  const spinner=document.getElementById('upload-spinner'),progressWrap=document.getElementById('upload-progress'),progressBar=document.getElementById('upload-progress-bar');
-  spinner.style.display='block';progressWrap.style.display='block';spinner.textContent='⏳ Uploading image...';
-  const ref=storage.ref('products/'+Date.now()+'_'+file.name),task=ref.put(file);
-  task.on('state_changed',snap=>{progressBar.style.width=(snap.bytesTransferred/snap.totalBytes*100)+'%';},err=>{spinner.textContent='❌ Upload failed: '+err.message;APP.pendingImageUrl=null;},()=>{task.snapshot.ref.getDownloadURL().then(url=>{APP.pendingImageUrl=url;spinner.textContent='✅ Image ready';progressWrap.style.display='none';});});
-}
-function saveProduct(){
-  const name=document.getElementById('p-name').value.trim(),category=document.getElementById('p-category').value,price=parseFloat(document.getElementById('p-price').value),stockQty=parseInt(document.getElementById('p-stock').value,10);
-  const errEl=document.getElementById('drawer-error');
-  if(!name||!category||!price||price<1||isNaN(stockQty)||stockQty<0){errEl.textContent='Please fill in Name, Category, Price, and Stock Qty.';errEl.style.display='block';return;}
-  const btn=document.getElementById('save-product-btn');btn.disabled=true;btn.textContent='Saving…';
-  db.collection('products').add({name,category,price,brand:document.getElementById('p-brand').value.trim()||'',emoji:document.getElementById('p-emoji').value.trim()||getDefaultEmoji(category),imageUrl:APP.pendingImageUrl||'',isHot:document.getElementById('p-hot').checked,inStock:stockQty>0,stockQty,createdAt:firebase.firestore.FieldValue.serverTimestamp()})
-  .then(()=>{closeDrawer();APP.pendingImageUrl=null;})
-  .catch(err=>{errEl.textContent='Save failed: '+err.message;errEl.style.display='block';btn.disabled=false;btn.textContent='Save Product';});
-}
+function handleFileSelect(input){const file=input.files[0];if(!file)return;if(file.size>5*1024*1024){alert('Image must be under 5MB');return;}const reader=new FileReader();reader.onload=e=>{const preview=document.getElementById('upload-preview');preview.src=e.target.result;preview.style.display='block';document.getElementById('upload-area').style.display='none';};reader.readAsDataURL(file);uploadImageToStorage(file);}
+function uploadImageToStorage(file){const spinner=document.getElementById('upload-spinner'),progressWrap=document.getElementById('upload-progress'),progressBar=document.getElementById('upload-progress-bar');spinner.style.display='block';progressWrap.style.display='block';spinner.textContent='⏳ Uploading image...';const ref=storage.ref('products/'+Date.now()+'_'+file.name),task=ref.put(file);task.on('state_changed',snap=>{progressBar.style.width=(snap.bytesTransferred/snap.totalBytes*100)+'%';},err=>{spinner.textContent='❌ Upload failed: '+err.message;APP.pendingImageUrl=null;},()=>{task.snapshot.ref.getDownloadURL().then(url=>{APP.pendingImageUrl=url;spinner.textContent='✅ Image ready';progressWrap.style.display='none';});});}
+function saveProduct(){const name=document.getElementById('p-name').value.trim(),category=document.getElementById('p-category').value,price=parseFloat(document.getElementById('p-price').value),stockQty=parseInt(document.getElementById('p-stock').value,10);const errEl=document.getElementById('drawer-error');if(!name||!category||!price||price<1||isNaN(stockQty)||stockQty<0){errEl.textContent='Please fill in Name, Category, Price, and Stock Qty.';errEl.style.display='block';return;}const btn=document.getElementById('save-product-btn');btn.disabled=true;btn.textContent='Saving…';db.collection('products').add({name,category,price,brand:document.getElementById('p-brand').value.trim()||'',emoji:document.getElementById('p-emoji').value.trim()||getDefaultEmoji(category),imageUrl:APP.pendingImageUrl||'',isHot:document.getElementById('p-hot').checked,inStock:stockQty>0,stockQty,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(()=>{closeDrawer();APP.pendingImageUrl=null;}).catch(err=>{errEl.textContent='Save failed: '+err.message;errEl.style.display='block';btn.disabled=false;btn.textContent='Save Product';});}
 function getDefaultEmoji(cat){return{chips:'🥔',drinks:'⚡',sweets:'🍫',meals:'🍜'}[cat]||'🍬';}
 
 /* ── INIT ─────────────────────────────────────────────────── */
