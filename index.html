@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>UNIBITES — UCT Campus Snacks</title>
+<title>UNIBITE — UCT Campus Snacks</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -113,9 +113,25 @@ a{color:inherit;text-decoration:none;}
 .aw-card{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:24px;box-shadow:0 0 40px #C084FC18;}
 .aw-err{background:#F871711a;color:var(--red);border:1.5px solid #F8717130;border-radius:12px;padding:10px 12px;font-size:12px;margin-bottom:14px;display:none;line-height:1.5;}
 .aw-err.show{display:block;}
+.aw-success{background:#34D3991a;color:var(--candy-mint);border:1.5px solid #34D39930;border-radius:12px;padding:10px 12px;font-size:12px;margin-bottom:14px;display:none;line-height:1.5;}
+.aw-success.show{display:block;}
 .aw-terms{font-size:10px;color:var(--dim);text-align:center;margin-top:14px;line-height:1.6;border-top:1px solid var(--border);padding-top:14px;}
-.link-limit-notice{background:#7C3AED18;border:1.5px solid #7C3AED40;border-radius:12px;padding:14px;text-align:center;font-size:12px;color:var(--lav-light);line-height:1.7;}
-.link-limit-notice strong{color:var(--lav);display:block;font-size:14px;margin-bottom:4px;}
+/* Auth tabs */
+.auth-tabs{display:flex;background:var(--s2);border-radius:14px;padding:4px;margin-bottom:20px;gap:4px;}
+.auth-tab{flex:1;padding:9px;border:none;border-radius:10px;font-size:12px;font-weight:800;font-family:var(--font);cursor:pointer;color:var(--muted);background:transparent;transition:all .15s;letter-spacing:.04em;}
+.auth-tab.active{background:var(--surface);color:var(--lav);box-shadow:0 2px 8px rgba(192,132,252,.2);}
+/* Password strength */
+.pw-strength-wrap{margin-top:6px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.pw-strength-bar{height:100%;width:0%;border-radius:2px;transition:width .3s,background .3s;}
+.pw-hint{font-size:10px;color:var(--muted);margin-top:5px;}
+/* Input with toggle */
+.input-wrap{position:relative;}
+.input-wrap .form-input{padding-right:40px;}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--muted);padding:0;line-height:1;}
+.aw-divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--dim);font-size:11px;font-weight:700;}
+.aw-divider::before,.aw-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.forgot-link{font-size:11px;color:var(--lav);background:none;border:none;cursor:pointer;font-family:var(--font);font-weight:700;display:block;text-align:right;margin-top:-8px;margin-bottom:14px;}
+.forgot-link:hover{text-decoration:underline;}
 
 /* ─── ADMIN GATE MODAL ───────────────────────────────────── */
 #admin-gate-modal{position:fixed;inset:0;z-index:9000;background:rgba(10,10,18,.94);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:20px;}
@@ -473,7 +489,6 @@ select.form-input option{background:var(--surface);}
 .orders-filter-strip::-webkit-scrollbar{display:none;}
 .orders-filter-chip{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:10px;font-weight:800;cursor:pointer;flex-shrink:0;color:var(--muted);letter-spacing:.06em;white-space:nowrap;box-shadow:0 2px 0 var(--dim);}
 .orders-filter-chip.active{background:var(--lav-glow);border-color:var(--lav);color:var(--lav);box-shadow:0 2px 0 var(--lav-dim);}
-
 .order-card{background:var(--surface);border:1.5px solid var(--border);border-left:4px solid var(--order-accent,var(--border));border-radius:16px;margin-bottom:10px;overflow:hidden;box-shadow:0 3px 0 var(--dim);transition:border-color .2s,box-shadow .2s;}
 .order-card.expanded{border-color:var(--border);border-left-color:var(--order-accent,var(--lav));box-shadow:0 4px 0 color-mix(in srgb,var(--order-accent,var(--lav)) 40%,transparent),0 0 0 1px color-mix(in srgb,var(--order-accent,var(--lav)) 20%,transparent);}
 .order-card-summary{display:flex;align-items:flex-start;gap:10px;padding:13px 14px;cursor:pointer;user-select:none;transition:background .15s;}
@@ -560,8 +575,8 @@ select.form-input option{background:var(--surface);}
   const EASEOUT='cubic-bezier(0.22,1,0.36,1)',EASEINOUT='cubic-bezier(0.4,0,0.2,1)';
   const stars=document.getElementById('ldr-stars');
   for(let i=0;i<32;i++){const s=document.createElement('div');s.className='ldr-star';const sz=Math.random()*2.5+1;s.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;--dur:'+(2+Math.random()*2)+'s;--delay:-'+(Math.random()*4)+'s;';stars.appendChild(s);}
-  const WORD='UNIBITES';
-  const traj=[[-180,-90,-20,0],[-110,160,16,80],[-50,-140,-10,150],[70,170,24,220],[150,-80,-18,290],[190,80,13,360],[-160,50,-28,430],[90,-160,20,500]];
+  const WORD='UNIBITE';
+  const traj=[[-180,-90,-20,0],[-110,160,16,80],[-50,-140,-10,150],[70,170,24,220],[150,-80,-18,290],[190,80,13,360],[-160,50,-28,430]];
   const wrap=document.getElementById('ldr-word');const letters=[];
   WORD.split('').forEach((ch,i)=>{const el=document.createElement('span');el.className='ldr-letter';el.textContent=ch;wrap.appendChild(el);letters.push(el);const[tx,ty,rot,delay]=traj[i];el.animate([{opacity:0,transform:'translate('+tx+'px,'+ty+'px) rotate('+rot+'deg) scale(0.35)',offset:0},{opacity:1,transform:'translate(0,0) rotate(0deg) scale(1.07)',offset:0.72},{opacity:1,transform:'translate(0,4px) rotate(0deg) scale(0.97)',offset:0.86},{opacity:1,transform:'translate(0,0) rotate(0deg) scale(1)',offset:1}],{duration:680,delay,easing:EASEOUT,fill:'both'});});
   document.getElementById('ldr-tagline').animate([{opacity:0,transform:'translateY(12px)'},{opacity:1,transform:'translateY(0)'}],{duration:500,delay:900,easing:EASEINOUT,fill:'both'});
@@ -576,40 +591,65 @@ select.form-input option{background:var(--surface);}
 <!-- ===================== AUTH WALL ===================== -->
 <div id="auth-wall">
   <div class="aw-inner">
-    <div class="aw-logo"><div class="aw-logo-dot"></div><span class="aw-logo-name">UNIBITES</span></div>
+    <div class="aw-logo"><div class="aw-logo-dot"></div><span class="aw-logo-name">UNIBITE</span></div>
     <p class="aw-tagline">UCT's campus snack shop 🎓<br>Sign in to order snacks delivered to your res.</p>
     <div class="aw-card">
-      <div id="wall-completing" style="display:none;text-align:center;padding:30px 0;">
-        <div style="font-size:32px;margin-bottom:12px;">🔐</div>
-        <div style="font-weight:700;margin-bottom:6px;">Completing sign-in…</div>
-        <div style="font-size:12px;color:var(--muted);">Just a moment.</div>
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-signin" onclick="switchAuthTab('signin')">Sign In</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create Account</button>
       </div>
-      <div id="wall-confirm-email" style="display:none;">
-        <div style="font-size:32px;margin-bottom:12px;text-align:center;">📧</div>
-        <div style="font-weight:800;margin-bottom:6px;text-align:center;">Confirm your email</div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px;text-align:center;">Looks like you opened this on a different device. Enter the email you used.</div>
-        <div class="aw-err" id="wall-confirm-err"></div>
-        <div class="form-group"><label class="form-label">YOUR EMAIL ADDRESS</label><input class="form-input" type="email" id="wall-confirm-email-input" placeholder="you@email.com" onkeydown="if(event.key==='Enter')wallConfirmEmail()"></div>
-        <button class="btn btn-primary" id="wall-confirm-btn" onclick="wallConfirmEmail()">Complete Sign-In</button>
+
+      <!-- Error / Success -->
+      <div class="aw-err" id="wall-err"></div>
+      <div class="aw-success" id="wall-success"></div>
+
+      <!-- Sign In Form -->
+      <div id="signin-form">
+        <div class="form-group">
+          <label class="form-label">EMAIL ADDRESS</label>
+          <input class="form-input" type="email" id="signin-email" placeholder="you@email.com" onkeydown="if(event.key==='Enter')doSignIn()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">PASSWORD</label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="signin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignIn()">
+            <button class="pw-toggle" onclick="togglePw('signin-password',this)" type="button">👁</button>
+          </div>
+        </div>
+        <button class="forgot-link" onclick="doForgotPassword()">Forgot password?</button>
+        <button class="btn btn-primary" id="signin-btn" onclick="doSignIn()">Sign In →</button>
       </div>
-      <div id="wall-sent" style="display:none;text-align:center;">
-        <div style="font-size:32px;margin-bottom:12px;">📬</div>
-        <div style="font-weight:700;margin-bottom:6px;">Check your email</div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:18px;">We sent a sign-in link to<br><b id="wall-sent-email" style="color:var(--text)"></b></div>
-        <div id="wall-link-uses-left" style="font-size:11px;color:var(--muted);margin-bottom:14px;"></div>
-        <button class="btn btn-ghost" onclick="wallResetForm()">Use a different email</button>
+
+      <!-- Sign Up Form -->
+      <div id="signup-form" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">DISPLAY NAME</label>
+          <input class="form-input" type="text" id="signup-name" placeholder="Your name" onkeydown="if(event.key==='Enter')doSignUp()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">EMAIL ADDRESS</label>
+          <input class="form-input" type="email" id="signup-email" placeholder="you@email.com" onkeydown="if(event.key==='Enter')doSignUp()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">PASSWORD</label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="signup-password" placeholder="Min. 6 characters" oninput="checkPwStrength(this.value)" onkeydown="if(event.key==='Enter')doSignUp()">
+            <button class="pw-toggle" onclick="togglePw('signup-password',this)" type="button">👁</button>
+          </div>
+          <div class="pw-strength-wrap"><div class="pw-strength-bar" id="pw-strength-bar"></div></div>
+          <div class="pw-hint" id="pw-hint">Enter a password</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">CONFIRM PASSWORD</label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="signup-confirm" placeholder="Repeat password" onkeydown="if(event.key==='Enter')doSignUp()">
+            <button class="pw-toggle" onclick="togglePw('signup-confirm',this)" type="button">👁</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="signup-btn" onclick="doSignUp()">Create Account →</button>
       </div>
-      <div id="wall-link-limit" style="display:none;">
-        <div class="link-limit-notice"><strong>🔒 Link limit reached</strong>You've requested 3 sign-in links for this email in the last 24 hours.</div>
-        <div id="wall-limit-timer" style="text-align:center;font-size:12px;color:var(--muted);margin-top:14px;"></div>
-        <button class="btn btn-ghost" onclick="wallResetForm()" style="margin-top:16px;">Try a different email</button>
-      </div>
-      <div id="wall-form-state">
-        <div class="aw-err" id="wall-err"></div>
-        <div class="form-group"><label class="form-label">EMAIL ADDRESS</label><input class="form-input" type="email" id="wall-email" placeholder="you@email.com" onkeydown="if(event.key==='Enter')wallSendLink()"></div>
-        <button class="btn btn-primary" id="wall-action-btn" onclick="wallSendLink()">Email Me a Sign-In Link</button>
-        <div style="font-size:10px;color:var(--dim);text-align:center;margin-top:12px;line-height:1.6;">No password needed — we'll email you a secure sign-in link.</div>
-      </div>
+
       <div class="aw-terms">By continuing you agree to our Terms &amp; Privacy Policy.</div>
     </div>
   </div>
@@ -618,7 +658,7 @@ select.form-input option{background:var(--surface);}
 <!-- ===================== TOP NAV ===================== -->
 <nav id="top-nav" style="display:none;">
   <div class="logo" id="nav-logo" onclick="handleLogoTap()">
-    <span class="logo-name">UNIBITES</span>
+    <span class="logo-name">UNIBITE</span>
   </div>
   <div class="nav-right">
     <button class="cart-icon-btn" onclick="navigate('cart')">🛒<span class="cart-badge hidden" id="cart-badge">0</span></button>
@@ -718,7 +758,6 @@ select.form-input option{background:var(--surface);}
       <div class="campus-opt" id="campus-middle" onclick="setCampus('middle')"><span class="campus-opt-icon">📚</span><div class="campus-opt-name">Middle Campus</div><div class="campus-opt-sub">Sports Centre area</div></div>
     </div>
     <div class="form-group"><label class="form-label">DELIVERY VENUE</label><select class="form-input" id="res-select"><option value="">Select a delivery venue</option></select></div>
-    <div class="form-group"><label class="form-label">ROOM / FLOOR (optional)</label><input class="form-input" type="text" id="co-room" placeholder="e.g. Room 214"></div>
     <div class="form-group"><label class="form-label">WHATSAPP NUMBER</label><input class="form-input" type="tel" id="co-phone" placeholder="+27 82 000 0000"></div>
     <div class="section-label" style="margin-top:4px;margin-bottom:10px;">DELIVERY TIME</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
@@ -806,20 +845,21 @@ select.form-input option{background:var(--surface);}
 <!-- ===================== ACCOUNT ===================== -->
 <div id="auth-screen" class="screen">
   <div class="account-wrap">
-    <div class="account-logo"><div class="logo-dot"></div><span class="logo-name">UNIBITES</span></div>
+    <div class="account-logo"><div class="logo-dot"></div><span class="logo-name">UNIBITE</span></div>
     <div class="account-card">
       <div class="account-avatar">🎓</div>
       <div class="account-name" id="user-display-name">Student</div>
       <div class="account-email" id="user-display-email"></div>
     </div>
-    <button class="btn btn-ghost" onclick="signOut()" style="margin-top:8px;">Sign Out</button>
+    <button class="btn btn-ghost" onclick="doChangePassword()" style="margin-top:8px;margin-bottom:8px;">Change Password</button>
+    <button class="btn btn-ghost" onclick="signOut()">Sign Out</button>
   </div>
 </div>
 
 <!-- ===================== ADMIN PANEL ===================== -->
 <div id="admin-screen">
   <div class="admin-bar">
-    <div class="admin-bar-left"><div class="admin-logo-dot"></div><span class="admin-logo-text">UNIBITES</span><span class="admin-badge">ADMIN</span></div>
+    <div class="admin-bar-left"><div class="admin-logo-dot"></div><span class="admin-logo-text">UNIBITE</span><span class="admin-badge">ADMIN</span></div>
     <div class="admin-bar-right"><span class="admin-user-email" id="admin-user-email"></span><button class="admin-signout" onclick="signOut()">Sign out</button></div>
   </div>
   <div class="admin-tab-bar">
@@ -856,7 +896,7 @@ select.form-input option{background:var(--surface);}
 <!-- ===================== ADMIN GATE MODAL ===================== -->
 <div id="admin-gate-modal">
   <div class="agm-card">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;"><div class="logo-dot"></div><span class="logo-name" style="font-size:17px;">UNIBITES</span><span class="admin-badge" style="margin-left:2px;">ADMIN</span></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;"><div class="logo-dot"></div><span class="logo-name" style="font-size:17px;">UNIBITE</span><span class="admin-badge" style="margin-left:2px;">ADMIN</span></div>
     <div class="agm-title">Admin Access</div>
     <div class="agm-sub">Restricted to authorised administrators only.</div>
     <div class="agm-err" id="admin-gate-error"></div>
@@ -917,7 +957,7 @@ select.form-input option{background:var(--surface);}
 
 <script>
 /* ============================================================
- * UNIBITES — Firebase-powered UCT campus snack shop
+ * UNIBITE — Firebase-powered UCT campus snack shop
  * ============================================================ */
 
 const firebaseConfig={
@@ -943,7 +983,6 @@ const APP={
   activeOrderUnsub:null,
 };
 
-/* ── UPDATED DELIVERY VENUES ─────────────────────────────── */
 const RESIDENCES={
   upper:['UCR','Fuller Hall','Hlanganani','Leslie Social','Chris Hani','Oppenheimer Library','Sarah Baartman Stairs'],
   middle:['School of Economics','Kramer Library','Woolsack'],
@@ -952,7 +991,18 @@ const RESIDENCES={
 function esc(str){if(str===null||str===undefined)return '';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');}
 
 function friendlyAuthError(code){
-  const msgs={'auth/user-not-found':'No account found with this email.','auth/wrong-password':'Incorrect password.','auth/invalid-credential':'Incorrect email or password.','auth/email-already-in-use':'An account already exists with this email.','auth/weak-password':'Password must be at least 6 characters.','auth/invalid-email':'Please enter a valid email address.','auth/too-many-requests':'Too many attempts — please wait a few minutes.','auth/network-request-failed':'Network error — check your connection.','auth/invalid-action-code':'This sign-in link is invalid or already used.','auth/expired-action-code':'This sign-in link has expired. Request a new one.','auth/missing-email':'Please enter your email address.'};
+  const msgs={
+    'auth/user-not-found':'No account found with this email.',
+    'auth/wrong-password':'Incorrect password. Please try again.',
+    'auth/invalid-credential':'Incorrect email or password.',
+    'auth/email-already-in-use':'An account already exists with this email.',
+    'auth/weak-password':'Password must be at least 6 characters.',
+    'auth/invalid-email':'Please enter a valid email address.',
+    'auth/too-many-requests':'Too many attempts — please wait a few minutes.',
+    'auth/network-request-failed':'Network error — check your connection.',
+    'auth/requires-recent-login':'Please sign out and sign in again to do this.',
+    'auth/missing-password':'Please enter your password.',
+  };
   return msgs[code]||'Something went wrong. Please try again.';
 }
 
@@ -966,49 +1016,109 @@ function toggleTheme(){
 }
 (function(){try{const t=localStorage.getItem('ub_theme');if(t==='light'){isLightMode=true;document.body.classList.add('light-mode');}}catch(_){}})();
 
-/* ── RATE LIMITING ────────────────────────────────────────── */
-const LINK_MAX=3;
-const LINK_WINDOW_MS=24*60*60*1000;
-const SEND_COOLDOWN_MS=60*1000;
+/* ── AUTH WALL — EMAIL + PASSWORD ────────────────────────── */
+let currentAuthTab='signin';
 
-function linkUsageKey(e){return 'ub_lu_'+btoa(e.toLowerCase()).replace(/[^a-zA-Z0-9]/g,'');}
-function sendCooldownKey(){return 'ub_send_cd';}
-function getLinkUsage(email){try{const raw=localStorage.getItem(linkUsageKey(email));if(!raw)return{count:0,windowStart:Date.now()};const d=JSON.parse(raw);if(Date.now()-d.windowStart>=LINK_WINDOW_MS)return{count:0,windowStart:Date.now()};return d;}catch(_){return{count:0,windowStart:Date.now()};}}
-function setLinkUsage(email,d){try{localStorage.setItem(linkUsageKey(email),JSON.stringify(d));}catch(_){}}
-function incrementLinkUsage(email){const d=getLinkUsage(email),now=Date.now();const isNew=now-d.windowStart>=LINK_WINDOW_MS;const next={count:isNew?1:d.count+1,windowStart:isNew?now:d.windowStart};setLinkUsage(email,next);return next;}
-function linkWindowResetMs(email){const d=getLinkUsage(email);return Math.max(0,LINK_WINDOW_MS-(Date.now()-d.windowStart));}
-function getLastSentMs(){try{return parseInt(localStorage.getItem(sendCooldownKey())||'0',10);}catch(_){return 0;}}
-function setLastSentMs(){try{localStorage.setItem(sendCooldownKey(),String(Date.now()));}catch(_){}}
-function sendCooldownRemaining(){return Math.max(0,SEND_COOLDOWN_MS-(Date.now()-getLastSentMs()));}
-function formatCountdown(ms){const s=Math.ceil(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;if(h>0)return h+'h '+m+'m';if(m>0)return m+'m '+sec+'s';return sec+'s';}
-
-let limitTimerInterval=null;
-function startLimitTimer(email){const el=document.getElementById('wall-limit-timer');if(!el)return;if(limitTimerInterval)clearInterval(limitTimerInterval);const tick=()=>{const ms=linkWindowResetMs(email);if(ms<=0){clearInterval(limitTimerInterval);limitTimerInterval=null;wallResetForm();return;}el.textContent='You can try again in '+formatCountdown(ms)+'.';};tick();limitTimerInterval=setInterval(tick,1000);}
-
-/* ── AUTH WALL ────────────────────────────────────────────── */
-const WALL_EMAIL_KEY='ub_emailForSignIn';
-function showWallError(msg){const el=document.getElementById('wall-err');el.textContent=msg;el.classList.add('show');}
-function hideWallError(){document.getElementById('wall-err').classList.remove('show');}
-function wallSendLink(){
-  const emailInput=document.getElementById('wall-email'),email=emailInput.value.trim();
-  hideWallError();
-  if(!email||!emailInput.checkValidity()){showWallError('Please enter a valid email address.');return;}
-  const usage=getLinkUsage(email);
-  if(usage.count>=LINK_MAX){wallShowState('wall-link-limit');startLimitTimer(email);return;}
-  const cooldown=sendCooldownRemaining();
-  if(cooldown>0){showWallError('Please wait '+formatCountdown(cooldown)+' before requesting another link.');return;}
-  const btn=document.getElementById('wall-action-btn');
-  btn.disabled=true;btn.textContent='Sending…';
-  auth.sendSignInLinkToEmail(email,{url:window.location.href.split('#')[0].split('?')[0],handleCodeInApp:true})
-  .then(()=>{setLastSentMs();localStorage.setItem(WALL_EMAIL_KEY,email);const updated=incrementLinkUsage(email);const remaining=LINK_MAX-updated.count;document.getElementById('wall-sent-email').textContent=email;const usesEl=document.getElementById('wall-link-uses-left');if(remaining>0){usesEl.textContent=remaining+' sign-in link'+(remaining===1?'':'s')+' remaining in the next 24 hours.';usesEl.style.color='';}else{usesEl.textContent='This was your last sign-in link for the next 24 hours.';usesEl.style.color='var(--candy-yellow)';}wallShowState('wall-sent');})
-  .catch(err=>{showWallError(friendlyAuthError(err.code));})
-  .finally(()=>{btn.disabled=false;btn.textContent='Email Me a Sign-In Link';});
+function switchAuthTab(tab){
+  currentAuthTab=tab;
+  document.getElementById('tab-signin').classList.toggle('active',tab==='signin');
+  document.getElementById('tab-signup').classList.toggle('active',tab==='signup');
+  document.getElementById('signin-form').style.display=tab==='signin'?'block':'none';
+  document.getElementById('signup-form').style.display=tab==='signup'?'block':'none';
+  clearWallMessages();
 }
-function wallResetForm(){if(limitTimerInterval){clearInterval(limitTimerInterval);limitTimerInterval=null;}wallShowState('wall-form-state');document.getElementById('wall-email').value='';hideWallError();}
-function wallShowState(id){['wall-completing','wall-confirm-email','wall-sent','wall-link-limit','wall-form-state'].forEach(s=>{document.getElementById(s).style.display=s===id?'block':'none';});}
-function wallConfirmEmail(){const input=document.getElementById('wall-confirm-email-input'),errEl=document.getElementById('wall-confirm-err'),btn=document.getElementById('wall-confirm-btn'),email=input.value.trim();errEl.classList.remove('show');if(!email||!input.checkValidity()){errEl.textContent='Please enter a valid email address.';errEl.classList.add('show');return;}btn.disabled=true;btn.textContent='Signing in…';const cleanUrl=()=>window.history.replaceState({},document.title,window.location.pathname);auth.signInWithEmailLink(email,window.location.href).then(()=>{localStorage.removeItem(WALL_EMAIL_KEY);cleanUrl();}).catch(err=>{errEl.textContent=friendlyAuthError(err.code);errEl.classList.add('show');btn.disabled=false;btn.textContent='Complete Sign-In';cleanUrl();});}
-function completeEmailLinkSignIn(){if(!auth.isSignInWithEmailLink(window.location.href))return;wallShowState('wall-completing');const email=localStorage.getItem(WALL_EMAIL_KEY);const cleanUrl=()=>window.history.replaceState({},document.title,window.location.pathname);if(!email){wallShowState('wall-confirm-email');return;}auth.signInWithEmailLink(email,window.location.href).then(()=>{localStorage.removeItem(WALL_EMAIL_KEY);cleanUrl();}).catch(err=>{wallShowState('wall-form-state');showWallError(friendlyAuthError(err.code));cleanUrl();});}
-completeEmailLinkSignIn();
+
+function showWallError(msg){
+  const el=document.getElementById('wall-err');
+  el.textContent=msg;el.classList.add('show');
+  document.getElementById('wall-success').classList.remove('show');
+}
+function showWallSuccess(msg){
+  const el=document.getElementById('wall-success');
+  el.textContent=msg;el.classList.add('show');
+  document.getElementById('wall-err').classList.remove('show');
+}
+function clearWallMessages(){
+  document.getElementById('wall-err').classList.remove('show');
+  document.getElementById('wall-success').classList.remove('show');
+}
+
+function togglePw(inputId,btn){
+  const inp=document.getElementById(inputId);
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁';}
+}
+
+function checkPwStrength(val){
+  const bar=document.getElementById('pw-strength-bar');
+  const hint=document.getElementById('pw-hint');
+  if(!val){bar.style.width='0%';hint.textContent='Enter a password';return;}
+  let score=0;
+  if(val.length>=6)score++;
+  if(val.length>=10)score++;
+  if(/[A-Z]/.test(val))score++;
+  if(/[0-9]/.test(val))score++;
+  if(/[^A-Za-z0-9]/.test(val))score++;
+  const levels=[
+    {pct:'20%',bg:'var(--red)',text:'Too short'},
+    {pct:'40%',bg:'#F97316',text:'Weak'},
+    {pct:'60%',bg:'var(--candy-yellow)',text:'Fair'},
+    {pct:'80%',bg:'#84CC16',text:'Good'},
+    {pct:'100%',bg:'var(--candy-mint)',text:'Strong'},
+  ];
+  const lvl=levels[Math.min(score,4)];
+  bar.style.width=lvl.pct;
+  bar.style.background=lvl.bg;
+  hint.textContent=lvl.text;
+}
+
+function doSignIn(){
+  clearWallMessages();
+  const email=document.getElementById('signin-email').value.trim();
+  const password=document.getElementById('signin-password').value;
+  if(!email||!password){showWallError('Please enter your email and password.');return;}
+  const btn=document.getElementById('signin-btn');
+  btn.disabled=true;btn.textContent='Signing in…';
+  auth.signInWithEmailAndPassword(email,password)
+    .catch(err=>showWallError(friendlyAuthError(err.code)))
+    .finally(()=>{btn.disabled=false;btn.textContent='Sign In →';});
+}
+
+function doSignUp(){
+  clearWallMessages();
+  const name=document.getElementById('signup-name').value.trim();
+  const email=document.getElementById('signup-email').value.trim();
+  const password=document.getElementById('signup-password').value;
+  const confirm=document.getElementById('signup-confirm').value;
+  if(!name){showWallError('Please enter your name.');return;}
+  if(!email){showWallError('Please enter your email.');return;}
+  if(!password||password.length<6){showWallError('Password must be at least 6 characters.');return;}
+  if(password!==confirm){showWallError('Passwords do not match.');return;}
+  const btn=document.getElementById('signup-btn');
+  btn.disabled=true;btn.textContent='Creating account…';
+  auth.createUserWithEmailAndPassword(email,password)
+    .then(cred=>cred.user.updateProfile({displayName:name}))
+    .catch(err=>showWallError(friendlyAuthError(err.code)))
+    .finally(()=>{btn.disabled=false;btn.textContent='Create Account →';});
+}
+
+function doForgotPassword(){
+  clearWallMessages();
+  const email=document.getElementById('signin-email').value.trim();
+  if(!email){showWallError('Enter your email address above first.');return;}
+  auth.sendPasswordResetEmail(email)
+    .then(()=>showWallSuccess('Password reset email sent! Check your inbox.'))
+    .catch(err=>showWallError(friendlyAuthError(err.code)));
+}
+
+function doChangePassword(){
+  const newPw=prompt('Enter your new password (min. 6 characters):');
+  if(!newPw)return;
+  if(newPw.length<6){alert('Password must be at least 6 characters.');return;}
+  APP.user.updatePassword(newPw)
+    .then(()=>alert('✅ Password updated successfully!'))
+    .catch(err=>alert(friendlyAuthError(err.code)));
+}
 
 /* ── ADMIN GATE ───────────────────────────────────────────── */
 let adminGateOpen=false,logoTapCount=0,logoTapTimer=null;
@@ -1177,21 +1287,13 @@ function filterProducts(val){
 }
 
 /* ── CART LOGIC ───────────────────────────────────────────── */
-
-/* ── STOCK OVER-ORDER TOAST ───────────────────────────────── */
 let _stockToastTimer=null;
 function showStockToast(name,qty){
   let toast=document.getElementById('stock-toast');
-  if(!toast){
-    toast=document.createElement('div');
-    toast.id='stock-toast';
-    toast.style.cssText='position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1.5px solid var(--candy-yellow);border-radius:14px;padding:10px 18px;font-size:12px;font-weight:800;color:var(--candy-yellow);z-index:500;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.4);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:300px;';
-    document.body.appendChild(toast);
-  }
+  if(!toast){toast=document.createElement('div');toast.id='stock-toast';toast.style.cssText='position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1.5px solid var(--candy-yellow);border-radius:14px;padding:10px 18px;font-size:12px;font-weight:800;color:var(--candy-yellow);z-index:500;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.4);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:300px;';document.body.appendChild(toast);}
   clearTimeout(_stockToastTimer);
-  toast.textContent='\u26a0\ufe0f Only '+qty+' \u00d7 '+name+' available \u2014 can\'t add more!';
-  toast.style.opacity='1';
-  toast.style.transform='translateX(-50%) translateY(0)';
+  toast.textContent='⚠️ Only '+qty+' × '+name+' available — can\'t add more!';
+  toast.style.opacity='1';toast.style.transform='translateX(-50%) translateY(0)';
   _stockToastTimer=setTimeout(()=>{toast.style.opacity='0';toast.style.transform='translateX(-50%) translateY(8px)';},2800);
 }
 
@@ -1203,18 +1305,10 @@ function addToCart(productId){
   if(prod.stockQty===0)return;
   const ex=APP.cart.find(i=>i.id===productId);
   const currentInCart=ex?ex.qty:0;
-  // Guard: don't let the cart exceed available stock
   if(prod.stockQty!==undefined&&prod.stockQty!==null&&currentInCart>=prod.stockQty){
     const btn=document.getElementById('add-'+productId);
-    if(btn){
-      const orig=btn.textContent;
-      btn.textContent='Max';
-      btn.style.background='linear-gradient(135deg,var(--candy-yellow),#F59E0B)';
-      btn.style.color='#1A1A00';
-      setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.color='';},1200);
-    }
-    showStockToast(prod.name,prod.stockQty);
-    return;
+    if(btn){const orig=btn.textContent;btn.textContent='Max';btn.style.background='linear-gradient(135deg,var(--candy-yellow),#F59E0B)';btn.style.color='#1A1A00';setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.color='';},1200);}
+    showStockToast(prod.name,prod.stockQty);return;
   }
   if(ex)ex.qty++;else APP.cart.push({...prod,qty:1});
   updateCartBadge();saveCart();
@@ -1254,11 +1348,7 @@ function changeQty(idx,delta){
   const item=APP.cart[idx];
   const prod=APP.products.find(p=>p.id===item.id);
   const newQty=Math.max(1,item.qty+delta);
-  // Guard: don't exceed stock when incrementing
-  if(delta>0&&prod&&prod.stockQty!==undefined&&prod.stockQty!==null&&newQty>prod.stockQty){
-    showStockToast(item.name,prod.stockQty);
-    return;
-  }
+  if(delta>0&&prod&&prod.stockQty!==undefined&&prod.stockQty!==null&&newQty>prod.stockQty){showStockToast(item.name,prod.stockQty);return;}
   item.qty=newQty;updateCartBadge();renderCart();saveCart();
 }
 
@@ -1301,12 +1391,11 @@ function placeOrder(){
   const{sub,discount,total}=getCartTotals();
   APP.lastOrder={items:APP.cart.map(i=>({...i})),total};
   const residence=document.getElementById('res-select')?.value||'';
-  const room=document.getElementById('co-room')?.value||'';
   const phone=document.getElementById('co-phone')?.value||'';
   db.collection('orders').add({
     orderNum:APP.orderNum,userId:APP.user?.uid||null,userEmail:APP.user?.email||'',userDisplayName:APP.user?.displayName||'',
     items:APP.cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty,emoji:i.emoji||'',imageUrl:i.imageUrl||''})),
-    subtotal:sub,delivery:0,discount,total,campus:APP.currentCampus,residence,room,phone,
+    subtotal:sub,delivery:0,discount,total,campus:APP.currentCampus,residence,phone,
     status:'pending',
     createdAt:firebase.firestore.FieldValue.serverTimestamp(),
   }).then(ref=>{
@@ -1457,7 +1546,7 @@ function renderAdminOrders(){
         <div class="ocs-left">
           <div class="ocs-num">${esc(o.orderNum||'—')}</div>
           <div class="ocs-emoji-strip">${emojiPills}${extraPill}</div>
-          <div class="ocs-meta">${campusLabel}${o.residence?' · '+esc(o.residence):''}${o.room?' · Rm '+esc(o.room):''} · ${timeStr}</div>
+          <div class="ocs-meta">${campusLabel}${o.residence?' · '+esc(o.residence):''} · ${timeStr}</div>
         </div>
         <div class="ocs-right">
           <span class="order-status-badge ${ORDER_STATUS_CSS[o.status]||''}">${ORDER_STATUS_LABELS[o.status]||esc(o.status)}</span>
@@ -1467,7 +1556,7 @@ function renderAdminOrders(){
       </div>
       <div class="order-card-body">
         <div class="order-body-inner">
-          <div class="order-customer">👤 <b>${esc(o.userDisplayName||'Guest')}</b><br>${o.userEmail?`📧 ${esc(o.userEmail)}<br>`:''}${o.phone?`📱 ${esc(o.phone)}<br>`:''}${campusLabel}${o.residence?' · '+esc(o.residence):''}${o.room?' · Room '+esc(o.room):''}</div>
+          <div class="order-customer">👤 <b>${esc(o.userDisplayName||'Guest')}</b><br>${o.userEmail?`📧 ${esc(o.userEmail)}<br>`:''}${o.phone?`📱 ${esc(o.phone)}<br>`:''}${campusLabel}${o.residence?' · '+esc(o.residence):''}</div>
           <div class="order-items-list">${itemRows||'<div class="order-item-row"><span class="order-item-name" style="color:var(--muted)">No items</span></div>'}</div>
           <div class="order-totals-row"><span>Subtotal</span><span>R${esc(o.subtotal||o.total||0)}</span></div>
           ${o.discount?`<div class="order-totals-row"><span>Discount</span><span style="color:var(--candy-mint)">−R${esc(o.discount)}</span></div>`:''}
