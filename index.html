@@ -133,6 +133,13 @@ a{color:inherit;text-decoration:none;}
 .forgot-link{font-size:11px;color:var(--lav);background:none;border:none;cursor:pointer;font-family:var(--font);font-weight:700;display:block;text-align:right;margin-top:-8px;margin-bottom:14px;}
 .forgot-link:hover{text-decoration:underline;}
 
+/* ─── GOOGLE SIGN-IN BUTTON ──────────────────────────────── */
+.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:12px;font-size:13px;font-weight:800;font-family:var(--font);color:var(--text);cursor:pointer;box-shadow:0 3px 0 var(--dim);transition:transform .1s,box-shadow .1s,background .15s;margin-bottom:4px;}
+.google-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--dim);}
+.google-btn:hover{background:var(--s2);}
+.google-btn:disabled{opacity:.6;cursor:not-allowed;}
+.google-btn svg{flex-shrink:0;}
+
 /* ─── ADMIN GATE MODAL ───────────────────────────────────── */
 #admin-gate-modal{position:fixed;inset:0;z-index:9000;background:rgba(10,10,18,.94);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:20px;}
 #admin-gate-modal.show{display:flex;}
@@ -256,7 +263,8 @@ select.form-input option{background:var(--surface);}
 .account-wrap{padding:32px 20px 20px;}
 .account-logo{display:flex;align-items:center;gap:8px;margin-bottom:28px;}
 .account-card{background:var(--surface);border:1.5px solid var(--border);border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 4px 0 var(--dim);}
-.account-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--lav-dim),var(--candy-pink));display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px;box-shadow:0 4px 0 #5B21B6;}
+.account-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--lav-dim),var(--candy-pink));display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px;box-shadow:0 4px 0 #5B21B6;overflow:hidden;}
+.account-avatar img{width:100%;height:100%;object-fit:cover;}
 .account-name{font-size:17px;font-weight:800;margin-bottom:4px;}
 .account-email{font-size:12px;color:var(--muted);}
 
@@ -594,15 +602,23 @@ select.form-input option{background:var(--surface);}
     <div class="aw-logo"><div class="aw-logo-dot"></div><span class="aw-logo-name">UNIBITE</span></div>
     <p class="aw-tagline">UCT's campus snack shop 🎓<br>Sign in to order snacks delivered to your res.</p>
     <div class="aw-card">
+      <!-- Error / Success -->
+      <div class="aw-err" id="wall-err"></div>
+      <div class="aw-success" id="wall-success"></div>
+
+      <!-- Google Sign-In -->
+      <button class="google-btn" id="google-btn" onclick="doGoogleSignIn()" type="button">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.84 2.09-1.8 2.73v2.27h2.91c1.7-1.57 2.69-3.88 2.69-6.64z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.81 5.96-2.18l-2.91-2.27c-.81.54-1.84.86-3.05.86-2.34 0-4.33-1.58-5.04-3.71H.96v2.34C2.44 15.98 5.48 18 9 18z"/><path fill="#FBBC05" d="M3.96 10.7c-.18-.54-.28-1.11-.28-1.7s.1-1.16.28-1.7V4.96H.96A8.997 8.997 0 0 0 0 9c0 1.45.35 2.83.96 4.04l3-2.34z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l3 2.34C4.67 5.16 6.66 3.58 9 3.58z"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="aw-divider">OR USE EMAIL</div>
+
       <!-- Tabs -->
       <div class="auth-tabs">
         <button class="auth-tab active" id="tab-signin" onclick="switchAuthTab('signin')">Sign In</button>
         <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create Account</button>
       </div>
-
-      <!-- Error / Success -->
-      <div class="aw-err" id="wall-err"></div>
-      <div class="aw-success" id="wall-success"></div>
 
       <!-- Sign In Form -->
       <div id="signin-form">
@@ -847,11 +863,11 @@ select.form-input option{background:var(--surface);}
   <div class="account-wrap">
     <div class="account-logo"><div class="logo-dot"></div><span class="logo-name">UNIBITE</span></div>
     <div class="account-card">
-      <div class="account-avatar">🎓</div>
+      <div class="account-avatar" id="user-avatar-wrap">🎓</div>
       <div class="account-name" id="user-display-name">Student</div>
       <div class="account-email" id="user-display-email"></div>
     </div>
-    <button class="btn btn-ghost" onclick="doChangePassword()" style="margin-top:8px;margin-bottom:8px;">Change Password</button>
+    <button class="btn btn-ghost" id="change-pw-btn" onclick="doChangePassword()" style="margin-top:8px;margin-bottom:8px;">Change Password</button>
     <button class="btn btn-ghost" onclick="signOut()">Sign Out</button>
   </div>
 </div>
@@ -971,6 +987,8 @@ const firebaseConfig={
 const ADMIN_EMAIL='k.duplex16@gmail.com';
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore(),auth=firebase.auth(),storage=firebase.storage();
+const googleProvider=new firebase.auth.GoogleAuthProvider();
+googleProvider.setCustomParameters({prompt:'select_account'});
 
 const APP={
   user:null,isAdmin:false,
@@ -1002,6 +1020,11 @@ function friendlyAuthError(code){
     'auth/network-request-failed':'Network error — check your connection.',
     'auth/requires-recent-login':'Please sign out and sign in again to do this.',
     'auth/missing-password':'Please enter your password.',
+    'auth/popup-closed-by-user':'Sign-in popup was closed before completing.',
+    'auth/popup-blocked':'Popup was blocked by your browser. Please allow popups and try again.',
+    'auth/cancelled-popup-request':'Sign-in was cancelled.',
+    'auth/account-exists-with-different-credential':'An account already exists with this email using a different sign-in method. Try signing in with email/password instead.',
+    'auth/unauthorized-domain':'This domain is not authorised for Google sign-in yet.',
   };
   return msgs[code]||'Something went wrong. Please try again.';
 }
@@ -1072,6 +1095,24 @@ function checkPwStrength(val){
   hint.textContent=lvl.text;
 }
 
+/* ── GOOGLE SIGN-IN ───────────────────────────────────────── */
+function doGoogleSignIn(){
+  clearWallMessages();
+  const btn=document.getElementById('google-btn');
+  btn.disabled=true;
+  const originalHTML=btn.innerHTML;
+  btn.innerHTML='Signing in…';
+  auth.signInWithPopup(googleProvider)
+    .catch(err=>{
+      console.error('Google sign-in error:',err.code,err.message);
+      showWallError(friendlyAuthError(err.code));
+    })
+    .finally(()=>{
+      btn.disabled=false;
+      btn.innerHTML=originalHTML;
+    });
+}
+
 function doSignIn(){
   clearWallMessages();
   const email=document.getElementById('signin-email').value.trim();
@@ -1094,12 +1135,36 @@ function doSignUp(){
   if(!email){showWallError('Please enter your email.');return;}
   if(!password||password.length<6){showWallError('Password must be at least 6 characters.');return;}
   if(password!==confirm){showWallError('Passwords do not match.');return;}
+
   const btn=document.getElementById('signup-btn');
-  btn.disabled=true;btn.textContent='Creating account…';
-  auth.createUserWithEmailAndPassword(email,password)
-    .then(cred=>cred.user.updateProfile({displayName:name}))
-    .catch(err=>showWallError(friendlyAuthError(err.code)))
-    .finally(()=>{btn.disabled=false;btn.textContent='Create Account →';});
+  btn.disabled=true;btn.textContent='Checking email…';
+
+  // Pre-check: does this email already have an account (with any provider)?
+  auth.fetchSignInMethodsForEmail(email).then(methods=>{
+    if(methods && methods.length>0){
+      const usesGoogle=methods.includes('google.com');
+      showWallError(usesGoogle
+        ? 'An account already exists with this email via Google. Use "Continue with Google" instead.'
+        : 'An account already exists with this email. Try signing in instead.');
+      btn.disabled=false;btn.textContent='Create Account →';
+      switchAuthTab('signin');
+      document.getElementById('signin-email').value=email;
+      return;
+    }
+    btn.textContent='Creating account…';
+    return auth.createUserWithEmailAndPassword(email,password)
+      .then(cred=>cred.user.updateProfile({displayName:name}))
+      .catch(err=>showWallError(friendlyAuthError(err.code)))
+      .finally(()=>{btn.disabled=false;btn.textContent='Create Account →';});
+  }).catch(err=>{
+    // If enumeration protection blocks fetchSignInMethodsForEmail, fall back to direct creation;
+    // Firebase's own auth/email-already-in-use check will still catch duplicates.
+    btn.textContent='Creating account…';
+    auth.createUserWithEmailAndPassword(email,password)
+      .then(cred=>cred.user.updateProfile({displayName:name}))
+      .catch(err2=>showWallError(friendlyAuthError(err2.code)))
+      .finally(()=>{btn.disabled=false;btn.textContent='Create Account →';});
+  });
 }
 
 function doForgotPassword(){
@@ -1112,6 +1177,10 @@ function doForgotPassword(){
 }
 
 function doChangePassword(){
+  if(APP.user&&APP.user.providerData&&APP.user.providerData.some(p=>p.providerId==='google.com')&&!APP.user.providerData.some(p=>p.providerId==='password')){
+    alert('You signed in with Google, so there\'s no password to change here. Manage your password through your Google Account.');
+    return;
+  }
   const newPw=prompt('Enter your new password (min. 6 characters):');
   if(!newPw)return;
   if(newPw.length<6){alert('Password must be at least 6 characters.');return;}
@@ -1150,6 +1219,11 @@ auth.onAuthStateChanged(user=>{
     document.getElementById('user-display-email').textContent=user.email;
     document.getElementById('admin-user-email').textContent=user.email;
     document.getElementById('theme-toggle').textContent=isLightMode?'🌙':'☀️';
+    const avatarWrap=document.getElementById('user-avatar-wrap');
+    if(avatarWrap){avatarWrap.innerHTML=user.photoURL?`<img src="${esc(user.photoURL)}" alt="${esc(user.displayName||'')}">`:'🎓';}
+    const isGoogleOnly=user.providerData&&user.providerData.length&&user.providerData.every(p=>p.providerId==='google.com');
+    const changePwBtn=document.getElementById('change-pw-btn');
+    if(changePwBtn)changePwBtn.style.display=isGoogleOnly?'none':'block';
     if(adminGateOpen){if(APP.isAdmin){closeAdminGate();navigate('admin');}else{showGateError('⛔ This account does not have admin access.');document.getElementById('admin-gate-submit').disabled=false;document.getElementById('admin-gate-submit').textContent='Sign In to Admin';}}
     startProductListener();
     startCartListener(user.uid);
