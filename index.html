@@ -297,11 +297,6 @@ select.form-input option{background:var(--surface);}
 .cart-item-price{font-size:13px;font-weight:800;min-width:40px;text-align:right;color:var(--lav);}
 .remove-btn{background:none;border:none;color:var(--dim);cursor:pointer;padding:4px;font-size:15px;}
 .remove-btn:hover{color:var(--red);}
-.promo-row{display:flex;gap:8px;padding:12px 16px;}
-.promo-input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;font-size:12px;font-family:var(--font);color:var(--text);outline:none;}
-.promo-input::placeholder{color:var(--dim);}
-.promo-apply{background:var(--s2);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;font-size:12px;font-weight:800;font-family:var(--font);color:var(--text);cursor:pointer;box-shadow:0 3px 0 var(--dim);}
-.promo-ok{font-size:11px;color:var(--candy-mint);padding:0 16px 8px;display:none;font-weight:700;}
 .summary-box{margin:4px 16px 16px;background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:14px;box-shadow:0 4px 0 var(--dim);}
 .sum-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:10px;color:#aaa;}
 .sum-row:last-child{margin-bottom:0;}
@@ -744,15 +739,9 @@ select.form-input option{background:var(--surface);}
   </div>
   <div id="cart-items-list"></div>
   <div id="cart-full" style="display:none;">
-    <div class="promo-row">
-      <input class="promo-input" id="promo-input" type="text" placeholder="Promo code (try: UCT10)">
-      <button class="promo-apply" onclick="applyPromo()">Apply</button>
-    </div>
-    <div class="promo-ok" id="promo-ok">✅ Code applied — 10% off!</div>
     <div class="summary-box">
       <div class="sum-row"><span>Subtotal</span><span id="sum-sub">R0</span></div>
       <div class="sum-row"><span>Delivery</span><span><span class="free-tag">FREE</span></span></div>
-      <div class="sum-row" id="sum-disc-row" style="display:none;"><span>Discount (10%)</span><span id="sum-disc">-R0</span></div>
       <div class="sum-row total"><span>Total</span><span id="sum-total">R0</span></div>
     </div>
     <div class="cart-actions">
@@ -780,6 +769,7 @@ select.form-input option{background:var(--surface);}
       <div class="campus-opt selected" id="time-asap" onclick="setTime('asap')"><span class="campus-opt-icon">⚡</span><div class="campus-opt-name">ASAP</div><div class="campus-opt-sub">Est. 25–40 min</div></div>
       <div class="campus-opt" id="time-sched" onclick="setTime('sched')"><span class="campus-opt-icon">🗓️</span><div class="campus-opt-name">Schedule</div><div class="campus-opt-sub">Pick a time slot</div></div>
     </div>
+    <div class="form-group" id="sched-time-group" style="display:none;"><label class="form-label">DELIVERY TIME</label><input class="form-input" type="time" id="co-sched-time"></div>
     <div class="section-label" style="margin-bottom:10px;">PAYMENT METHOD</div>
     <div class="pay-opts">
       <div class="pay-opt selected" onclick="selectPay(this)"><div class="pay-icon">💳</div><div class="pay-info"><div class="pay-name">Card</div><div class="pay-sub">Card on delivery</div></div><div class="pay-radio"><div class="pay-radio-dot"></div></div></div>
@@ -789,10 +779,10 @@ select.form-input option{background:var(--surface);}
     <div class="compact-sum">
       <div class="compact-row"><span id="co-items">0 items</span><span id="co-sub">R0</span></div>
       <div class="compact-row"><span>Delivery</span><span style="color:var(--candy-mint);font-weight:800;">FREE</span></div>
-      <div class="compact-row" id="co-disc-row" style="display:none;"><span>Discount</span><span id="co-disc">-R0</span></div>
       <div class="compact-row total"><span>Total</span><span id="co-total">R0</span></div>
     </div>
-    <button class="btn btn-primary" onclick="placeOrder()">Place order →</button>
+    <div id="checkout-error" style="font-size:12px;color:var(--red);margin-bottom:12px;display:none;line-height:1.5;"></div>
+    <button class="btn btn-primary" id="place-order-btn" onclick="placeOrder()">Place order →</button>
     <button class="btn btn-ghost" onclick="navigate('cart')" style="margin-top:8px;">Edit bag</button>
   </div>
 </div>
@@ -993,9 +983,9 @@ googleProvider.setCustomParameters({prompt:'select_account'});
 const APP={
   user:null,isAdmin:false,
   products:[],orders:[],
-  cart:[],promoApplied:false,lastOrder:null,
+  cart:[],lastOrder:null,
   currentFilter:'all',currentCampus:'upper',
-  orderNum:null,etaTime:null,
+  orderNum:null,etaTime:null,deliveryTimeMode:'asap',
   pendingImageUrl:null,
   activeOrderId:null,
   activeOrderUnsub:null,
@@ -1273,17 +1263,16 @@ function startCartListener(uid){
   cartUnsub=db.collection('carts').doc(uid).onSnapshot(doc=>{
     const data=doc.exists?doc.data():null;
     APP.cart=(data&&Array.isArray(data.items))?data.items:[];
-    APP.promoApplied=!!(data&&data.promoApplied);
     updateCartBadge();
     if(currentScreen==='cart')renderCart();
     if(currentScreen==='checkout')renderCheckoutSummary();
-  },err=>{if(err.code==='permission-denied'){APP.cart=[];APP.promoApplied=false;updateCartBadge();}});
+  },err=>{if(err.code==='permission-denied'){APP.cart=[];updateCartBadge();}});
 }
-function stopCartListener(){if(cartUnsub)cartUnsub();cartUnsub=null;cartListenerUid=null;APP.cart=[];APP.promoApplied=false;updateCartBadge();}
+function stopCartListener(){if(cartUnsub)cartUnsub();cartUnsub=null;cartListenerUid=null;APP.cart=[];updateCartBadge();}
 function saveCart(){
   if(!APP.user)return Promise.resolve();
   const items=APP.cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty,emoji:i.emoji||'',imageUrl:i.imageUrl||'',brand:i.brand||''}));
-  return db.collection('carts').doc(APP.user.uid).set({items,promoApplied:APP.promoApplied,userId:APP.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(err=>console.error('Cart save failed:',err.code));
+  return db.collection('carts').doc(APP.user.uid).set({items,userId:APP.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(err=>console.error('Cart save failed:',err.code));
 }
 
 /* ── ACTIVE ORDER LISTENER ────────────────────────────────── */
@@ -1390,7 +1379,7 @@ function addToCart(productId){
   if(btn){btn.textContent='✓';btn.classList.add('added-flash');setTimeout(()=>{btn.textContent='+';btn.classList.remove('added-flash');},700);}
 }
 
-function getCartTotals(){const sub=APP.cart.reduce((a,i)=>a+i.price*i.qty,0);const discount=APP.promoApplied?Math.round(sub*0.1):0;return{sub,delivery:0,discount,total:sub-discount};}
+function getCartTotals(){const sub=APP.cart.reduce((a,i)=>a+i.price*i.qty,0);return{sub,delivery:0,total:sub};}
 
 function renderCart(){
   const list=document.getElementById('cart-items-list'),empty=document.getElementById('cart-empty'),full=document.getElementById('cart-full');
@@ -1411,10 +1400,8 @@ function renderCart(){
 }
 
 function updateCartSummary(){
-  const{sub,discount,total}=getCartTotals();
+  const{sub,total}=getCartTotals();
   document.getElementById('sum-sub').textContent='R'+sub;
-  document.getElementById('sum-disc-row').style.display=APP.promoApplied?'flex':'none';
-  if(APP.promoApplied)document.getElementById('sum-disc').textContent='-R'+discount;
   document.getElementById('sum-total').textContent='R'+total;
 }
 
@@ -1428,17 +1415,6 @@ function changeQty(idx,delta){
 
 function removeFromCart(idx){APP.cart.splice(idx,1);updateCartBadge();renderCart();saveCart();}
 
-function applyPromo(){
-  const input=document.getElementById('promo-input'),btn=document.getElementById('promo-apply'),val=input.value.trim().toUpperCase();
-  if(!val)return;btn.disabled=true;btn.textContent='...';input.style.borderColor='';
-  db.collection('config').doc('promoCodes').get().then(doc=>{
-    const codes=(doc.exists&&Array.isArray(doc.data().codes))?doc.data().codes.map(c=>c.toUpperCase()):[];
-    const valid=codes.includes(val)||val.endsWith('.AC.ZA');
-    if(valid){APP.promoApplied=true;document.getElementById('promo-ok').style.display='block';input.style.borderColor='var(--candy-mint)';updateCartSummary();saveCart();}
-    else{input.style.borderColor='var(--red)';setTimeout(()=>{input.style.borderColor='';},1500);}
-  }).catch(()=>{input.style.borderColor='var(--red)';setTimeout(()=>{input.style.borderColor='';},1500);}).finally(()=>{btn.disabled=false;btn.textContent='Apply';});
-}
-
 /* ── CHECKOUT ─────────────────────────────────────────────── */
 function setCampus(campus){
   APP.currentCampus=campus;
@@ -1447,46 +1423,81 @@ function setCampus(campus){
   const sel=document.getElementById('res-select');
   sel.innerHTML='<option value="">Select a delivery venue</option>'+RESIDENCES[campus].map(r=>`<option>${r}</option>`).join('');
 }
-function setTime(t){document.getElementById('time-asap').classList.toggle('selected',t==='asap');document.getElementById('time-sched').classList.toggle('selected',t==='sched');}
+function setTime(t){document.getElementById('time-asap').classList.toggle('selected',t==='asap');document.getElementById('time-sched').classList.toggle('selected',t==='sched');document.getElementById('sched-time-group').style.display=t==='sched'?'block':'none';APP.deliveryTimeMode=t;}
 function selectPay(el){document.querySelectorAll('.pay-opt').forEach(e=>e.classList.remove('selected'));el.classList.add('selected');}
 function renderCheckoutSummary(){
-  const{sub,discount,total}=getCartTotals(),qty=APP.cart.reduce((a,i)=>a+i.qty,0);
+  const{sub,total}=getCartTotals(),qty=APP.cart.reduce((a,i)=>a+i.qty,0);
   document.getElementById('co-items').textContent=qty+' item'+(qty!==1?'s':'');
   document.getElementById('co-sub').textContent='R'+sub;
-  document.getElementById('co-disc-row').style.display=APP.promoApplied?'flex':'none';
-  if(APP.promoApplied)document.getElementById('co-disc').textContent='-R'+discount;
   document.getElementById('co-total').textContent='R'+total;
   setCampus('upper');
+  setTime('asap');
+  document.getElementById('checkout-error').style.display='none';
 }
 
+function showCheckoutError(msg){const el=document.getElementById('checkout-error');el.textContent=msg;el.style.display='block';}
+
 function placeOrder(){
-  const arr=new Uint32Array(1);crypto.getRandomValues(arr);
-  const n=(arr[0]%90000)+10000;APP.orderNum='#UNI-'+n;
-  const{sub,discount,total}=getCartTotals();
-  APP.lastOrder={items:APP.cart.map(i=>({...i})),total};
+  const errEl=document.getElementById('checkout-error');errEl.style.display='none';
+  if(!APP.user){showCheckoutError('Please sign in to place an order.');return;}
+  if(!APP.cart.length){showCheckoutError('Your bag is empty — add some snacks first.');return;}
   const residence=document.getElementById('res-select')?.value||'';
-  const phone=document.getElementById('co-phone')?.value||'';
-  db.collection('orders').add({
-    orderNum:APP.orderNum,userId:APP.user?.uid||null,userEmail:APP.user?.email||'',userDisplayName:APP.user?.displayName||'',
-    items:APP.cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty,emoji:i.emoji||'',imageUrl:i.imageUrl||''})),
-    subtotal:sub,delivery:0,discount,total,campus:APP.currentCampus,residence,phone,
+  if(!residence){showCheckoutError('Please select a delivery venue.');return;}
+  const phone=(document.getElementById('co-phone')?.value||'').trim();
+  if(!phone){showCheckoutError('Please enter your WhatsApp number.');return;}
+  if(phone.replace(/[^0-9]/g,'').length<9){showCheckoutError('Please enter a valid phone number.');return;}
+  let scheduledTime='';
+  if(APP.deliveryTimeMode==='sched'){
+    scheduledTime=document.getElementById('co-sched-time')?.value||'';
+    if(!scheduledTime){showCheckoutError('Please pick a delivery time, or switch to ASAP.');return;}
+  }
+  // Re-check stock against the latest known product data before submitting
+  for(const item of APP.cart){
+    const prod=APP.products.find(p=>p.id===item.id);
+    if(!prod||prod.inStock===false||prod.stockQty===0){showCheckoutError(`Sorry, "${item.name}" just went out of stock. Please remove it from your bag.`);return;}
+    if(prod.stockQty!==undefined&&prod.stockQty!==null&&item.qty>prod.stockQty){showCheckoutError(`Only ${prod.stockQty} × "${item.name}" left in stock. Please adjust your bag.`);return;}
+  }
+
+  const btn=document.getElementById('place-order-btn');
+  if(btn.disabled)return; // guard against double-submit
+  btn.disabled=true;btn.textContent='Placing order…';
+
+  const arr=new Uint32Array(1);crypto.getRandomValues(arr);
+  const n=(arr[0]%90000)+10000;const orderNum='#UNI-'+n;
+  const{sub,total}=getCartTotals();
+  const cartSnapshot=APP.cart.map(i=>({...i}));
+  const orderPayload={
+    orderNum,userId:APP.user.uid,userEmail:APP.user.email||'',userDisplayName:APP.user.displayName||'',
+    items:cartSnapshot.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty,emoji:i.emoji||'',imageUrl:i.imageUrl||''})),
+    subtotal:sub,delivery:0,total,campus:APP.currentCampus,residence,phone,
+    deliveryTimeMode:APP.deliveryTimeMode,scheduledTime,
     status:'pending',
     createdAt:firebase.firestore.FieldValue.serverTimestamp(),
-  }).then(ref=>{
-    APP.activeOrderId=ref.id;
-    if(APP.user)loadActiveOrder(APP.user.uid);
-    APP.cart.forEach(item=>{
+  };
+
+  db.collection('orders').add(orderPayload).then(ref=>{
+    // Order is confirmed saved — now decrement stock atomically and clear the cart.
+    cartSnapshot.forEach(item=>{
       const prod=APP.products.find(p=>p.id===item.id);
       if(prod&&prod.stockQty!==undefined&&prod.stockQty!==null){
-        const newQty=Math.max(0,prod.stockQty-item.qty);
-        db.collection('products').doc(item.id).update({stockQty:newQty}).catch(e=>console.warn('Stock update:',e));
+        db.collection('products').doc(item.id).update({stockQty:firebase.firestore.FieldValue.increment(-item.qty)})
+          .catch(e=>console.warn('Stock update:',e));
       }
     });
-  }).catch(err=>console.warn('Order save failed:',err.message));
-  APP.cart=[];APP.promoApplied=false;updateCartBadge();saveCart();
-  document.getElementById('confirm-order-num').textContent=APP.orderNum;
-  document.getElementById('confirm-eta').textContent='Admin will set your ETA shortly ⏳';
-  navigate('confirm');
+    APP.activeOrderId=ref.id;
+    APP.orderNum=orderNum;
+    APP.lastOrder={items:cartSnapshot,total};
+    if(APP.user)loadActiveOrder(APP.user.uid);
+    APP.cart=[];updateCartBadge();saveCart();
+    document.getElementById('confirm-order-num').textContent=orderNum;
+    document.getElementById('confirm-eta').textContent='Admin will set your ETA shortly ⏳';
+    btn.disabled=false;btn.textContent='Place order →';
+    navigate('confirm');
+  }).catch(err=>{
+    console.error('Order save failed:',err);
+    showCheckoutError('Something went wrong placing your order. Please check your connection and try again.');
+    btn.disabled=false;btn.textContent='Place order →';
+  });
 }
 
 /* ── TRACKING ─────────────────────────────────────────────── */
@@ -1630,10 +1641,9 @@ function renderAdminOrders(){
       </div>
       <div class="order-card-body">
         <div class="order-body-inner">
-          <div class="order-customer">👤 <b>${esc(o.userDisplayName||'Guest')}</b><br>${o.userEmail?`📧 ${esc(o.userEmail)}<br>`:''}${o.phone?`📱 ${esc(o.phone)}<br>`:''}${campusLabel}${o.residence?' · '+esc(o.residence):''}</div>
+          <div class="order-customer">👤 <b>${esc(o.userDisplayName||'Guest')}</b><br>${o.userEmail?`📧 ${esc(o.userEmail)}<br>`:''}${o.phone?`📱 ${esc(o.phone)}<br>`:''}${campusLabel}${o.residence?' · '+esc(o.residence):''}${o.deliveryTimeMode==='sched'&&o.scheduledTime?`<br>🗓️ Scheduled for ${esc(o.scheduledTime)}`:''}</div>
           <div class="order-items-list">${itemRows||'<div class="order-item-row"><span class="order-item-name" style="color:var(--muted)">No items</span></div>'}</div>
           <div class="order-totals-row"><span>Subtotal</span><span>R${esc(o.subtotal||o.total||0)}</span></div>
-          ${o.discount?`<div class="order-totals-row"><span>Discount</span><span style="color:var(--candy-mint)">−R${esc(o.discount)}</span></div>`:''}
           <div class="order-totals-row"><span>Delivery</span><span style="color:var(--candy-mint)">FREE</span></div>
           <hr class="order-divider">
           <div class="order-totals-row big"><span>Total</span><span style="color:var(--lav)">R${esc(o.total||0)}</span></div>
