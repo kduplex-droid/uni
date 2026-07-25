@@ -8,7 +8,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <style>
 /* ===================== TOKENS — Dark Mode ===================== */
 :root{
@@ -976,7 +975,7 @@ const firebaseConfig={
 };
 const ADMIN_EMAIL='k.duplex16@gmail.com';
 firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore(),auth=firebase.auth(),storage=firebase.storage();
+const db=firebase.firestore(),auth=firebase.auth();
 const googleProvider=new firebase.auth.GoogleAuthProvider();
 googleProvider.setCustomParameters({prompt:'select_account'});
 
@@ -1728,7 +1727,52 @@ function setAdminEta(orderId){const inp=document.getElementById('eta-inp-'+order
 function openDrawer(){document.getElementById('add-product-drawer').classList.add('open');document.getElementById('drawer-overlay').classList.add('show');APP.pendingImageUrl=null;document.getElementById('upload-preview').style.display='none';document.getElementById('upload-area').style.display='block';['p-name','p-brand','p-emoji'].forEach(id=>document.getElementById(id).value='');document.getElementById('p-category').value='';document.getElementById('p-price').value='';document.getElementById('p-stock').value='';document.getElementById('p-hot').checked=false;document.getElementById('drawer-error').style.display='none';document.getElementById('save-product-btn').disabled=false;document.getElementById('save-product-btn').textContent='Save Product';document.getElementById('upload-spinner').style.display='none';document.getElementById('upload-progress').style.display='none';}
 function closeDrawer(){document.getElementById('add-product-drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('show');}
 function handleFileSelect(input){const file=input.files[0];if(!file)return;if(file.size>5*1024*1024){alert('Image must be under 5MB');return;}const reader=new FileReader();reader.onload=e=>{const preview=document.getElementById('upload-preview');preview.src=e.target.result;preview.style.display='block';document.getElementById('upload-area').style.display='none';};reader.readAsDataURL(file);uploadImageToStorage(file);}
-function uploadImageToStorage(file){const spinner=document.getElementById('upload-spinner'),progressWrap=document.getElementById('upload-progress'),progressBar=document.getElementById('upload-progress-bar');spinner.style.display='block';progressWrap.style.display='block';spinner.textContent='⏳ Uploading image...';const ref=storage.ref('products/'+Date.now()+'_'+file.name),task=ref.put(file);task.on('state_changed',snap=>{progressBar.style.width=(snap.bytesTransferred/snap.totalBytes*100)+'%';},err=>{spinner.textContent='❌ Upload failed: '+err.message;APP.pendingImageUrl=null;},()=>{task.snapshot.ref.getDownloadURL().then(url=>{APP.pendingImageUrl=url;spinner.textContent='✅ Image ready';progressWrap.style.display='none';});});}
+const CLOUDINARY_CLOUD_NAME='dqrqdhxhy';
+const CLOUDINARY_UPLOAD_PRESET='unibite_products';
+
+function uploadImageToStorage(file){
+  const spinner=document.getElementById('upload-spinner'),progressWrap=document.getElementById('upload-progress'),progressBar=document.getElementById('upload-progress-bar');
+  spinner.style.display='block';progressWrap.style.display='block';spinner.textContent='⏳ Uploading image...';
+
+  const xhr=new XMLHttpRequest();
+  xhr.open('POST',`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`);
+
+  xhr.upload.onprogress=e=>{
+    if(e.lengthComputable){progressBar.style.width=(e.loaded/e.total*100)+'%';}
+  };
+
+  xhr.onload=()=>{
+    if(xhr.status>=200&&xhr.status<300){
+      try{
+        const data=JSON.parse(xhr.responseText);
+        if(!data.secure_url)throw new Error('No URL returned from Cloudinary');
+        APP.pendingImageUrl=data.secure_url;
+        spinner.textContent='✅ Image ready';
+        progressWrap.style.display='none';
+      }catch(err){
+        console.error('Cloudinary parse error:',err);
+        spinner.textContent='❌ Upload failed: bad response';
+        APP.pendingImageUrl=null;
+      }
+    }else{
+      console.error('Cloudinary upload failed:',xhr.status,xhr.responseText);
+      spinner.textContent='❌ Upload failed ('+xhr.status+')';
+      APP.pendingImageUrl=null;
+    }
+  };
+
+  xhr.onerror=()=>{
+    console.error('Cloudinary upload network error');
+    spinner.textContent='❌ Upload failed: network error';
+    APP.pendingImageUrl=null;
+  };
+
+  const formData=new FormData();
+  formData.append('file',file);
+  formData.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);
+  formData.append('folder','unibite_products');
+  xhr.send(formData);
+}
 function saveProduct(){const name=document.getElementById('p-name').value.trim(),category=document.getElementById('p-category').value,price=parseFloat(document.getElementById('p-price').value),stockQty=parseInt(document.getElementById('p-stock').value,10);const errEl=document.getElementById('drawer-error');if(!name||!category||!price||price<1||isNaN(stockQty)||stockQty<0){errEl.textContent='Please fill in Name, Category, Price, and Stock Qty.';errEl.style.display='block';return;}const btn=document.getElementById('save-product-btn');btn.disabled=true;btn.textContent='Saving…';db.collection('products').add({name,category,price,brand:document.getElementById('p-brand').value.trim()||'',emoji:document.getElementById('p-emoji').value.trim()||getDefaultEmoji(category),imageUrl:APP.pendingImageUrl||'',isHot:document.getElementById('p-hot').checked,inStock:stockQty>0,stockQty,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(()=>{closeDrawer();APP.pendingImageUrl=null;}).catch(err=>{errEl.textContent='Save failed: '+err.message;errEl.style.display='block';btn.disabled=false;btn.textContent='Save Product';});}
 function getDefaultEmoji(cat){return{chips:'🥔',drinks:'⚡',sweets:'🍫',meals:'🍜'}[cat]||'🍬';}
 
