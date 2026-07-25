@@ -1451,7 +1451,7 @@ function placeOrder(){
     scheduledTime=document.getElementById('co-sched-time')?.value||'';
     if(!scheduledTime){showCheckoutError('Please pick a delivery time, or switch to ASAP.');return;}
   }
-  // Re-check stock against the latest known product data before submitting
+  // Fast client-side pre-check (UX only — the real guarantee is the transaction below)
   for(const item of APP.cart){
     const prod=APP.products.find(p=>p.id===item.id);
     if(!prod||prod.inStock===false||prod.stockQty===0){showCheckoutError(`Sorry, "${item.name}" just went out of stock. Please remove it from your bag.`);return;}
@@ -1466,25 +1466,49 @@ function placeOrder(){
   const n=(arr[0]%90000)+10000;const orderNum='#UNI-'+n;
   const{sub,total}=getCartTotals();
   const cartSnapshot=APP.cart.map(i=>({...i}));
-  const orderPayload={
-    orderNum,userId:APP.user.uid,userEmail:APP.user.email||'',userDisplayName:APP.user.displayName||'',
-    items:cartSnapshot.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty,emoji:i.emoji||'',imageUrl:i.imageUrl||''})),
-    subtotal:sub,delivery:0,total,campus:APP.currentCampus,residence,phone,
-    deliveryTimeMode:APP.deliveryTimeMode,scheduledTime,
-    status:'pending',
-    createdAt:firebase.firestore.FieldValue.serverTimestamp(),
-  };
+  const orderRef=db.collection('orders').doc(); // pre-generate ref so we can write it inside the transaction
 
-  db.collection('orders').add(orderPayload).then(ref=>{
-    // Order is confirmed saved — now decrement stock atomically and clear the cart.
-    cartSnapshot.forEach(item=>{
-      const prod=APP.products.find(p=>p.id===item.id);
-      if(prod&&prod.stockQty!==undefined&&prod.stockQty!==null){
-        db.collection('products').doc(item.id).update({stockQty:firebase.firestore.FieldValue.increment(-item.qty)})
-          .catch(e=>console.warn('Stock update:',e));
+  db.runTransaction(txn=>{
+    // ── READ PHASE (all reads must happen before any writes in a Firestore transaction) ──
+    const productRefs=cartSnapshot.map(item=>db.collection('products').doc(item.id));
+    return Promise.all(productRefs.map(ref=>txn.get(ref))).then(productDocs=>{
+      // Verify stock against the live server data, not the local cache
+      for(let i=0;i<cartSnapshot.length;i++){
+        const item=cartSnapshot[i];
+        const doc=productDocs[i];
+        if(!doc.exists){
+          throw new Error(`"${item.name}" is no longer available.`);
+        }
+        const data=doc.data();
+        if(data.inStock===false){
+          throw new Error(`Sorry, "${item.name}" just went out of stock.`);
+        }
+        if(data.stockQty!==undefined&&data.stockQty!==null&&data.stockQty<item.qty){
+          throw new Error(`Only ${data.stockQty} × "${item.name}" left — someone just grabbed the rest.`);
+        }
       }
+
+      // ── WRITE PHASE ──
+      productRefs.forEach((ref,i)=>{
+        const item=cartSnapshot[i];
+        const data=productDocs[i].data();
+        if(data.stockQty!==undefined&&data.stockQty!==null){
+          const newQty=data.stockQty-item.qty;
+          txn.update(ref,{stockQty:newQty,inStock:newQty>0});
+        }
+      });
+
+      txn.set(orderRef,{
+        orderNum,userId:APP.user.uid,userEmail:APP.user.email||'',userDisplayName:APP.user.displayName||'',
+        items:cartSnapshot.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty,emoji:i.emoji||'',imageUrl:i.imageUrl||''})),
+        subtotal:sub,delivery:0,total,campus:APP.currentCampus,residence,phone,
+        deliveryTimeMode:APP.deliveryTimeMode,scheduledTime,
+        status:'pending',
+        createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+      });
     });
-    APP.activeOrderId=ref.id;
+  }).then(()=>{
+    APP.activeOrderId=orderRef.id;
     APP.orderNum=orderNum;
     APP.lastOrder={items:cartSnapshot,total};
     if(APP.user)loadActiveOrder(APP.user.uid);
@@ -1494,8 +1518,8 @@ function placeOrder(){
     btn.disabled=false;btn.textContent='Place order →';
     navigate('confirm');
   }).catch(err=>{
-    console.error('Order save failed:',err);
-    showCheckoutError('Something went wrong placing your order. Please check your connection and try again.');
+    console.error('Order transaction failed:',err);
+    showCheckoutError(err.message||'Something went wrong placing your order. Please check your connection and try again.');
     btn.disabled=false;btn.textContent='Place order →';
   });
 }
