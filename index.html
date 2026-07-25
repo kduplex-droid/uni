@@ -1024,6 +1024,7 @@ const APP={
   products:[],orders:[],
   cart:[],lastOrder:null,
   currentFilter:'all',currentCampus:'upper',
+  currentSearch:'',
   orderNum:null,etaTime:null,deliveryTimeMode:'asap',
   pendingImageUrl:null,
   activeOrderId:null,
@@ -1455,7 +1456,10 @@ function startProductListener(){
   db.collection('products').orderBy('createdAt','desc').onSnapshot(snapshot=>{
     APP.products=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
     if(currentScreen==='home')renderProductGrid('home-products',true);
-    if(currentScreen==='shop')renderProductGrid('shop-products',false);
+    if(currentScreen==='shop'){
+      if(APP.currentSearch)filterProducts(APP.currentSearch); // re-apply active search instead of wiping it
+      else renderProductGrid('shop-products',false);
+    }
     if(currentScreen==='admin')renderAdminPanel();
   },err=>console.error('Products listener:',err));
 }
@@ -1488,9 +1492,16 @@ function renderProductGrid(containerId,hotOnly){
   if(APP.currentFilter!=='all'&&!hotOnly)prods=prods.filter(p=>p.category===APP.currentFilter);
   container.innerHTML=prods.length?'<div class="products-grid">'+prods.map(productCardHTML).join('')+'</div>':'<div class="empty-state"><span class="empty-state-icon">🕐</span><div class="empty-state-title">No snacks here yet</div><div class="empty-state-sub">Check back soon!</div></div>';
 }
-function setFilter(cat,el){APP.currentFilter=cat;document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderProductGrid('shop-products',false);}
+function setFilter(cat,el){
+  APP.currentFilter=cat;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  if(APP.currentSearch)filterProducts(APP.currentSearch); // keep search text applied when switching category
+  else renderProductGrid('shop-products',false);
+}
 function setFilterByKey(cat){APP.currentFilter=cat;document.querySelectorAll('.filter-chip').forEach(c=>{c.classList.remove('active');if(c.textContent.toLowerCase().includes(cat))c.classList.add('active');});if(cat==='all')document.querySelector('.filter-chip').classList.add('active');}
 function filterProducts(val){
+  APP.currentSearch=val; // remember the active search so live updates don't wipe it
   const v=val.toLowerCase(),container=document.getElementById('shop-products');
   let prods=APP.products.filter(p=>p.inStock!==false);
   if(APP.currentFilter!=='all')prods=prods.filter(p=>p.category===APP.currentFilter);
