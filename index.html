@@ -149,6 +149,18 @@ a{color:inherit;text-decoration:none;}
 .agm-err.show{display:block;}
 .agm-close{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;font-family:var(--font);margin-top:16px;text-align:center;width:100%;display:block;}
 
+/* ─── CHANGE PASSWORD MODAL ──────────────────────────────── */
+#pw-change-modal{position:fixed;inset:0;z-index:9000;background:rgba(10,10,18,.94);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:20px;}
+#pw-change-modal.show{display:flex;}
+.pwm-card{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:380px;box-shadow:0 0 40px #C084FC18;}
+.pwm-title{font-size:17px;font-weight:800;margin-bottom:4px;}
+.pwm-sub{font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.6;}
+.pwm-err{background:#F871711a;color:var(--red);border:1.5px solid #F8717130;border-radius:12px;padding:10px 12px;font-size:12px;margin-bottom:14px;display:none;line-height:1.5;}
+.pwm-err.show{display:block;}
+.pwm-success{background:#34D3991a;color:var(--candy-mint);border:1.5px solid #34D39930;border-radius:12px;padding:10px 12px;font-size:12px;margin-bottom:14px;display:none;line-height:1.5;}
+.pwm-success.show{display:block;}
+.pwm-close{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;font-family:var(--font);margin-top:14px;text-align:center;width:100%;display:block;}
+
 /* ─── TOP NAV ────────────────────────────────────────────── */
 #top-nav{
   position:sticky;top:0;z-index:100;
@@ -912,6 +924,34 @@ select.form-input option{background:var(--surface);}
   </div>
 </div>
 
+<!-- ===================== CHANGE PASSWORD MODAL ===================== -->
+<div id="pw-change-modal">
+  <div class="pwm-card">
+    <div class="pwm-title">Change Password</div>
+    <div class="pwm-sub">Enter a new password for your account.</div>
+    <div class="pwm-err" id="pwm-err"></div>
+    <div class="pwm-success" id="pwm-success"></div>
+    <div class="form-group">
+      <label class="form-label">NEW PASSWORD</label>
+      <div class="input-wrap">
+        <input class="form-input" type="password" id="pwm-new" placeholder="Min. 6 characters" oninput="checkPwStrength(this.value)" onkeydown="if(event.key==='Enter')submitPasswordChange()">
+        <button class="pw-toggle" onclick="togglePw('pwm-new',this)" type="button">👁</button>
+      </div>
+      <div class="pw-strength-wrap"><div class="pw-strength-bar" id="pwm-strength-bar"></div></div>
+      <div class="pw-hint" id="pwm-hint">Enter a password</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">CONFIRM NEW PASSWORD</label>
+      <div class="input-wrap">
+        <input class="form-input" type="password" id="pwm-confirm" placeholder="Repeat password" onkeydown="if(event.key==='Enter')submitPasswordChange()">
+        <button class="pw-toggle" onclick="togglePw('pwm-confirm',this)" type="button">👁</button>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="pwm-submit-btn" onclick="submitPasswordChange()">Update Password</button>
+    <button class="pwm-close" onclick="closePasswordModal()">Cancel</button>
+  </div>
+</div>
+
 <!-- ===================== BOTTOM NAV ===================== -->
 <div id="bottom-nav" style="display:none;">
   <button class="bnav-item active" id="bnav-home" onclick="navigate('home')"><span class="bnav-icon">🏠</span>Home</button>
@@ -1167,15 +1207,69 @@ function doForgotPassword(){
 
 function doChangePassword(){
   if(APP.user&&APP.user.providerData&&APP.user.providerData.some(p=>p.providerId==='google.com')&&!APP.user.providerData.some(p=>p.providerId==='password')){
-    alert('You signed in with Google, so there\'s no password to change here. Manage your password through your Google Account.');
+    showPwmError('You signed in with Google, so there\'s no password to change here. Manage your password through your Google Account.');
+    document.getElementById('pw-change-modal').classList.add('show');
+    document.getElementById('pwm-new').style.display='none';
+    document.getElementById('pwm-confirm').closest('.form-group').style.display='none';
+    document.getElementById('pwm-new').closest('.form-group').style.display='none';
+    document.getElementById('pwm-submit-btn').style.display='none';
     return;
   }
-  const newPw=prompt('Enter your new password (min. 6 characters):');
-  if(!newPw)return;
-  if(newPw.length<6){alert('Password must be at least 6 characters.');return;}
+  openPasswordModal();
+}
+
+function openPasswordModal(){
+  document.getElementById('pwm-new').closest('.form-group').style.display='block';
+  document.getElementById('pwm-confirm').closest('.form-group').style.display='block';
+  document.getElementById('pwm-submit-btn').style.display='block';
+  document.getElementById('pwm-new').value='';
+  document.getElementById('pwm-confirm').value='';
+  document.getElementById('pwm-strength-bar').style.width='0%';
+  document.getElementById('pwm-hint').textContent='Enter a password';
+  document.getElementById('pwm-err').classList.remove('show');
+  document.getElementById('pwm-success').classList.remove('show');
+  document.getElementById('pwm-submit-btn').disabled=false;
+  document.getElementById('pwm-submit-btn').textContent='Update Password';
+  document.getElementById('pw-change-modal').classList.add('show');
+}
+
+function closePasswordModal(){
+  document.getElementById('pw-change-modal').classList.remove('show');
+}
+
+function showPwmError(msg){
+  const el=document.getElementById('pwm-err');
+  el.textContent=msg;el.classList.add('show');
+  document.getElementById('pwm-success').classList.remove('show');
+}
+function showPwmSuccess(msg){
+  const el=document.getElementById('pwm-success');
+  el.textContent=msg;el.classList.add('show');
+  document.getElementById('pwm-err').classList.remove('show');
+}
+
+function submitPasswordChange(){
+  const newPw=document.getElementById('pwm-new').value;
+  const confirmPw=document.getElementById('pwm-confirm').value;
+  document.getElementById('pwm-err').classList.remove('show');
+  document.getElementById('pwm-success').classList.remove('show');
+  if(!newPw||newPw.length<6){showPwmError('Password must be at least 6 characters.');return;}
+  if(newPw!==confirmPw){showPwmError('Passwords do not match.');return;}
+
+  const btn=document.getElementById('pwm-submit-btn');
+  btn.disabled=true;btn.textContent='Updating…';
   APP.user.updatePassword(newPw)
-    .then(()=>alert('✅ Password updated successfully!'))
-    .catch(err=>alert(friendlyAuthError(err.code)));
+    .then(()=>{
+      showPwmSuccess('✅ Password updated successfully!');
+      btn.textContent='Update Password';
+      btn.disabled=false;
+      setTimeout(closePasswordModal,1500);
+    })
+    .catch(err=>{
+      showPwmError(friendlyAuthError(err.code));
+      btn.disabled=false;
+      btn.textContent='Update Password';
+    });
 }
 
 /* ── ADMIN GATE ───────────────────────────────────────────── */
