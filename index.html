@@ -1218,6 +1218,7 @@ auth.onAuthStateChanged(user=>{
     startProductListener();
     startCartListener(user.uid);
     loadActiveOrder(user.uid);
+    startInactivityWatcher();
   }else{
     document.getElementById('auth-wall').classList.remove('hidden');
     document.getElementById('top-nav').style.display='none';
@@ -1226,10 +1227,43 @@ auth.onAuthStateChanged(user=>{
     document.getElementById('theme-toggle').style.display='none';
     stopCartListener();
     stopActiveOrderListener();
+    stopInactivityWatcher();
     if(currentScreen==='admin'){currentScreen='home';CUSTOMER_SCREENS.forEach(s=>{const el=document.getElementById(s+'-screen');if(el)el.classList.toggle('active',s==='home');});document.getElementById('admin-screen').style.display='none';}
   }
 });
 function signOut(){const finish=()=>auth.signOut().then(()=>{currentScreen='home';});saveCart().then(finish,finish);}
+
+/* ── INACTIVITY TIMEOUT ───────────────────────────────────── */
+const INACTIVITY_LIMIT_MS=30*60*1000; // 30 minutes of no activity before auto sign-out
+const ACTIVITY_KEY='ub_last_activity';
+const ACTIVITY_EVENTS=['click','keydown','touchstart','scroll','mousemove'];
+let inactivityCheckInterval=null;
+
+function recordActivity(){try{localStorage.setItem(ACTIVITY_KEY,Date.now().toString());}catch(_){}}
+
+function startInactivityWatcher(){
+  recordActivity();
+  ACTIVITY_EVENTS.forEach(evt=>window.addEventListener(evt,recordActivity,{passive:true}));
+  if(inactivityCheckInterval)clearInterval(inactivityCheckInterval);
+  inactivityCheckInterval=setInterval(()=>{
+    if(!APP.user)return;
+    let last=0;
+    try{last=parseInt(localStorage.getItem(ACTIVITY_KEY),10)||0;}catch(_){}
+    if(!last)return;
+    if(Date.now()-last>INACTIVITY_LIMIT_MS){
+      stopInactivityWatcher();
+      auth.signOut().then(()=>{alert('You\'ve been signed out due to inactivity. Please sign in again.');});
+    }
+  },60*1000); // check every minute
+}
+
+function stopInactivityWatcher(){
+  if(inactivityCheckInterval){clearInterval(inactivityCheckInterval);inactivityCheckInterval=null;}
+  ACTIVITY_EVENTS.forEach(evt=>window.removeEventListener(evt,recordActivity));
+  try{localStorage.removeItem(ACTIVITY_KEY);}catch(_){}
+}
+
+/* ── NAVIGATION ───────────────────────────────────────────── */
 
 /* ── NAVIGATION ───────────────────────────────────────────── */
 const CUSTOMER_SCREENS=['home','auth','shop','cart','checkout','confirm','tracking'];
