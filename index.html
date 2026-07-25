@@ -1286,7 +1286,12 @@ function adminGateSignIn(){
   if(email.toLowerCase()!==ADMIN_EMAIL){showGateError('⛔ This email does not have admin access.');return;}
   const btn=document.getElementById('admin-gate-submit');btn.disabled=true;btn.textContent='Signing in…';
   const doSignIn=()=>auth.signInWithEmailAndPassword(email,password).catch(err=>{showGateError(friendlyAuthError(err.code));btn.disabled=false;btn.textContent='Sign In to Admin';});
-  if(APP.user&&!APP.isAdmin){auth.signOut().then(doSignIn);}else{doSignIn();}
+  if(APP.user&&!APP.isAdmin){
+    const switchAccounts=()=>auth.signOut().then(doSignIn);
+    saveCart().then(switchAccounts,switchAccounts); // save the outgoing student's cart first, either way
+  }else{
+    doSignIn();
+  }
 }
 
 /* ── AUTH STATE ───────────────────────────────────────────── */
