@@ -1321,6 +1321,7 @@ auth.onAuthStateChanged(user=>{
     stopCartListener();
     stopActiveOrderListener();
     stopInactivityWatcher();
+    if(currentScreen==='tracking')renderTracking();
     if(currentScreen==='admin'){currentScreen='home';CUSTOMER_SCREENS.forEach(s=>{const el=document.getElementById(s+'-screen');if(el)el.classList.toggle('active',s==='home');});document.getElementById('admin-screen').style.display='none';}
   }
 });
@@ -1434,7 +1435,13 @@ function loadActiveOrder(uid){
     }
   },err=>console.error('Active order listener:',err));
 }
-function stopActiveOrderListener(){if(APP.activeOrderUnsub){APP.activeOrderUnsub();APP.activeOrderUnsub=null;}APP.activeOrderId=null;}
+function stopActiveOrderListener(){
+  if(APP.activeOrderUnsub){APP.activeOrderUnsub();APP.activeOrderUnsub=null;}
+  APP.activeOrderId=null;
+  APP.orderNum=null;
+  APP.etaTime=null;
+  APP.lastOrder=null;
+}
 
 /* ── PRODUCTS ─────────────────────────────────────────────── */
 let productListenerActive=false;
