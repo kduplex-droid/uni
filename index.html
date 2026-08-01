@@ -1013,7 +1013,7 @@ const firebaseConfig={
   messagingSenderId:"387128538792",
   appId:"1:387128538792:web:f40aae63b45e314176349d"
 };
-const ADMIN_EMAIL='k.duplex16@gmail.com';
+const ADMIN_EMAILS=['k.duplex16@gmail.com','unibite26@gmail.com'];
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore(),auth=firebase.auth();
 const googleProvider=new firebase.auth.GoogleAuthProvider();
@@ -1285,7 +1285,7 @@ function adminGateSignIn(){
   const email=document.getElementById('admin-gate-email').value.trim(),password=document.getElementById('admin-gate-password').value;
   document.getElementById('admin-gate-error').classList.remove('show');
   if(!email||!password){showGateError('Please enter your email and password.');return;}
-  if(email.toLowerCase()!==ADMIN_EMAIL){showGateError('⛔ This email does not have admin access.');return;}
+  if(!ADMIN_EMAILS.includes(email.toLowerCase())){showGateError('⛔ This email does not have admin access.');return;}
   const btn=document.getElementById('admin-gate-submit');btn.disabled=true;btn.textContent='Signing in…';
   const doSignIn=()=>auth.signInWithEmailAndPassword(email,password).catch(err=>{showGateError(friendlyAuthError(err.code));btn.disabled=false;btn.textContent='Sign In to Admin';});
   if(APP.user&&!APP.isAdmin){
@@ -1298,7 +1298,7 @@ function adminGateSignIn(){
 
 /* ── AUTH STATE ───────────────────────────────────────────── */
 auth.onAuthStateChanged(user=>{
-  APP.user=user;APP.isAdmin=!!(user&&user.email&&user.email.toLowerCase()===ADMIN_EMAIL);
+  APP.user=user;APP.isAdmin=!!(user&&user.email&&ADMIN_EMAILS.includes(user.email.toLowerCase()));
   if(user){
     document.getElementById('auth-wall').classList.add('hidden');
     document.getElementById('top-nav').style.display='';
