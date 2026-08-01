@@ -1758,9 +1758,26 @@ function showEtaLive(eta){
   const box=document.getElementById('t-eta-box');
   box.classList.remove('eta-pending');
   document.getElementById('t-eta-left').innerHTML=`<div class="eta-lbl">ARRIVING AROUND</div><div class="eta-t">${eta.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})}</div>`;
-  document.getElementById('t-eta-right').innerHTML=`<div class="eta-cd-lbl">Time remaining</div><div class="eta-cd" id="t-countdown">--:--</div>`;
-  let sec=Math.max(0,Math.floor((eta-new Date())/1000));
-  const tick=()=>{const m=Math.floor(sec/60),s=sec%60;const el=document.getElementById('t-countdown');if(el)el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(sec>0)sec--;};
+  document.getElementById('t-eta-right').innerHTML=`<div class="eta-cd-lbl">Time remaining</div><div class="eta-cd" id="t-countdown">-- min left</div>`;
+  // Recompute remaining seconds from eta - now() on every tick, rather than
+  // decrementing a local counter. A local counter only reflects real time
+  // when setInterval fires exactly every 1000ms, which browsers don't
+  // guarantee (throttled/backgrounded tabs run intervals slower), so it
+  // would silently drift behind the real ETA the longer the tab sits idle.
+  // Deriving from the actual clock each tick means it's always correct,
+  // even after long gaps, and self-heals without needing a resync trigger.
+  const tick=()=>{
+    const sec=Math.max(0,Math.floor((eta-new Date())/1000));
+    const el=document.getElementById('t-countdown');
+    if(!el)return;
+    if(sec<=0){
+      el.textContent='Arriving now';
+      if(cdInterval){clearInterval(cdInterval);cdInterval=null;}
+      return;
+    }
+    const mins=Math.ceil(sec/60); // ceil so it doesn't undercount (e.g. 61s still reads "2 min left", not "1")
+    el.textContent=mins+' min left';
+  };
   tick();cdInterval=setInterval(tick,1000);
 }
 
