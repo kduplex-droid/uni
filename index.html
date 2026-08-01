@@ -523,6 +523,7 @@ select.form-input option{background:var(--surface);}
 .status-packing{background:#F472B61a;color:var(--candy-pink);border:1.5px solid #F472B640;}
 .status-delivering{background:#34D3991a;color:var(--candy-mint);border:1.5px solid #34D39930;}
 .status-delivered{background:var(--s2);color:var(--muted);border:1.5px solid var(--border);}
+.status-cancelled{background:var(--red)1a;color:var(--red);border:1.5px solid var(--red)40;}
 .order-card-body{border-top:1px solid var(--border);max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1);}
 .order-card.expanded .order-card-body{max-height:1400px;}
 .order-body-inner{padding:14px;}
@@ -846,6 +847,8 @@ select.form-input option{background:var(--surface);}
           <div class="eta-cd">--:--</div>
         </div>
       </div>
+      <button class="btn btn-ghost" id="t-cancel-btn" style="display:none;margin:4px 0 2px;color:var(--red);border-color:var(--red);" onclick="cancelActiveOrder()">Cancel order</button>
+      <div id="t-cancelled-note" style="display:none;font-size:12px;color:var(--red);text-align:center;margin:4px 0 2px;">This order was cancelled.</div>
       <div class="section-label">YOUR ORDER</div>
       <div class="ordered-items" id="tracking-items"></div>
       <div class="section-label" style="margin-top:14px;">YOUR DELIVERY PERSON</div>
@@ -868,8 +871,20 @@ select.form-input option{background:var(--surface);}
       <div class="account-name" id="user-display-name">Student</div>
       <div class="account-email" id="user-display-email"></div>
     </div>
+    <button class="btn btn-ghost" onclick="navigate('history')" style="margin-top:8px;margin-bottom:8px;">Order History</button>
     <button class="btn btn-ghost" id="change-pw-btn" onclick="doChangePassword()" style="margin-top:8px;margin-bottom:8px;">Change Password</button>
     <button class="btn btn-ghost" onclick="signOut()">Sign Out</button>
+  </div>
+</div>
+
+<!-- ===================== ORDER HISTORY ===================== -->
+<div id="history-screen" class="screen">
+  <div class="checkout-header">
+    <button class="back-btn" onclick="navigate('auth')">←</button>
+    <div class="checkout-title">Order History</div>
+  </div>
+  <div style="padding:14px;">
+    <div id="history-list"><div class="loading-state">Loading your orders...</div></div>
   </div>
 </div>
 
@@ -904,6 +919,7 @@ select.form-input option{background:var(--surface);}
       <div class="orders-filter-chip" onclick="setOrdersFilter('packing',this)">📦 PACKING</div>
       <div class="orders-filter-chip" onclick="setOrdersFilter('delivering',this)">🛵 DELIVERING</div>
       <div class="orders-filter-chip" onclick="setOrdersFilter('delivered',this)">✅ DELIVERED</div>
+      <div class="orders-filter-chip" onclick="setOrdersFilter('cancelled',this)">❌ CANCELLED</div>
     </div>
     <div id="admin-order-list"><div class="loading-state">Loading orders...</div></div>
   </div>
@@ -1327,12 +1343,13 @@ auth.onAuthStateChanged(user=>{
     document.getElementById('theme-toggle').style.display='none';
     stopCartListener();
     stopActiveOrderListener();
+    stopOrderHistoryListener();
     stopInactivityWatcher();
     if(currentScreen==='tracking')renderTracking();
     if(currentScreen==='admin'){currentScreen='home';CUSTOMER_SCREENS.forEach(s=>{const el=document.getElementById(s+'-screen');if(el)el.classList.toggle('active',s==='home');});document.getElementById('admin-screen').style.display='none';}
   }
 });
-function signOut(){const finish=()=>auth.signOut().then(()=>{currentScreen='home';});saveCart().then(finish,finish);}
+function signOut(){const finish=()=>auth.signOut().then(()=>{currentScreen='home';stopOrderHistoryListener();});saveCart().then(finish,finish);}
 
 /* ── INACTIVITY TIMEOUT ───────────────────────────────────── */
 const INACTIVITY_LIMIT_MS=30*60*1000; // 30 minutes of no activity before auto sign-out
@@ -1377,7 +1394,7 @@ function stopInactivityWatcher(){
 /* ── NAVIGATION ───────────────────────────────────────────── */
 
 /* ── NAVIGATION ───────────────────────────────────────────── */
-const CUSTOMER_SCREENS=['home','auth','shop','cart','checkout','confirm','tracking'];
+const CUSTOMER_SCREENS=['home','auth','shop','cart','checkout','confirm','tracking','history'];
 const BNAV_MAP={home:'bnav-home',shop:'bnav-shop',cart:'bnav-cart',tracking:'bnav-tracking',auth:'bnav-auth'};
 let currentScreen='home';
 function navigate(screen,filterCat){
@@ -1396,6 +1413,7 @@ function navigate(screen,filterCat){
   if(screen==='cart')renderCart();
   if(screen==='checkout')renderCheckoutSummary();
   if(screen==='tracking')renderTracking();
+  if(screen==='history')loadOrderHistory();
   if(screen==='admin'){renderAdminPanel();startOrdersListener();}
   window.scrollTo(0,0);
 }
@@ -1724,6 +1742,7 @@ const STATUS_CONFIG={
   packing:  {emoji:'📦',title:'Being Packed',desc:'Your snacks are being packed',prog:'55%',step:2},
   delivering:{emoji:'🛵',title:'On Its Way!',desc:'Your delivery is heading to you',prog:'80%',step:3},
   delivered:{emoji:'🎉',title:'Delivered!',desc:'Enjoy your snacks!',prog:'100%',step:4},
+  cancelled:{emoji:'❌',title:'Order Cancelled',desc:'This order was cancelled',prog:'0%',step:-1},
 };
 let cdInterval=null;
 
@@ -1782,17 +1801,129 @@ function showEtaLive(eta){
 }
 
 function updateTrackingUI(data){
+  APP.activeOrderStatus=data.status; // needed by cancelActiveOrder() to guard against stale button clicks
   const cfg=STATUS_CONFIG[data.status]||STATUS_CONFIG.pending;
   document.getElementById('t-emoji').textContent=cfg.emoji;
   document.getElementById('t-title').textContent=cfg.title;
   document.getElementById('t-desc').textContent=cfg.desc;
   document.getElementById('t-prog').style.width=cfg.prog;
   for(let i=0;i<5;i++){const dot=document.getElementById('td-'+i);const lbl=document.getElementById('tl-'+i);dot.className='step-dot';lbl.className='step-label';if(i<cfg.step){dot.classList.add('done');dot.textContent='✓';lbl.classList.add('done-lbl');}else if(i===cfg.step){dot.classList.add('current');dot.textContent=(['📦','✅','📦','🛵','🎉'])[i];lbl.classList.add('current-lbl');}else{dot.textContent=i+1;}}
-  const etaStr=data.adminEta||null;
-  if(etaStr){const eta=new Date(etaStr);if(!isNaN(eta.getTime()))showEtaLive(eta);else showEtaSkeleton();}else{showEtaSkeleton();}
+  const cancelBtn=document.getElementById('t-cancel-btn');
+  const cancelledNote=document.getElementById('t-cancelled-note');
+  const etaBox=document.getElementById('t-eta-box');
+  if(data.status==='cancelled'){
+    if(cdInterval){clearInterval(cdInterval);cdInterval=null;}
+    etaBox.style.display='none';
+    cancelBtn.style.display='none';
+    cancelledNote.style.display='block';
+  }else{
+    etaBox.style.display='';
+    cancelledNote.style.display='none';
+    // Only lets you back out before the admin has started confirming/packing —
+    // once it's confirmed, cancelling could mean snacks already being packed
+    // for nothing, so we cut it off there.
+    cancelBtn.style.display=(data.status==='pending')?'block':'none';
+    const etaStr=data.adminEta||null;
+    if(etaStr){const eta=new Date(etaStr);if(!isNaN(eta.getTime()))showEtaLive(eta);else showEtaSkeleton();}else{showEtaSkeleton();}
+  }
   const items=(data.items&&data.items.length)?data.items:[{emoji:'🍜',name:'Your snacks',price:0,qty:1}];
   document.getElementById('tracking-items').innerHTML=items.map(i=>`<div class="ord-item"><div class="ord-thumb">${i.imageUrl?`<img src="${esc(i.imageUrl)}" alt="${esc(i.name)}">`:`<span style="font-size:18px">${esc(i.emoji)||'🍬'}</span>`}</div><div class="ord-name">${esc(i.name)} × ${i.qty}</div><div class="ord-price">R${esc(i.price*i.qty)}</div></div>`).join('')+`<div class="ord-item" style="background:var(--s2)"><span style="flex:1;font-size:12px;font-weight:700">Total paid</span><div class="ord-price">R${data.total||0}</div></div>`;
   document.getElementById('track-time').textContent=data.createdAt?.toDate?'Placed '+data.createdAt.toDate().toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'}):'—';
+}
+
+function cancelActiveOrder(){
+  const orderId=APP.activeOrderId;
+  if(!orderId)return;
+  if(!confirm('Cancel this order? This can\'t be undone.'))return;
+  const btn=document.getElementById('t-cancel-btn');
+  btn.disabled=true;btn.textContent='Cancelling…';
+  const orderRef=db.collection('orders').doc(orderId);
+  db.runTransaction(txn=>{
+    return txn.get(orderRef).then(orderDoc=>{
+      if(!orderDoc.exists)throw new Error('Order not found.');
+      const order=orderDoc.data();
+      if(order.userId!==APP.user.uid)throw new Error('You can only cancel your own orders.');
+      if(order.status!=='pending')throw new Error('This order can no longer be cancelled — it\'s already being prepared.');
+      const items=order.items||[];
+      const productRefs=items.map(i=>db.collection('products').doc(i.id));
+      return Promise.all(productRefs.map(ref=>txn.get(ref))).then(productDocs=>{
+        // Restore stock for each item so cancelling doesn't leave products
+        // looking permanently out of stock. Read-then-write inside the
+        // same transaction keeps this safe against concurrent orders.
+        productRefs.forEach((ref,i)=>{
+          const doc=productDocs[i];
+          if(!doc.exists)return; // product may have been deleted since — nothing to restore
+          const data=doc.data();
+          if(typeof data.stockQty==='number'){
+            const newQty=data.stockQty+items[i].qty;
+            txn.update(ref,{stockQty:newQty,inStock:newQty>0});
+          }
+        });
+        txn.update(orderRef,{status:'cancelled'});
+      });
+    });
+  }).then(()=>{
+    btn.disabled=false;btn.textContent='Cancel order';
+  }).catch(err=>{
+    console.error('Cancel order failed:',err);
+    alert(err.message||'Could not cancel this order. Please try again.');
+    btn.disabled=false;btn.textContent='Cancel order';
+  });
+}
+
+/* ── ORDER HISTORY (customer) ────────────────────────────── */
+let historyOrdersUnsub=null,APP_HISTORY_ORDERS=[];
+function loadOrderHistory(){
+  if(!APP.user){document.getElementById('history-list').innerHTML='<div class="empty-state"><span class="empty-state-icon">🔒</span><div class="empty-state-title">Sign in to see your orders</div></div>';return;}
+  if(historyOrdersUnsub)return; // already listening for this session
+  historyOrdersUnsub=db.collection('orders').where('userId','==',APP.user.uid).orderBy('createdAt','desc').limit(50).onSnapshot(snap=>{
+    APP_HISTORY_ORDERS=snap.docs.map(doc=>({id:doc.id,...doc.data()}));
+    if(currentScreen==='history')renderOrderHistory();
+  },err=>{
+    // Same class of issue as the active-order listener: this needs a
+    // Firestore composite index (userId == + orderBy createdAt). Check the
+    // console for a "requires an index" link if this list stays empty.
+    console.error('Order history listener (check for a "requires an index" link below):',err);
+    document.getElementById('history-list').innerHTML='<div class="empty-state"><span class="empty-state-icon">⚠️</span><div class="empty-state-title">Couldn\'t load your orders</div></div>';
+  });
+}
+function stopOrderHistoryListener(){if(historyOrdersUnsub){historyOrdersUnsub();historyOrdersUnsub=null;}APP_HISTORY_ORDERS=[];}
+function renderOrderHistory(){
+  const container=document.getElementById('history-list');
+  if(!APP_HISTORY_ORDERS.length){container.innerHTML='<div class="empty-state"><span class="empty-state-icon">📭</span><div class="empty-state-title">No orders yet</div></div>';return;}
+  container.innerHTML=APP_HISTORY_ORDERS.map(o=>{
+    const accent=orderAccent(o.id);
+    const t=o.createdAt?.toDate?o.createdAt.toDate():new Date();
+    const timeStr=t.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})+', '+t.toLocaleDateString('en-ZA',{day:'numeric',month:'short'});
+    const isExpanded=expandedOrders.has('h-'+o.id);
+    const emojiPills=(o.items||[]).slice(0,4).map(i=>`<span class="ocs-emoji-pill">${i.imageUrl?'📦':(i.emoji||'🍬')} ×${i.qty}</span>`).join('');
+    const extraPill=(o.items||[]).length>4?`<span class="ocs-emoji-pill">+${(o.items||[]).length-4} more</span>`:'';
+    const itemRows=(o.items||[]).map(i=>`<div class="order-item-row"><span class="order-item-emoji">${i.imageUrl?`<img src="${esc(i.imageUrl)}" style="width:20px;height:20px;border-radius:4px;object-fit:cover;" alt="">`:(esc(i.emoji)||'🍬')}</span><span class="order-item-name">${esc(i.name)}</span><span class="order-item-qty">×${i.qty}</span><span class="order-item-price">R${esc(i.price*i.qty)}</span></div>`).join('');
+    return `<div class="order-card${isExpanded?' expanded':''}" id="ocard-h-${esc(o.id)}" style="--order-accent:${accent}">
+      <div class="order-card-summary" onclick="toggleOrderCard('h-${esc(o.id)}')">
+        <div class="ocs-left" style="margin-left:0;">
+          <div class="ocs-num">${esc(o.orderNum||'—')}</div>
+          <div class="ocs-emoji-strip">${emojiPills}${extraPill}</div>
+          <div class="ocs-meta">${timeStr}</div>
+        </div>
+        <div class="ocs-right">
+          <span class="order-status-badge ${ORDER_STATUS_CSS[o.status]||''}">${ORDER_STATUS_LABELS[o.status]||esc(o.status)}</span>
+          <span class="ocs-total">R${esc(o.total||0)}</span>
+          <span class="ocs-chevron">▼</span>
+        </div>
+      </div>
+      <div class="order-card-body">
+        <div class="order-body-inner">
+          <div class="order-items-list">${itemRows||'<div class="order-item-row"><span class="order-item-name" style="color:var(--muted)">No items</span></div>'}</div>
+          <div class="order-totals-row"><span>Subtotal</span><span>R${esc(o.subtotal||o.total||0)}</span></div>
+          <div class="order-totals-row"><span>Delivery</span><span style="color:var(--candy-mint)">FREE</span></div>
+          <hr class="order-divider">
+          <div class="order-totals-row big"><span>Total</span><span style="color:var(--lav)">R${esc(o.total||0)}</span></div>
+          ${(o.status!=='cancelled'&&o.status!=='delivered')?`<button class="btn btn-ghost" style="margin-top:10px;" onclick="navigate('tracking')">Track this order →</button>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 /* ── ADMIN PANEL ──────────────────────────────────────────── */
@@ -1823,9 +1954,9 @@ function deleteProduct(id){if(!confirm('Delete this product?'))return;db.collect
 /* ── ADMIN ORDERS ─────────────────────────────────────────── */
 let adminOrdersUnsub=null,APP_ORDERS_FILTER='all';
 const expandedOrders=new Set();
-const ORDER_STATUS_NEXT={pending:'confirmed',confirmed:'packing',packing:'delivering',delivering:'delivered',delivered:null};
-const ORDER_STATUS_LABELS={pending:'⏳ PENDING',confirmed:'✓ CONFIRMED',packing:'📦 PACKING',delivering:'🛵 DELIVERING',delivered:'✅ DELIVERED'};
-const ORDER_STATUS_CSS={pending:'status-pending',confirmed:'status-confirmed',packing:'status-packing',delivering:'status-delivering',delivered:'status-delivered'};
+const ORDER_STATUS_NEXT={pending:'confirmed',confirmed:'packing',packing:'delivering',delivering:'delivered',delivered:null,cancelled:null};
+const ORDER_STATUS_LABELS={pending:'⏳ PENDING',confirmed:'✓ CONFIRMED',packing:'📦 PACKING',delivering:'🛵 DELIVERING',delivered:'✅ DELIVERED',cancelled:'❌ CANCELLED'};
+const ORDER_STATUS_CSS={pending:'status-pending',confirmed:'status-confirmed',packing:'status-packing',delivering:'status-delivering',delivered:'status-delivered',cancelled:'status-cancelled'};
 const ORDER_NEXT_LABELS={pending:'Confirm Order',confirmed:'Start Packing',packing:'Out for Delivery',delivering:'Mark Delivered'};
 function orderAccent(id){let h=0;for(let i=0;i<id.length;i++)h=id.charCodeAt(i)+((h<<5)-h);const palette=['#C084FC','#F472B6','#34D399','#FCD34D','#60A5FA','#F97316','#A78BFA','#2DD4BF','#FB7185','#4ADE80'];return palette[Math.abs(h)%palette.length];}
 function getInitials(name){if(!name||!name.trim())return '?';if(name.includes('@'))return name.split('@')[0].slice(0,2).toUpperCase();const parts=name.trim().split(/\s+/);if(parts.length>=2)return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();return name.trim().slice(0,2).toUpperCase();}
@@ -1837,7 +1968,7 @@ function renderAdminOrders(){
   const allOrders=APP.orders||[];
   const delivered=allOrders.filter(o=>o.status==='delivered');
   const revenue=delivered.reduce((a,o)=>a+(o.total||0),0);
-  const pending=allOrders.filter(o=>o.status!=='delivered').length;
+  const pending=allOrders.filter(o=>o.status!=='delivered'&&o.status!=='cancelled').length;
   document.getElementById('stat-orders').textContent=allOrders.length;
   document.getElementById('stat-revenue').textContent='R'+revenue;
   const tab=document.getElementById('atab-orders');
@@ -1889,7 +2020,7 @@ function renderAdminOrders(){
           <div class="eta-current-val">Currently: <b style="color:${accent}">${currentEtaDisplay}</b></div>
           <div class="order-card-actions">
             <span style="font-size:11px;color:var(--muted);">${timeStr}</span>
-            ${next?`<button class="order-action-btn" style="background:linear-gradient(135deg,${accent}cc,${accent})" onclick="advanceOrder('${esc(o.id)}','${next}')">${ORDER_NEXT_LABELS[o.status]} →</button>`:`<span class="order-complete-tag">✅ COMPLETE</span>`}
+            ${next?`<button class="order-action-btn" style="background:linear-gradient(135deg,${accent}cc,${accent})" onclick="advanceOrder('${esc(o.id)}','${next}')">${ORDER_NEXT_LABELS[o.status]} →</button>`:(o.status==='cancelled'?`<span class="order-complete-tag" style="background:var(--red)1a;color:var(--red);">❌ CANCELLED</span>`:`<span class="order-complete-tag">✅ COMPLETE</span>`)}
           </div>
         </div>
       </div>
