@@ -8,7 +8,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
 <style>
 /* ===================== TOKENS — Dark Mode ===================== */
 :root{
@@ -1016,7 +1015,6 @@ const firebaseConfig={
 };
 const ADMIN_EMAIL='k.duplex16@gmail.com';
 firebase.initializeApp(firebaseConfig);
-const placeOrderFn=firebase.functions().httpsCallable('placeOrder');
 const db=firebase.firestore(),auth=firebase.auth();
 const googleProvider=new firebase.auth.GoogleAuthProvider();
 googleProvider.setCustomParameters({prompt:'select_account'});
@@ -1624,19 +1622,67 @@ function placeOrder(){
   if(btn.disabled)return; // guard against double-submit
   btn.disabled=true;btn.textContent='Placing order…';
 
+  const arr=new Uint32Array(1);crypto.getRandomValues(arr);
+  const n=(arr[0]%90000)+10000;const orderNum='#UNI-'+n;
   const cartSnapshot=APP.cart.map(i=>({...i}));
-  // Only ids + qty are sent — price, name, and total are never trusted from
-  // the client. The Cloud Function recomputes everything from the live
-  // product docs and writes the order server-side.
-  const payload={
-    cart:cartSnapshot.map(i=>({productId:i.id,qty:i.qty})),
-    campus:APP.currentCampus,residence,phone,
-    deliveryTimeMode:APP.deliveryTimeMode,scheduledTime,
-  };
+  const orderRef=db.collection('orders').doc(); // pre-generate ref so we can write it inside the transaction
 
-  placeOrderFn(payload).then(res=>{
-    const{orderId,orderNum,total}=res.data;
-    APP.activeOrderId=orderId;
+  db.runTransaction(txn=>{
+    // ── READ PHASE (all reads must happen before any writes in a Firestore transaction) ──
+    const productRefs=cartSnapshot.map(item=>db.collection('products').doc(item.id));
+    return Promise.all(productRefs.map(ref=>txn.get(ref))).then(productDocs=>{
+      // Verify stock AND price against the live server data — never the
+      // client's cached APP.cart values, which can be tampered with in
+      // devtools before this function runs.
+      let subtotal=0;
+      const orderItems=[];
+      for(let i=0;i<cartSnapshot.length;i++){
+        const item=cartSnapshot[i];
+        const doc=productDocs[i];
+        if(!doc.exists){
+          throw new Error(`"${item.name}" is no longer available.`);
+        }
+        const data=doc.data();
+        if(data.inStock===false){
+          throw new Error(`Sorry, "${item.name}" just went out of stock.`);
+        }
+        if(data.stockQty!==undefined&&data.stockQty!==null&&data.stockQty<item.qty){
+          throw new Error(`Only ${data.stockQty} × "${item.name}" left — someone just grabbed the rest.`);
+        }
+        if(typeof data.price!=='number'||data.price<=0){
+          throw new Error(`"${item.name}" has an invalid price. Please contact support.`);
+        }
+        // Price, name, emoji, image all come from the live product doc —
+        // never from the client's cart.
+        subtotal+=data.price*item.qty;
+        orderItems.push({id:item.id,name:data.name,price:data.price,qty:item.qty,emoji:data.emoji||'',imageUrl:data.imageUrl||''});
+      }
+      const delivery=0;
+      const total=subtotal+delivery;
+
+      // ── WRITE PHASE ──
+      productRefs.forEach((ref,i)=>{
+        const item=cartSnapshot[i];
+        const data=productDocs[i].data();
+        if(data.stockQty!==undefined&&data.stockQty!==null){
+          const newQty=data.stockQty-item.qty;
+          txn.update(ref,{stockQty:newQty,inStock:newQty>0});
+        }
+      });
+
+      txn.set(orderRef,{
+        orderNum,userId:APP.user.uid,userEmail:APP.user.email||'',userDisplayName:APP.user.displayName||'',
+        items:orderItems,
+        subtotal,delivery,total,campus:APP.currentCampus,residence,phone,
+        deliveryTimeMode:APP.deliveryTimeMode,scheduledTime,
+        status:'pending',
+        createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      return{total};
+    });
+  }).then(({total})=>{
+    APP.activeOrderId=orderRef.id;
     APP.orderNum=orderNum;
     APP.lastOrder={items:cartSnapshot,total};
     if(APP.user)loadActiveOrder(APP.user.uid);
@@ -1646,7 +1692,7 @@ function placeOrder(){
     btn.disabled=false;btn.textContent='Place order →';
     navigate('confirm');
   }).catch(err=>{
-    console.error('placeOrder call failed:',err);
+    console.error('Order transaction failed:',err);
     showCheckoutError(err.message||'Something went wrong placing your order. Please check your connection and try again.');
     btn.disabled=false;btn.textContent='Place order →';
   });
@@ -1875,4 +1921,4 @@ function getDefaultEmoji(cat){return{chips:'🥔',drinks:'⚡',sweets:'🍫',mea
 setCampus('upper');
 </script>
 </body>
-</html> 
+</html>
