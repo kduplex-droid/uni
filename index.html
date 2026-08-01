@@ -1029,6 +1029,7 @@ const APP={
   pendingImageUrl:null,
   activeOrderId:null,
   activeOrderUnsub:null,
+  activeOrderQueryUnsub:null,
 };
 
 const RESIDENCES={
@@ -1421,8 +1422,17 @@ function saveCart(){
 
 /* ── ACTIVE ORDER LISTENER ────────────────────────────────── */
 function loadActiveOrder(uid){
-  stopActiveOrderListener();
-  db.collection('orders').where('userId','==',uid).where('status','in',['pending','confirmed','packing','delivering']).orderBy('createdAt','desc').limit(1).onSnapshot(snap=>{
+  // Only tear down THIS function's own previous query listener — not the
+  // per-order tracking listener (that's APP.activeOrderUnsub, used in
+  // renderTracking), and NOT the displayed state fields. Previously this
+  // called stopActiveOrderListener() here, which nulled APP.activeOrderId /
+  // orderNum / lastOrder immediately, wiping out whatever placeOrder() had
+  // just set — before this async query even had a chance to confirm it.
+  // If the query was slow, or needed a Firestore composite index that
+  // didn't exist yet, that null state was never restored, so tracking
+  // showed "no active order" and no live listener ever got attached.
+  if(APP.activeOrderQueryUnsub){APP.activeOrderQueryUnsub();APP.activeOrderQueryUnsub=null;}
+  APP.activeOrderQueryUnsub=db.collection('orders').where('userId','==',uid).where('status','in',['pending','confirmed','packing','delivering']).orderBy('createdAt','desc').limit(1).onSnapshot(snap=>{
     const dot=document.getElementById('track-live-dot');
     if(!snap.empty){
       const doc=snap.docs[0];
@@ -1436,12 +1446,21 @@ function loadActiveOrder(uid){
       if(currentScreen==='tracking')renderTracking();
     }else{
       APP.activeOrderId=null;
+      APP.orderNum=null;
+      APP.lastOrder=null;
       if(dot)dot.style.display='none';
       if(currentScreen==='tracking')renderTracking();
     }
-  },err=>console.error('Active order listener:',err));
+  },err=>{
+    // Most likely cause: this query (equality + 'in' + orderBy on a
+    // different field) needs a Firestore composite index that hasn't been
+    // created yet. Firestore's error message normally includes a direct
+    // link to auto-create it — check the browser console for that link.
+    console.error('Active order listener (check for a "requires an index" link below):',err);
+  });
 }
 function stopActiveOrderListener(){
+  if(APP.activeOrderQueryUnsub){APP.activeOrderQueryUnsub();APP.activeOrderQueryUnsub=null;}
   if(APP.activeOrderUnsub){APP.activeOrderUnsub();APP.activeOrderUnsub=null;}
   APP.activeOrderId=null;
   APP.orderNum=null;
