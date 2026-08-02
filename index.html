@@ -8,6 +8,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 /* ===================== TOKENS — Dark Mode ===================== */
 :root{
@@ -1051,6 +1052,45 @@ const firebaseConfig={
   appId:"1:387128538792:web:f40aae63b45e314176349d"
 };
 const ADMIN_EMAILS=['k.duplex16@gmail.com','unibite26@gmail.com'];
+
+// ── EMAILJS (new-order admin notification) ──────────────────
+// UNIBITE has no backend, so this sends straight from the browser using
+// EmailJS's free client-side email API — no Cloud Functions/Blaze needed.
+// Fill these in from your EmailJS dashboard (emailjs.com):
+//   1. Sign up free, add an Email Service (e.g. connect Gmail) → gives you
+//      a SERVICE_ID.
+//   2. Create an Email Template with variables like {{order_num}},
+//      {{items_text}}, {{total}}, {{campus}}, {{residence}}, {{phone}},
+//      {{customer_email}}, {{delivery_time}} → gives you a TEMPLATE_ID.
+//      Set the template's "To email" field to your admin address(es).
+//   3. Account → General → copy your Public Key.
+const EMAILJS_PUBLIC_KEY='YOUR_EMAILJS_PUBLIC_KEY';
+const EMAILJS_SERVICE_ID='YOUR_EMAILJS_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID='YOUR_EMAILJS_TEMPLATE_ID';
+if(window.emailjs&&EMAILJS_PUBLIC_KEY!=='YOUR_EMAILJS_PUBLIC_KEY')emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});
+
+function notifyAdminOfOrder(order){
+  if(!window.emailjs||EMAILJS_PUBLIC_KEY==='YOUR_EMAILJS_PUBLIC_KEY'){
+    console.warn('EmailJS not configured yet — skipping admin order-notification email. See EMAILJS_* constants near the top of the script.');
+    return;
+  }
+  const itemsText=(order.items||[]).map(i=>`${i.qty}× ${i.name} (R${i.price} ea)`).join('\n');
+  emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{
+    order_num:order.orderNum,
+    items_text:itemsText,
+    subtotal:order.subtotal,
+    total:order.total,
+    campus:order.campus,
+    residence:order.residence,
+    phone:order.phone,
+    delivery_time:order.deliveryTimeMode==='sched'?order.scheduledTime:'ASAP',
+    customer_email:order.userEmail||'',
+  }).catch(err=>{
+    // Never let a failed notification email break order placement for the
+    // customer — this is a nice-to-have side effect, not a critical path.
+    console.error('Admin order-notification email failed:',err);
+  });
+}
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore(),auth=firebase.auth();
 const googleProvider=new firebase.auth.GoogleAuthProvider();
@@ -1773,17 +1813,18 @@ function placeOrder(){
         createdAt:firebase.firestore.FieldValue.serverTimestamp(),
       });
 
-      return{total};
+      return{total,orderItems,subtotal};
     });
-  }).then(({total})=>{
+  }).then(({total,orderItems,subtotal})=>{
     APP.activeOrderId=orderRef.id;
     APP.orderNum=orderNum;
     APP.lastOrder={items:cartSnapshot,total};
     if(APP.user)loadActiveOrder(APP.user.uid);
     APP.cart=[];updateCartBadge();saveCart();
     document.getElementById('confirm-order-num').textContent=orderNum;
-    document.getElementById('confirm-eta').textContent='Admin will set your ETA shortly ⏳';
+    document.getElementById('confirm-eta').textContent='We\'ll confirm your ETA shortly ⏳';
     btn.disabled=false;btn.textContent='Place order →';
+    notifyAdminOfOrder({orderNum,items:orderItems,subtotal,total,campus:APP.currentCampus,residence,phone,deliveryTimeMode:APP.deliveryTimeMode,scheduledTime,userEmail:APP.user.email||''});
     navigate('confirm');
   }).catch(err=>{
     console.error('Order transaction failed:',err);
@@ -1816,7 +1857,15 @@ function renderTracking(){
   if(APP.activeOrderId){
     if(APP.activeOrderUnsub)APP.activeOrderUnsub();
     APP.activeOrderUnsub=db.collection('orders').doc(APP.activeOrderId).onSnapshot(doc=>{
-      if(!doc.exists)return;
+      if(!doc.exists){
+        // Order was deleted (e.g. the customer cancelled it) — clear the
+        // stale UI instead of silently doing nothing and leaving the last
+        // known status/cancel-button on screen.
+        if(APP.activeOrderUnsub){APP.activeOrderUnsub();APP.activeOrderUnsub=null;}
+        APP.activeOrderId=null;APP.orderNum=null;APP.lastOrder=null;
+        if(currentScreen==='tracking')renderTracking();
+        return;
+      }
       updateTrackingUI(doc.data());
     },err=>console.error('Order live:',err));
   }
@@ -1825,7 +1874,7 @@ function renderTracking(){
 function showEtaSkeleton(){
   const box=document.getElementById('t-eta-box');
   box.classList.add('eta-pending');
-  document.getElementById('t-eta-left').innerHTML=`<div class="eta-lbl">ARRIVING AROUND</div><div class="eta-skeleton"><div class="eta-skel-line wide"></div><div class="eta-skel-line narrow"></div></div><div class="eta-pending-label">Admin is setting your ETA…</div>`;
+  document.getElementById('t-eta-left').innerHTML=`<div class="eta-lbl">ARRIVING AROUND</div><div class="eta-skeleton"><div class="eta-skel-line wide"></div><div class="eta-skel-line narrow"></div></div><div class="eta-pending-label">Confirming your ETA…</div>`;
   document.getElementById('t-eta-right').innerHTML=`<div class="eta-cd-lbl">Time remaining</div><div class="eta-cd" style="color:var(--dim);">--:--</div>`;
 }
 
@@ -1916,7 +1965,12 @@ function cancelActiveOrder(){
             txn.update(ref,{stockQty:newQty,inStock:newQty>0});
           }
         });
-        txn.update(orderRef,{status:'cancelled'});
+        // Deleted, not marked 'cancelled' — per request, a cancelled order
+        // shouldn't linger anywhere (admin view, customer history). This
+        // does mean there's no record of it afterwards; if you ever want an
+        // audit trail back, this is the one line to change to a status
+        // update instead.
+        txn.delete(orderRef);
       });
     });
   }).then(()=>{
