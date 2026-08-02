@@ -9,6 +9,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 /* ===================== TOKENS — Dark Mode ===================== */
 :root{
@@ -260,6 +262,23 @@ select.form-input option{background:var(--surface);}
 .home-row-scroll::-webkit-scrollbar{display:none;}
 .home-row-scroll .prod-card{flex:0 0 132px;width:132px;}
 .home-row-scroll .prod-img{height:100px;}
+/* ── RECEIPT ────────────────────────────────────────────── */
+.receipt-wrap{padding:18px 14px 40px;display:flex;flex-direction:column;align-items:center;}
+.receipt-card{width:100%;max-width:380px;background:#FFFDF8;color:#2A2A3D;border-radius:16px;padding:28px 22px 22px;box-shadow:0 12px 44px rgba(0,0,0,.4);font-family:var(--font);}
+.receipt-logo{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:2px;}
+.receipt-logo-dot{width:11px;height:11px;background:#7C3AED;border-radius:50%;box-shadow:0 0 10px #7C3AED80;}
+.receipt-logo-name{font-size:21px;font-weight:900;letter-spacing:.07em;background:linear-gradient(135deg,#7C3AED,#C084FC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.receipt-tagline{text-align:center;font-size:9.5px;color:#8A87A8;letter-spacing:.09em;margin:2px 0 18px;font-weight:800;text-transform:uppercase;}
+.receipt-divider{border:none;border-top:1.5px dashed #DCD8EC;margin:14px 0;}
+.receipt-row{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0;color:#4A4768;}
+.receipt-row b{color:#1F1B2E;font-weight:800;}
+.receipt-item-row{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:4px 0;color:#2A2A3D;}
+.receipt-item-name{flex:1;}
+.receipt-item-qty{color:#8A87A8;font-weight:700;}
+.receipt-total-row{display:flex;justify-content:space-between;font-size:17px;font-weight:900;padding:8px 0 2px;color:#1F1B2E;}
+.receipt-status-badge{display:inline-block;font-size:9.5px;font-weight:800;padding:4px 11px;border-radius:11px;letter-spacing:.06em;margin:2px auto 0;}
+.receipt-footer{text-align:center;font-size:10.5px;color:#9C99BB;margin-top:18px;letter-spacing:.03em;line-height:1.6;}
+.receipt-actions{display:flex;gap:10px;width:100%;max-width:380px;margin-top:16px;}
 .prod-card{background:var(--surface);cursor:pointer;position:relative;overflow:hidden;border-radius:18px;border:1.5px solid var(--border);box-shadow:0 4px 0 var(--dim);transition:transform .15s,box-shadow .15s;}
 .prod-card:active{transform:translateY(3px);box-shadow:0 1px 0 var(--dim);}
 .prod-img{height:130px;display:flex;align-items:center;justify-content:center;font-size:42px;position:relative;overflow:hidden;background:var(--s2);}
@@ -870,6 +889,7 @@ select.form-input option{background:var(--surface);}
         </div>
       </div>
       <button class="btn btn-ghost" id="t-cancel-btn" style="display:none;margin:4px 0 2px;color:var(--red);border-color:var(--red);" onclick="cancelActiveOrder()">Cancel order</button>
+      <button class="btn btn-ghost" style="margin:4px 0 2px;" onclick="openReceipt(APP.activeOrderData)">🧾 View Receipt</button>
       <div id="t-cancelled-note" style="display:none;font-size:12px;color:var(--red);text-align:center;margin:4px 0 2px;">This order was cancelled.</div>
       <div class="section-label">YOUR ORDER</div>
       <div class="ordered-items" id="tracking-items"></div>
@@ -907,6 +927,38 @@ select.form-input option{background:var(--surface);}
   </div>
   <div style="padding:14px;">
     <div id="history-list"><div class="loading-state">Loading your orders...</div></div>
+  </div>
+</div>
+
+<!-- ===================== RECEIPT ===================== -->
+<div id="receipt-screen" class="screen">
+  <div class="checkout-header">
+    <button class="back-btn" onclick="navigate('history')">←</button>
+    <div class="checkout-title">Receipt</div>
+  </div>
+  <div class="receipt-wrap">
+    <div class="receipt-card" id="receipt-card">
+      <div class="receipt-logo"><div class="receipt-logo-dot"></div><span class="receipt-logo-name">UNIBITE</span></div>
+      <div class="receipt-tagline">UCT Campus Snack Delivery</div>
+      <div class="receipt-row"><span>Order</span><b id="rc-ordernum">—</b></div>
+      <div class="receipt-row"><span>Date</span><b id="rc-date">—</b></div>
+      <div class="receipt-row"><span>Status</span><b id="rc-status">—</b></div>
+      <hr class="receipt-divider">
+      <div id="rc-items"></div>
+      <hr class="receipt-divider">
+      <div class="receipt-row"><span>Subtotal</span><span id="rc-subtotal">R0</span></div>
+      <div class="receipt-row"><span>Delivery</span><span>FREE</span></div>
+      <div class="receipt-total-row"><span>Total</span><span id="rc-total">R0</span></div>
+      <hr class="receipt-divider">
+      <div class="receipt-row"><span>Campus</span><b id="rc-campus">—</b></div>
+      <div class="receipt-row"><span>Delivered to</span><b id="rc-residence">—</b></div>
+      <div class="receipt-row"><span>Contact</span><b id="rc-phone">—</b></div>
+      <div class="receipt-footer">Thank you for ordering with UNIBITE! 🍬<br>Snacks, delivered fast on campus.</div>
+    </div>
+    <div class="receipt-actions">
+      <button class="btn btn-ghost" style="flex:1;" onclick="navigate('history')">Close</button>
+      <button class="btn btn-primary" style="flex:1;" id="rc-download-btn" onclick="downloadReceipt()">⬇ Download PDF</button>
+    </div>
   </div>
 </div>
 
@@ -1456,7 +1508,7 @@ function stopInactivityWatcher(){
 /* ── NAVIGATION ───────────────────────────────────────────── */
 
 /* ── NAVIGATION ───────────────────────────────────────────── */
-const CUSTOMER_SCREENS=['home','auth','shop','cart','checkout','confirm','tracking','history'];
+const CUSTOMER_SCREENS=['home','auth','shop','cart','checkout','confirm','tracking','history','receipt'];
 const BNAV_MAP={home:'bnav-home',shop:'bnav-shop',cart:'bnav-cart',tracking:'bnav-tracking',auth:'bnav-auth'};
 let currentScreen='home';
 function navigate(screen,filterCat){
@@ -1907,6 +1959,7 @@ function showEtaLive(eta){
 }
 
 function updateTrackingUI(data){
+  APP.activeOrderData=data; // lets the "View Receipt" button on this screen open a live receipt without a re-fetch
   APP.activeOrderStatus=data.status; // needed by cancelActiveOrder() to guard against stale button clicks
   const cfg=STATUS_CONFIG[data.status]||STATUS_CONFIG.pending;
   document.getElementById('t-emoji').textContent=cfg.emoji;
@@ -2038,11 +2091,66 @@ function renderOrderHistory(){
           <div class="order-totals-row"><span>Delivery</span><span style="color:var(--candy-mint)">FREE</span></div>
           <hr class="order-divider">
           <div class="order-totals-row big"><span>Total</span><span style="color:var(--lav)">R${esc(o.total||0)}</span></div>
-          ${(o.status!=='cancelled'&&o.status!=='delivered')?`<button class="btn btn-ghost" style="margin-top:10px;" onclick="navigate('tracking')">Track this order →</button>`:''}
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button class="btn btn-ghost" style="flex:1;margin:0;" onclick="openReceiptById('${esc(o.id)}')">🧾 Receipt</button>
+            ${(o.status!=='cancelled'&&o.status!=='delivered')?`<button class="btn btn-ghost" style="flex:1;margin:0;" onclick="navigate('tracking')">Track order →</button>`:''}
+          </div>
         </div>
       </div>
     </div>`;
   }).join('');
+}
+
+/* ── RECEIPT ──────────────────────────────────────────────── */
+let APP_RECEIPT_ORDER=null;
+function openReceipt(order){
+  if(!order)return;
+  APP_RECEIPT_ORDER=order;
+  renderReceiptCard(order);
+  navigate('receipt');
+}
+function openReceiptById(id){
+  const o=APP_HISTORY_ORDERS.find(x=>x.id===id);
+  if(o)openReceipt(o);
+  else alert('Could not find that order.');
+}
+function renderReceiptCard(o){
+  const t=o.createdAt?.toDate?o.createdAt.toDate():new Date();
+  document.getElementById('rc-ordernum').textContent=o.orderNum||'—';
+  document.getElementById('rc-date').textContent=t.toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})+', '+t.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('rc-status').textContent=(ORDER_STATUS_LABELS[o.status]||o.status||'—').replace(/^[^A-Z]*/,''); // strip the leading emoji for a cleaner printed look
+  document.getElementById('rc-subtotal').textContent='R'+(o.subtotal||o.total||0);
+  document.getElementById('rc-total').textContent='R'+(o.total||0);
+  document.getElementById('rc-campus').textContent=o.campus==='upper'?'Upper Campus':o.campus==='middle'?'Middle Campus':(o.campus||'—');
+  document.getElementById('rc-residence').textContent=o.residence||'—';
+  document.getElementById('rc-phone').textContent=o.phone||'—';
+  const items=(o.items&&o.items.length)?o.items:[];
+  document.getElementById('rc-items').innerHTML=items.map(i=>`<div class="receipt-item-row"><span class="receipt-item-name">${esc(i.name)} <span class="receipt-item-qty">×${i.qty}</span></span><span>R${esc(i.price*i.qty)}</span></div>`).join('')||'<div class="receipt-item-row"><span class="receipt-item-name">No items</span></div>';
+}
+function downloadReceipt(){
+  const node=document.getElementById('receipt-card');
+  const btn=document.getElementById('rc-download-btn');
+  if(!node||!window.html2canvas||!window.jspdf){alert('Download isn\'t available right now — please try again in a moment.');return;}
+  btn.disabled=true;btn.textContent='Preparing…';
+  html2canvas(node,{scale:3,backgroundColor:'#FFFDF8',useCORS:true}).then(canvas=>{
+    const{jsPDF}=window.jspdf;
+    // Size the PDF page to match the receipt's own aspect ratio (in mm,
+    // scaled from the canvas' pixel ratio) rather than forcing it onto a
+    // fixed A4 page — keeps it looking like an actual receipt slip, not a
+    // mostly-blank page.
+    const pxToMm=canvas.width/canvas.height;
+    const pdfWidth=100; // mm
+    const pdfHeight=pdfWidth/pxToMm;
+    const pdf=new jsPDF({orientation:pdfHeight>pdfWidth?'portrait':'landscape',unit:'mm',format:[pdfWidth,pdfHeight]});
+    pdf.addImage(canvas.toDataURL('image/png',1.0),'PNG',0,0,pdfWidth,pdfHeight);
+    const filename=`UNIBITE-Receipt-${(APP_RECEIPT_ORDER&&APP_RECEIPT_ORDER.orderNum||'order').replace('#','')}.pdf`;
+    pdf.save(filename);
+    btn.disabled=false;btn.textContent='⬇ Download PDF';
+  }).catch(err=>{
+    console.error('Receipt download failed:',err);
+    alert('Could not generate the PDF. Please try again.');
+    btn.disabled=false;btn.textContent='⬇ Download PDF';
+  });
 }
 
 /* ── ADMIN PANEL ──────────────────────────────────────────── */
