@@ -1598,11 +1598,20 @@ function loadActiveOrder(uid){
   // didn't exist yet, that null state was never restored, so tracking
   // showed "no active order" and no live listener ever got attached.
   if(APP.activeOrderQueryUnsub){APP.activeOrderQueryUnsub();APP.activeOrderQueryUnsub=null;}
-  APP.activeOrderQueryUnsub=db.collection('orders').where('userId','==',uid).where('status','in',['pending','confirmed','packing','delivering']).orderBy('createdAt','desc').limit(1).onSnapshot(snap=>{
+  // Query by userId only (auto-indexed, no composite index setup needed —
+  // same pattern as the working order-history query), then find the active
+  // order client-side. Previously this filtered status via a Firestore
+  // 'in' clause combined with orderBy, which needs a composite index that
+  // has to be manually created in Firebase Console/CLI — if that step was
+  // ever skipped, this query silently failed on every load, which is what
+  // was "clearing" tracking on browser restart. Pulling the last 15 orders
+  // and filtering here avoids that setup step entirely.
+  const ACTIVE_STATUSES=['pending','confirmed','packing','delivering'];
+  APP.activeOrderQueryUnsub=db.collection('orders').where('userId','==',uid).orderBy('createdAt','desc').limit(15).onSnapshot(snap=>{
     const dot=document.getElementById('track-live-dot');
-    if(!snap.empty){
-      const doc=snap.docs[0];
-      const data={id:doc.id,...doc.data()};
+    const activeDoc=snap.docs.find(d=>ACTIVE_STATUSES.includes(d.data().status));
+    if(activeDoc){
+      const data={id:activeDoc.id,...activeDoc.data()};
       APP.activeOrderId=data.id;
       APP.orderNum=data.orderNum;
       if(data.adminEta)APP.etaTime=new Date(data.adminEta);
@@ -1628,11 +1637,10 @@ function loadActiveOrder(uid){
       if(currentScreen==='tracking')renderTracking();
     }
   },err=>{
-    // Most likely cause: this query (equality + 'in' + orderBy on a
-    // different field) needs a Firestore composite index that hasn't been
-    // created yet. Firestore's error message normally includes a direct
-    // link to auto-create it — check the browser console for that link.
-    console.error('Active order listener (check for a "requires an index" link below):',err);
+    // This query no longer needs a composite index (single equality +
+    // orderBy only), so this should rarely fire. If it does, it's most
+    // likely a rules/permission issue rather than an indexing one.
+    console.error('Active order listener:',err);
   });
 }
 function stopActiveOrderListener(){
