@@ -1508,16 +1508,14 @@ let inactivityCheckInterval=null;
 function recordActivity(){try{localStorage.setItem(ACTIVITY_KEY,Date.now().toString());}catch(_){}}
 
 function startInactivityWatcher(){
-  // Check the PREVIOUS timestamp (from before this page load / browser reopen)
-  // before overwriting it — otherwise a stale session always looks "fresh."
-  let last=0;
-  try{last=parseInt(localStorage.getItem(ACTIVITY_KEY),10)||0;}catch(_){}
-  if(last&&(Date.now()-last>INACTIVITY_LIMIT_MS)){
-    try{localStorage.removeItem(ACTIVITY_KEY);}catch(_){}
-    auth.signOut().then(()=>{alert('You\'ve been signed out due to inactivity. Please sign in again.');});
-    return; // don't start the watcher on a session we just killed
-  }
-
+  // Previously this also checked the timestamp from BEFORE this page load
+  // and force-signed-out anyone who'd been away >30 min — which punished
+  // ordinary "closed the tab, came back later" usage exactly as harshly as
+  // someone leaving a shared computer signed in. That's what was wiping
+  // tracking state on browser restart. Now this only watches for idleness
+  // *during* an open session — closing/reopening the app never triggers a
+  // sign-out on its own; only genuinely sitting idle with the tab open for
+  // 30+ minutes does.
   recordActivity();
   ACTIVITY_EVENTS.forEach(evt=>window.addEventListener(evt,recordActivity,{passive:true}));
   if(inactivityCheckInterval)clearInterval(inactivityCheckInterval);
