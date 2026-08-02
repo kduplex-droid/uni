@@ -255,6 +255,10 @@ select.form-input option{background:var(--surface);}
 
 /* ─── PRODUCT GRID ───────────────────────────────────────── */
 .products-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 12px 12px;}
+.home-row-scroll{display:flex;gap:10px;padding:0 12px 18px;overflow-x:auto;scrollbar-width:none;}
+.home-row-scroll::-webkit-scrollbar{display:none;}
+.home-row-scroll .prod-card{flex:0 0 132px;width:132px;}
+.home-row-scroll .prod-img{height:100px;}
 .prod-card{background:var(--surface);cursor:pointer;position:relative;overflow:hidden;border-radius:18px;border:1.5px solid var(--border);box-shadow:0 4px 0 var(--dim);transition:transform .15s,box-shadow .15s;}
 .prod-card:active{transform:translateY(3px);box-shadow:0 1px 0 var(--dim);}
 .prod-img{height:130px;display:flex;align-items:center;justify-content:center;font-size:42px;position:relative;overflow:hidden;background:var(--s2);}
@@ -720,6 +724,23 @@ select.form-input option{background:var(--surface);}
   </div>
   <div class="row-header"><span class="row-label">MOST ORDERED</span><button class="row-link" onclick="navigate('shop')">View all →</button></div>
   <div id="home-products"><div class="loading-state">Loading snacks... 🍜</div></div>
+
+  <div id="home-recent-section" style="display:none;">
+    <div class="row-header"><span class="row-label">RECENTLY PURCHASED</span></div>
+    <div id="home-recent" class="home-row-scroll"></div>
+  </div>
+
+  <div class="row-header"><span class="row-label">🥔 CHIPS</span><button class="row-link" onclick="navigate('shop','chips')">View all →</button></div>
+  <div id="home-cat-chips" class="home-row-scroll"></div>
+
+  <div class="row-header"><span class="row-label">⚡ DRINKS</span><button class="row-link" onclick="navigate('shop','drinks')">View all →</button></div>
+  <div id="home-cat-drinks" class="home-row-scroll"></div>
+
+  <div class="row-header"><span class="row-label">🍫 SWEETS</span><button class="row-link" onclick="navigate('shop','sweets')">View all →</button></div>
+  <div id="home-cat-sweets" class="home-row-scroll"></div>
+
+  <div class="row-header"><span class="row-label">🍜 QUICK MEALS</span><button class="row-link" onclick="navigate('shop','meals')">View all →</button></div>
+  <div id="home-cat-meals" class="home-row-scroll"></div>
 </div>
 
 <!-- ===================== SHOP ===================== -->
@@ -1334,6 +1355,7 @@ auth.onAuthStateChanged(user=>{
     startProductListener();
     startCartListener(user.uid);
     loadActiveOrder(user.uid);
+    loadOrderHistory();
     startInactivityWatcher();
   }else{
     document.getElementById('auth-wall').classList.remove('hidden');
@@ -1408,7 +1430,7 @@ function navigate(screen,filterCat){
   document.getElementById('admin-screen').style.display=isAdmin?'block':'none';
   CUSTOMER_SCREENS.forEach(s=>{const el=document.getElementById(s+'-screen');if(el)el.classList.toggle('active',s===screen);});
   Object.keys(BNAV_MAP).forEach(k=>{document.getElementById(BNAV_MAP[k])?.classList.toggle('active',k===screen);});
-  if(screen==='home')renderProductGrid('home-products',true);
+  if(screen==='home'){renderProductGrid('home-products',true);renderHomeExtras();}
   if(screen==='shop'){if(filterCat)setFilterByKey(filterCat);renderProductGrid('shop-products',false);}
   if(screen==='cart')renderCart();
   if(screen==='checkout')renderCheckoutSummary();
@@ -1492,7 +1514,7 @@ function startProductListener(){
   if(productListenerActive)return;productListenerActive=true;
   db.collection('products').orderBy('createdAt','desc').onSnapshot(snapshot=>{
     APP.products=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
-    if(currentScreen==='home')renderProductGrid('home-products',true);
+    if(currentScreen==='home'){renderProductGrid('home-products',true);renderHomeExtras();}
     if(currentScreen==='shop'){
       if(APP.currentSearch)filterProducts(APP.currentSearch); // re-apply active search instead of wiping it
       else renderProductGrid('shop-products',false);
@@ -1528,6 +1550,41 @@ function renderProductGrid(containerId,hotOnly){
   if(hotOnly)prods=prods.filter(p=>p.isHot).slice(0,4);
   if(APP.currentFilter!=='all'&&!hotOnly)prods=prods.filter(p=>p.category===APP.currentFilter);
   container.innerHTML=prods.length?'<div class="products-grid">'+prods.map(productCardHTML).join('')+'</div>':'<div class="empty-state"><span class="empty-state-icon">🕐</span><div class="empty-state-title">No snacks here yet</div><div class="empty-state-sub">Check back soon!</div></div>';
+}
+function renderHomeExtras(){
+  const inStock=APP.products.filter(p=>p.inStock!==false);
+  ['chips','drinks','sweets','meals'].forEach(cat=>{
+    const el=document.getElementById('home-cat-'+cat);
+    if(!el)return;
+    const items=inStock.filter(p=>p.category===cat).slice(0,10);
+    el.innerHTML=items.length?items.map(productCardHTML).join(''):'<div class="empty-state" style="padding:16px 4px;"><div class="empty-state-sub">Nothing here yet</div></div>';
+  });
+  renderRecentlyPurchased();
+}
+function renderRecentlyPurchased(){
+  const section=document.getElementById('home-recent-section');
+  const el=document.getElementById('home-recent');
+  if(!section||!el)return;
+  if(!APP.user||!APP_HISTORY_ORDERS.length){section.style.display='none';return;}
+  // Flatten items across past orders, most recent order first, de-duped by
+  // product id (keep first/most-recent occurrence), then match against the
+  // live product catalog so price/stock/image shown are current — not
+  // whatever they were at the time of that old order.
+  const seen=new Set();
+  const recentIds=[];
+  for(const order of APP_HISTORY_ORDERS){
+    if(order.status==='cancelled')continue;
+    for(const item of (order.items||[])){
+      if(!seen.has(item.id)){seen.add(item.id);recentIds.push(item.id);}
+      if(recentIds.length>=10)break;
+    }
+    if(recentIds.length>=10)break;
+  }
+  const byId=Object.fromEntries(APP.products.map(p=>[p.id,p]));
+  const items=recentIds.map(id=>byId[id]).filter(p=>p&&p.inStock!==false);
+  if(!items.length){section.style.display='none';return;}
+  section.style.display='block';
+  el.innerHTML=items.map(productCardHTML).join('');
 }
 function setFilter(cat,el){
   APP.currentFilter=cat;
@@ -1875,10 +1932,18 @@ function cancelActiveOrder(){
 let historyOrdersUnsub=null,APP_HISTORY_ORDERS=[];
 function loadOrderHistory(){
   if(!APP.user){document.getElementById('history-list').innerHTML='<div class="empty-state"><span class="empty-state-icon">🔒</span><div class="empty-state-title">Sign in to see your orders</div></div>';return;}
-  if(historyOrdersUnsub)return; // already listening for this session
+  if(historyOrdersUnsub){
+    // Already listening (started at sign-in so the home screen's Recently
+    // Purchased row has data ready) — just render whatever we already have
+    // instead of skipping entirely, since this can be called again when
+    // the user navigates to the History screen for the first time.
+    if(currentScreen==='history')renderOrderHistory();
+    return;
+  }
   historyOrdersUnsub=db.collection('orders').where('userId','==',APP.user.uid).orderBy('createdAt','desc').limit(50).onSnapshot(snap=>{
     APP_HISTORY_ORDERS=snap.docs.map(doc=>({id:doc.id,...doc.data()}));
     if(currentScreen==='history')renderOrderHistory();
+    renderRecentlyPurchased(); // safe to call regardless of current screen — it's a cheap DOM update on an off-screen element if not on 'home'
   },err=>{
     // Same class of issue as the active-order listener: this needs a
     // Firestore composite index (userId == + orderBy createdAt). Check the
