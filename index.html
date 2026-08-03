@@ -1508,6 +1508,14 @@ let inactivityCheckInterval=null;
 function recordActivity(){try{localStorage.setItem(ACTIVITY_KEY,Date.now().toString());}catch(_){}}
 
 function startInactivityWatcher(){
+  // Previously this also checked the timestamp from BEFORE this page load
+  // and force-signed-out anyone who'd been away >30 min — which punished
+  // ordinary "closed the tab, came back later" usage exactly as harshly as
+  // someone leaving a shared computer signed in. That's what was wiping
+  // tracking state on browser restart. Now this only watches for idleness
+  // *during* an open session — closing/reopening the app never triggers a
+  // sign-out on its own; only genuinely sitting idle with the tab open for
+  // 30+ minutes does.
   recordActivity();
   ACTIVITY_EVENTS.forEach(evt=>window.addEventListener(evt,recordActivity,{passive:true}));
   if(inactivityCheckInterval)clearInterval(inactivityCheckInterval);
@@ -1528,6 +1536,8 @@ function stopInactivityWatcher(){
   ACTIVITY_EVENTS.forEach(evt=>window.removeEventListener(evt,recordActivity));
   try{localStorage.removeItem(ACTIVITY_KEY);}catch(_){}
 }
+
+/* ── NAVIGATION ───────────────────────────────────────────── */
 
 /* ── NAVIGATION ───────────────────────────────────────────── */
 const CUSTOMER_SCREENS=['home','auth','shop','cart','checkout','confirm','tracking','history','receipt'];
@@ -1576,7 +1586,24 @@ function saveCart(){
 
 /* ── ACTIVE ORDER LISTENER ────────────────────────────────── */
 function loadActiveOrder(uid){
+  // Only tear down THIS function's own previous query listener — not the
+  // per-order tracking listener (that's APP.activeOrderUnsub, used in
+  // renderTracking), and NOT the displayed state fields. Previously this
+  // called stopActiveOrderListener() here, which nulled APP.activeOrderId /
+  // orderNum / lastOrder immediately, wiping out whatever placeOrder() had
+  // just set — before this async query even had a chance to confirm it.
+  // If the query was slow, or needed a Firestore composite index that
+  // didn't exist yet, that null state was never restored, so tracking
+  // showed "no active order" and no live listener ever got attached.
   if(APP.activeOrderQueryUnsub){APP.activeOrderQueryUnsub();APP.activeOrderQueryUnsub=null;}
+  // Query by userId only (auto-indexed, no composite index setup needed —
+  // same pattern as the working order-history query), then find the active
+  // order client-side. Previously this filtered status via a Firestore
+  // 'in' clause combined with orderBy, which needs a composite index that
+  // has to be manually created in Firebase Console/CLI — if that step was
+  // ever skipped, this query silently failed on every load, which is what
+  // was "clearing" tracking on browser restart. Pulling the last 15 orders
+  // and filtering here avoids that setup step entirely.
   const ACTIVE_STATUSES=['pending','confirmed','packing','delivering'];
   APP.activeOrderQueryUnsub=db.collection('orders').where('userId','==',uid).orderBy('createdAt','desc').limit(15).onSnapshot(snap=>{
     const dot=document.getElementById('track-live-dot');
@@ -1590,6 +1617,12 @@ function loadActiveOrder(uid){
       APP.lastOrder={items:data.items||[],total:data.total||0};
       if(dot)dot.style.display='block';
       if(currentScreen==='tracking')renderTracking();
+      // Auto-open Tracking exactly once per session — only on the very
+      // first snapshot after sign-in (covers cold loads / browser
+      // restarts), and only while the user is still sitting on Home. If
+      // they're already mid-checkout, browsing Shop, or anywhere else, we
+      // don't yank them away — the live-dot on the nav tab is enough of a
+      // nudge in that case.
       if(!APP.autoOpenedTracking){
         APP.autoOpenedTracking=true;
         if(currentScreen==='home')navigate('tracking');
@@ -1602,6 +1635,9 @@ function loadActiveOrder(uid){
       if(currentScreen==='tracking')renderTracking();
     }
   },err=>{
+    // This query no longer needs a composite index (single equality +
+    // orderBy only), so this should rarely fire. If it does, it's most
+    // likely a rules/permission issue rather than an indexing one.
     console.error('Active order listener:',err);
   });
 }
@@ -1673,6 +1709,10 @@ function renderRecentlyPurchased(){
   const el=document.getElementById('home-recent');
   if(!section||!el)return;
   if(!APP.user||!APP_HISTORY_ORDERS.length){section.style.display='none';return;}
+  // Flatten items across past orders, most recent order first, de-duped by
+  // product id (keep first/most-recent occurrence), then match against the
+  // live product catalog so price/stock/image shown are current — not
+  // whatever they were at the time of that old order.
   const seen=new Set();
   const recentIds=[];
   for(const order of APP_HISTORY_ORDERS){
@@ -1828,6 +1868,9 @@ function placeOrder(){
     // ── READ PHASE (all reads must happen before any writes in a Firestore transaction) ──
     const productRefs=cartSnapshot.map(item=>db.collection('products').doc(item.id));
     return Promise.all(productRefs.map(ref=>txn.get(ref))).then(productDocs=>{
+      // Verify stock AND price against the live server data — never the
+      // client's cached APP.cart values, which can be tampered with in
+      // devtools before this function runs.
       let subtotal=0;
       const orderItems=[];
       for(let i=0;i<cartSnapshot.length;i++){
@@ -1846,12 +1889,15 @@ function placeOrder(){
         if(typeof data.price!=='number'||data.price<=0){
           throw new Error(`"${item.name}" has an invalid price. Please contact support.`);
         }
+        // Price, name, emoji, image all come from the live product doc —
+        // never from the client's cart.
         subtotal+=data.price*item.qty;
         orderItems.push({id:item.id,name:data.name,price:data.price,qty:item.qty,emoji:data.emoji||'',imageUrl:data.imageUrl||''});
       }
       const delivery=0;
       const total=subtotal+delivery;
 
+      // ── WRITE PHASE ──
       productRefs.forEach((ref,i)=>{
         const item=cartSnapshot[i];
         const data=productDocs[i].data();
@@ -1915,6 +1961,9 @@ function renderTracking(){
     if(APP.activeOrderUnsub)APP.activeOrderUnsub();
     APP.activeOrderUnsub=db.collection('orders').doc(APP.activeOrderId).onSnapshot(doc=>{
       if(!doc.exists){
+        // Order was deleted (e.g. the customer cancelled it) — clear the
+        // stale UI instead of silently doing nothing and leaving the last
+        // known status/cancel-button on screen.
         if(APP.activeOrderUnsub){APP.activeOrderUnsub();APP.activeOrderUnsub=null;}
         APP.activeOrderId=null;APP.orderNum=null;APP.lastOrder=null;
         if(currentScreen==='tracking')renderTracking();
@@ -1938,6 +1987,13 @@ function showEtaLive(eta){
   box.classList.remove('eta-pending');
   document.getElementById('t-eta-left').innerHTML=`<div class="eta-lbl">ARRIVING AROUND</div><div class="eta-t">${eta.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})}</div>`;
   document.getElementById('t-eta-right').innerHTML=`<div class="eta-cd-lbl">Time remaining</div><div class="eta-cd" id="t-countdown">-- min left</div>`;
+  // Recompute remaining seconds from eta - now() on every tick, rather than
+  // decrementing a local counter. A local counter only reflects real time
+  // when setInterval fires exactly every 1000ms, which browsers don't
+  // guarantee (throttled/backgrounded tabs run intervals slower), so it
+  // would silently drift behind the real ETA the longer the tab sits idle.
+  // Deriving from the actual clock each tick means it's always correct,
+  // even after long gaps, and self-heals without needing a resync trigger.
   const tick=()=>{
     const sec=Math.max(0,Math.floor((eta-new Date())/1000));
     const el=document.getElementById('t-countdown');
@@ -1947,7 +2003,7 @@ function showEtaLive(eta){
       if(cdInterval){clearInterval(cdInterval);cdInterval=null;}
       return;
     }
-    const mins=Math.ceil(sec/60);
+    const mins=Math.ceil(sec/60); // ceil so it doesn't undercount (e.g. 61s still reads "2 min left", not "1")
     el.textContent=mins+' min left';
   };
   tick();cdInterval=setInterval(tick,1000);
@@ -1972,8 +2028,8 @@ function renderDriverCard(order){
     </div>`;
 }
 function updateTrackingUI(data){
-  APP.activeOrderData=data;
-  APP.activeOrderStatus=data.status;
+  APP.activeOrderData=data; // lets the "View Receipt" button on this screen open a live receipt without a re-fetch
+  APP.activeOrderStatus=data.status; // needed by cancelActiveOrder() to guard against stale button clicks
   renderDriverCard(data);
   const cfg=STATUS_CONFIG[data.status]||STATUS_CONFIG.pending;
   document.getElementById('t-emoji').textContent=cfg.emoji;
@@ -1992,6 +2048,9 @@ function updateTrackingUI(data){
   }else{
     etaBox.style.display='';
     cancelledNote.style.display='none';
+    // Only lets you back out before the admin has started confirming/packing —
+    // once it's confirmed, cancelling could mean snacks already being packed
+    // for nothing, so we cut it off there.
     cancelBtn.style.display=(data.status==='pending')?'block':'none';
     const etaStr=data.adminEta||null;
     if(etaStr){const eta=new Date(etaStr);if(!isNaN(eta.getTime()))showEtaLive(eta);else showEtaSkeleton();}else{showEtaSkeleton();}
@@ -2017,15 +2076,23 @@ function cancelActiveOrder(){
       const items=order.items||[];
       const productRefs=items.map(i=>db.collection('products').doc(i.id));
       return Promise.all(productRefs.map(ref=>txn.get(ref))).then(productDocs=>{
+        // Restore stock for each item so cancelling doesn't leave products
+        // looking permanently out of stock. Read-then-write inside the
+        // same transaction keeps this safe against concurrent orders.
         productRefs.forEach((ref,i)=>{
           const doc=productDocs[i];
-          if(!doc.exists)return;
+          if(!doc.exists)return; // product may have been deleted since — nothing to restore
           const data=doc.data();
           if(typeof data.stockQty==='number'){
             const newQty=data.stockQty+items[i].qty;
             txn.update(ref,{stockQty:newQty,inStock:newQty>0});
           }
         });
+        // Deleted, not marked 'cancelled' — per request, a cancelled order
+        // shouldn't linger anywhere (admin view, customer history). This
+        // does mean there's no record of it afterwards; if you ever want an
+        // audit trail back, this is the one line to change to a status
+        // update instead.
         txn.delete(orderRef);
       });
     });
@@ -2043,14 +2110,21 @@ let historyOrdersUnsub=null,APP_HISTORY_ORDERS=[];
 function loadOrderHistory(){
   if(!APP.user){document.getElementById('history-list').innerHTML='<div class="empty-state"><span class="empty-state-icon">🔒</span><div class="empty-state-title">Sign in to see your orders</div></div>';return;}
   if(historyOrdersUnsub){
+    // Already listening (started at sign-in so the home screen's Recently
+    // Purchased row has data ready) — just render whatever we already have
+    // instead of skipping entirely, since this can be called again when
+    // the user navigates to the History screen for the first time.
     if(currentScreen==='history')renderOrderHistory();
     return;
   }
   historyOrdersUnsub=db.collection('orders').where('userId','==',APP.user.uid).orderBy('createdAt','desc').limit(50).onSnapshot(snap=>{
     APP_HISTORY_ORDERS=snap.docs.map(doc=>({id:doc.id,...doc.data()}));
     if(currentScreen==='history')renderOrderHistory();
-    renderRecentlyPurchased();
+    renderRecentlyPurchased(); // safe to call regardless of current screen — it's a cheap DOM update on an off-screen element if not on 'home'
   },err=>{
+    // Same class of issue as the active-order listener: this needs a
+    // Firestore composite index (userId == + orderBy createdAt). Check the
+    // console for a "requires an index" link if this list stays empty.
     console.error('Order history listener (check for a "requires an index" link below):',err);
     document.getElementById('history-list').innerHTML='<div class="empty-state"><span class="empty-state-icon">⚠️</span><div class="empty-state-title">Couldn\'t load your orders</div></div>';
   });
@@ -2089,6 +2163,7 @@ function renderOrderHistory(){
           <div class="order-totals-row big"><span>Total</span><span style="color:var(--lav)">R${esc(o.total||0)}</span></div>
           <div style="display:flex;gap:8px;margin-top:10px;">
             <button class="btn btn-ghost" style="flex:1;margin:0;" onclick="openReceiptById('${esc(o.id)}')">🧾 Receipt</button>
+            ${(o.status!=='cancelled'&&o.status!=='delivered')?`<button class="btn btn-ghost" style="flex:1;margin:0;" onclick="navigate('tracking')">Track order →</button>`:''}
           </div>
         </div>
       </div>
@@ -2113,7 +2188,7 @@ function renderReceiptCard(o){
   const t=o.createdAt?.toDate?o.createdAt.toDate():new Date();
   document.getElementById('rc-ordernum').textContent=o.orderNum||'—';
   document.getElementById('rc-date').textContent=t.toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})+', '+t.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('rc-status').textContent=(ORDER_STATUS_LABELS[o.status]||o.status||'—').replace(/^[^A-Z]*/,'');
+  document.getElementById('rc-status').textContent=(ORDER_STATUS_LABELS[o.status]||o.status||'—').replace(/^[^A-Z]*/,''); // strip the leading emoji for a cleaner printed look
   document.getElementById('rc-subtotal').textContent='R'+(o.subtotal||o.total||0);
   document.getElementById('rc-total').textContent='R'+(o.total||0);
   document.getElementById('rc-campus').textContent=o.campus==='upper'?'Upper Campus':o.campus==='middle'?'Middle Campus':(o.campus||'—');
@@ -2129,8 +2204,12 @@ function downloadReceipt(){
   btn.disabled=true;btn.textContent='Preparing…';
   html2canvas(node,{scale:3,backgroundColor:'#FFFDF8',useCORS:true}).then(canvas=>{
     const{jsPDF}=window.jspdf;
+    // Size the PDF page to match the receipt's own aspect ratio (in mm,
+    // scaled from the canvas' pixel ratio) rather than forcing it onto a
+    // fixed A4 page — keeps it looking like an actual receipt slip, not a
+    // mostly-blank page.
     const pxToMm=canvas.width/canvas.height;
-    const pdfWidth=100;
+    const pdfWidth=100; // mm
     const pdfHeight=pdfWidth/pxToMm;
     const pdf=new jsPDF({orientation:pdfHeight>pdfWidth?'portrait':'landscape',unit:'mm',format:[pdfWidth,pdfHeight]});
     pdf.addImage(canvas.toDataURL('image/png',1.0),'PNG',0,0,pdfWidth,pdfHeight);
