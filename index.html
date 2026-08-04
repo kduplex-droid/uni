@@ -381,74 +381,11 @@ select.form-input option{background:var(--surface);}
 .eta-val{font-size:24px;font-weight:900;color:var(--candy-mint);}
 .confirm-actions{width:100%;display:flex;flex-direction:column;gap:8px;}
 
-/* ─── TRACKING ───────────────────────────────────────────── */
-.tracking-content{padding:16px;}
+/* ─── ORDER HISTORY / STATUS CARDS ───────────────────────── */
 .order-meta{display:flex;justify-content:space-between;margin-bottom:18px;}
 .order-meta-num{font-size:12px;color:var(--muted);}
 .order-meta-num b{color:var(--text);}
 .order-meta-time{font-size:11px;color:var(--dim);}
-.status-card{background:var(--surface);border:1.5px solid var(--border);border-radius:18px;padding:20px;text-align:center;margin-bottom:18px;box-shadow:0 4px 0 var(--dim);}
-.status-emoji{font-size:36px;display:block;margin-bottom:10px;}
-.status-tag{font-size:10px;font-weight:800;letter-spacing:.15em;color:var(--muted);margin-bottom:4px;}
-.status-title{font-size:18px;font-weight:800;margin-bottom:4px;}
-.status-title.orange{color:var(--lav);}
-.status-title.green{color:var(--candy-mint);}
-.status-desc{font-size:12px;color:var(--muted);}
-.steps-wrap{position:relative;padding:0 8px;margin-bottom:18px;}
-.steps-track{display:flex;justify-content:space-between;align-items:flex-start;position:relative;}
-.steps-bg-line{position:absolute;top:14px;left:0;right:0;height:3px;background:var(--s2);z-index:0;border-radius:2px;}
-.steps-prog-line{position:absolute;top:14px;left:0;height:3px;background:linear-gradient(90deg,var(--lav-dim),var(--lav));z-index:1;transition:width .4s;border-radius:2px;}
-.step-node{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;position:relative;z-index:2;}
-.step-dot{width:30px;height:30px;border-radius:50%;border:2px solid var(--dim);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .3s;}
-.step-dot.done{background:linear-gradient(135deg,var(--lav-dim),var(--lav));border-color:var(--lav);color:#fff;box-shadow:0 3px 0 #5B21B6;}
-.step-dot.current{background:linear-gradient(135deg,#059669,var(--candy-mint));border-color:var(--candy-mint);color:#fff;box-shadow:0 0 0 4px #34D39930,0 3px 0 #065F46;}
-.step-label{font-size:9px;font-weight:700;color:var(--dim);text-align:center;line-height:1.3;}
-.step-label.done-lbl{color:var(--lav);}
-.step-label.current-lbl{color:var(--candy-mint);}
-
-/* ─── ETA BOX ─────────────────────────────────────────────── */
-.eta-box-sm{background:#34D3991a;border:1.5px solid #34D39930;border-radius:14px;padding:12px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
-.eta-box-sm.eta-pending{background:var(--s2);border-color:var(--border);}
-.eta-lbl{font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--candy-mint);margin-bottom:4px;}
-.eta-box-sm.eta-pending .eta-lbl{color:var(--muted);}
-.eta-t{font-size:20px;font-weight:900;color:var(--candy-mint);}
-.eta-cd-lbl{font-size:10px;color:var(--muted);text-align:right;margin-bottom:4px;}
-.eta-cd{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;text-align:right;}
-
-/* ─── ETA SKELETON SHIMMER ──────────────────────────────── */
-.eta-skeleton{display:flex;flex-direction:column;gap:7px;padding:2px 0;}
-.eta-skel-line{height:11px;border-radius:6px;background:linear-gradient(90deg,var(--border) 25%,var(--dim) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.4s ease-in-out infinite;}
-.eta-skel-line.wide{width:88px;}
-.eta-skel-line.narrow{width:52px;}
-@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
-.eta-pending-label{font-size:10px;color:var(--muted);font-weight:700;font-style:italic;margin-top:5px;}
-
-.ordered-items{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;}
-.ord-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--s2);}
-.ord-item:last-child{border-bottom:none;}
-.ord-thumb{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;overflow:hidden;background:var(--s2);border:1px solid var(--border);}
-.ord-thumb img{width:100%;height:100%;object-fit:cover;}
-.ord-name{flex:1;font-size:12px;font-weight:700;}
-.ord-price{font-size:13px;font-weight:800;color:var(--lav);}
-.driver-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;box-shadow:0 3px 0 var(--dim);}
-.driver-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--lav-dim),var(--candy-pink));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 3px 0 #5B21B6;}
-.driver-info{flex:1;}
-.driver-name{font-size:13px;font-weight:700;}
-.driver-sub{font-size:11px;color:var(--muted);}
-.wa-btn{display:flex;align-items:center;gap:6px;background:#25D366;color:#fff;border:none;border-radius:12px;padding:8px 12px;font-size:11px;font-weight:800;font-family:var(--font);cursor:pointer;box-shadow:0 3px 0 #15803D;text-decoration:none;justify-content:center;}
-.call-btn{display:flex;align-items:center;gap:6px;background:var(--lav-dim);color:#fff;border:none;border-radius:12px;padding:8px 12px;font-size:11px;font-weight:800;font-family:var(--font);cursor:pointer;box-shadow:0 3px 0 #5B21B6;text-decoration:none;justify-content:center;}
-.driver-btns{display:flex;flex-direction:column;gap:6px;}
-.support-btns{display:flex;gap:8px;}
-.support-btn{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:10px;font-size:11px;font-weight:700;font-family:var(--font);color:var(--text);cursor:pointer;box-shadow:0 2px 0 var(--dim);transition:all .15s;}
-.support-btn:hover{border-color:var(--lav);color:var(--lav);}
-
-/* ─── TRACKING LIVE BANNER ───────────────────────────────── */
-.track-live-banner{background:var(--lav-glow);border:1.5px solid var(--lav);border-radius:14px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;color:var(--lav-light);}
-.track-live-dot{width:8px;height:8px;border-radius:50%;background:var(--candy-mint);box-shadow:0 0 8px var(--candy-mint);animation:pulse-dot 1.5s ease-in-out infinite;flex-shrink:0;}
-.track-no-order{text-align:center;padding:60px 20px;}
-.track-no-order-icon{font-size:48px;margin-bottom:16px;display:block;}
-.track-no-order-title{font-size:17px;font-weight:800;margin-bottom:8px;}
-.track-no-order-sub{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:24px;}
 
 /* ─── ADMIN PANEL ────────────────────────────────────────── */
 #admin-screen{display:none;padding-bottom:20px;}
@@ -592,9 +529,6 @@ select.form-input option{background:var(--surface);}
 .ldr-bar{height:100%;width:0%;background:linear-gradient(90deg,#7C3AED,#C084FC,#F472B6);border-radius:2px;will-change:width;}
 .ldr-ring{position:absolute;border-radius:50%;border:1px solid #C084FC14;will-change:transform,opacity;animation:ringPulse 4s ease-in-out infinite;pointer-events:none;}
 @keyframes ringPulse{0%,100%{transform:scale(1);opacity:.4;}50%{transform:scale(1.05);opacity:.9;}}
-
-/* ─── TRACK LIVE NAV DOT ─────────────────────────────────── */
-#track-live-dot{display:none;position:absolute;top:4px;right:calc(50% - 16px);width:7px;height:7px;border-radius:50%;background:var(--candy-mint);box-shadow:0 0 6px var(--candy-mint);animation:pulse-dot 1.5s ease-in-out infinite;}
 </style>
 </head>
 <body>
@@ -848,59 +782,11 @@ select.form-input option{background:var(--surface);}
     <div class="confirm-circle">🎉</div>
     <div class="confirm-order-badge">Order <b id="confirm-order-num">#UNI-0000</b></div>
     <div class="confirm-title">Order placed!</div>
-    <div class="confirm-sub">Your snacks are being packed now.<br>We'll WhatsApp you when they're on the way.</div>
+    <div class="confirm-sub">Your snacks are being packed now.<br>We'll WhatsApp and email you when they're on the way.</div>
     <div class="eta-card"><div class="eta-label">ESTIMATED ARRIVAL</div><div class="eta-val" id="confirm-eta">—</div></div>
     <div class="confirm-actions">
       <button class="btn btn-primary" onclick="navigate('history')">View my order</button>
       <button class="btn btn-secondary" onclick="navigate('home')" style="margin-top:8px;">Continue shopping</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===================== TRACKING ===================== -->
-<div id="tracking-screen" class="screen">
-  <div id="tracking-no-order" class="track-no-order" style="display:none;">
-    <span class="track-no-order-icon">📦</span>
-    <div class="track-no-order-title">No active order</div>
-    <div class="track-no-order-sub">Place an order to track it here in real-time.</div>
-    <button class="btn btn-primary" onclick="navigate('shop')" style="max-width:200px;margin:0 auto;">Order now</button>
-  </div>
-  <div id="tracking-active" style="display:none;">
-    <div class="tracking-content">
-      <div class="track-live-banner"><div class="track-live-dot"></div><span>Live tracking active — updates in real time</span></div>
-      <div class="order-meta"><div class="order-meta-num">Order <b id="track-order-num">#UNI-0000</b></div><div class="order-meta-time" id="track-time">—</div></div>
-      <div class="status-card"><span class="status-emoji" id="t-emoji">📦</span><div class="status-tag">ORDER STATUS</div><div class="status-title orange" id="t-title">Pending</div><div class="status-desc" id="t-desc">Waiting for confirmation</div></div>
-      <div class="steps-wrap">
-        <div class="steps-track">
-          <div class="steps-bg-line"></div><div class="steps-prog-line" id="t-prog" style="width:0%;"></div>
-          <div class="step-node"><div class="step-dot" id="td-0">1</div><div class="step-label" id="tl-0">Received</div></div>
-          <div class="step-node"><div class="step-dot" id="td-1">2</div><div class="step-label" id="tl-1">Confirmed</div></div>
-          <div class="step-node"><div class="step-dot" id="td-2">3</div><div class="step-label" id="tl-2">Packing</div></div>
-          <div class="step-node"><div class="step-dot" id="td-3">4</div><div class="step-label" id="tl-3">Delivering</div></div>
-          <div class="step-node"><div class="step-dot" id="td-4">5</div><div class="step-label" id="tl-4">Delivered</div></div>
-        </div>
-      </div>
-      <div class="eta-box-sm" id="t-eta-box">
-        <div id="t-eta-left">
-          <div class="eta-lbl">ARRIVING AROUND</div>
-          <div class="eta-t">—</div>
-        </div>
-        <div id="t-eta-right">
-          <div class="eta-cd-lbl">Time remaining</div>
-          <div class="eta-cd">--:--</div>
-        </div>
-      </div>
-      <button class="btn btn-ghost" id="t-cancel-btn" style="display:none;margin:4px 0 2px;color:var(--red);border-color:var(--red);" onclick="cancelActiveOrder()">Cancel order</button>
-      <button class="btn btn-ghost" style="margin:4px 0 2px;" onclick="openReceipt(APP.activeOrderData)">🧾 View Receipt</button>
-      <div id="t-cancelled-note" style="display:none;font-size:12px;color:var(--red);text-align:center;margin:4px 0 2px;">This order was cancelled.</div>
-      <div class="section-label">YOUR ORDER</div>
-      <div class="ordered-items" id="tracking-items"></div>
-      <div class="section-label" style="margin-top:14px;">YOUR DELIVERY PERSON</div>
-      <div class="driver-card" id="t-driver-card">
-        <div class="driver-avatar">🧑</div>
-        <div class="driver-info"><div class="driver-name">Not assigned yet</div><div class="driver-sub">We'll assign someone shortly</div></div>
-      </div>
-      <div class="support-btns"><button class="support-btn">💬 Chat with us</button><button class="support-btn">📞 Call support</button></div>
     </div>
   </div>
 </div>
@@ -1048,10 +934,7 @@ select.form-input option{background:var(--surface);}
   <button class="bnav-item active" id="bnav-home" onclick="navigate('home')"><span class="bnav-icon">🏠</span>Home</button>
   <button class="bnav-item" id="bnav-shop" onclick="navigate('shop')"><span class="bnav-icon">🛍️</span>Shop</button>
   <button class="bnav-item" id="bnav-cart" onclick="navigate('cart')"><span class="bnav-icon">🛒</span>Cart</button>
-  <button class="bnav-item" id="bnav-tracking" onclick="navigate('tracking')">
-    <span class="bnav-icon">📍</span>Track
-    <span id="track-live-dot"></span>
-  </button>
+  <button class="bnav-item" id="bnav-history" onclick="navigate('history')"><span class="bnav-icon">📋</span>Orders</button>
   <button class="bnav-item" id="bnav-auth" onclick="navigate('auth')"><span class="bnav-icon">👤</span>Account</button>
 </div>
 
@@ -1112,38 +995,29 @@ const DELIVERY_PEOPLE=[
   {name:'Mufaro',phone:'0836735699'},
 ];
 function formatSAIntl(phone){
-  // South African numbers → international format for wa.me links, which
-  // require digits only, no leading 0 (e.g. 0844453183 → 27844453183).
   const digits=(phone||'').replace(/\D/g,'');
   if(digits.startsWith('27'))return digits;
   if(digits.startsWith('0'))return '27'+digits.slice(1);
   return digits;
 }
 
-// ── EMAILJS (new-order admin notification) ──────────────────
+// ── EMAILJS (order notifications) ────────────────────────────
 // UNIBITE has no backend, so this sends straight from the browser using
 // EmailJS's free client-side email API — no Cloud Functions/Blaze needed.
-// Fill these in from your EmailJS dashboard (emailjs.com):
-//   1. Sign up free, add an Email Service (e.g. connect Gmail) → gives you
-//      a SERVICE_ID.
-//   2. Create an Email Template with variables like {{order_num}},
-//      {{items_text}}, {{total}}, {{campus}}, {{residence}}, {{phone}},
-//      {{customer_email}}, {{delivery_time}} → gives you a TEMPLATE_ID.
-//      Set the template's "To email" field to your admin address(es).
-//   3. Account → General → copy your Public Key.
 const EMAILJS_PUBLIC_KEY='kX-pXMA1bid89RGiq';
 const EMAILJS_SERVICE_ID='service_qckxmbf';
 const EMAILJS_TEMPLATE_ID='template_zl4kiwz';
-// Separate template for customer-facing status updates (different
-// recipient, different content from the admin new-order notification).
-// In this template's "To Email" field, use {{to_email}} instead of a fixed
-// address, so it goes to whichever customer the update is for.
+// Optional: a second template for customer-facing status updates (different
+// recipient/content from the admin new-order notification). In that
+// template's "To Email" field, use {{to_email}} so it goes to whichever
+// customer the update is for. Leave as-is to skip customer emails.
 const EMAILJS_CUSTOMER_TEMPLATE_ID='YOUR_EMAILJS_CUSTOMER_TEMPLATE_ID';
-if(window.emailjs&&EMAILJS_PUBLIC_KEY!=='YOUR_EMAILJS_PUBLIC_KEY')emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});
+const EMAILJS_READY=!!(window.emailjs&&EMAILJS_PUBLIC_KEY&&EMAILJS_PUBLIC_KEY!=='YOUR_EMAILJS_PUBLIC_KEY');
+if(EMAILJS_READY)emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});
 
 function notifyAdminOfOrder(order){
-  if(!window.emailjs||EMAILJS_PUBLIC_KEY==='YOUR_EMAILJS_PUBLIC_KEY'){
-    console.warn('EmailJS not configured yet — skipping admin order-notification email. See EMAILJS_* constants near the top of the script.');
+  if(!EMAILJS_READY){
+    console.warn('EmailJS not configured — skipping admin order-notification email.');
     return;
   }
   const itemsText=(order.items||[]).map(i=>`${i.qty}× ${i.name} (R${i.price} ea)`).join('\n');
@@ -1165,8 +1039,8 @@ function notifyAdminOfOrder(order){
 }
 
 function notifyCustomerStatusUpdate(order,updateText){
-  if(!window.emailjs||EMAILJS_PUBLIC_KEY==='YOUR_EMAILJS_PUBLIC_KEY'||EMAILJS_CUSTOMER_TEMPLATE_ID==='YOUR_EMAILJS_CUSTOMER_TEMPLATE_ID'){
-    console.warn('EmailJS customer template not configured yet — skipping status-update email. See EMAILJS_CUSTOMER_TEMPLATE_ID near the top of the script.');
+  if(!EMAILJS_READY||EMAILJS_CUSTOMER_TEMPLATE_ID==='YOUR_EMAILJS_CUSTOMER_TEMPLATE_ID'){
+    console.warn('EmailJS customer template not configured — skipping status-update email.');
     return;
   }
   if(!order||!order.userEmail)return;
@@ -1187,12 +1061,8 @@ const APP={
   cart:[],lastOrder:null,
   currentFilter:'all',currentCampus:'upper',
   currentSearch:'',
-  orderNum:null,etaTime:null,deliveryTimeMode:'asap',
+  deliveryTimeMode:'asap',
   pendingImageUrl:null,
-  activeOrderId:null,
-  activeOrderUnsub:null,
-  activeOrderQueryUnsub:null,
-  autoOpenedTracking:false,
 };
 
 const RESIDENCES={
@@ -1333,7 +1203,6 @@ function doSignUp(){
   const btn=document.getElementById('signup-btn');
   btn.disabled=true;btn.textContent='Checking email…';
 
-  // Pre-check: does this email already have an account (with any provider)?
   auth.fetchSignInMethodsForEmail(email).then(methods=>{
     if(methods && methods.length>0){
       const usesGoogle=methods.includes('google.com');
@@ -1351,8 +1220,6 @@ function doSignUp(){
       .catch(err=>showWallError(friendlyAuthError(err.code)))
       .finally(()=>{btn.disabled=false;btn.textContent='Create Account →';});
   }).catch(err=>{
-    // If enumeration protection blocks fetchSignInMethodsForEmail, fall back to direct creation;
-    // Firebase's own auth/email-already-in-use check will still catch duplicates.
     btn.textContent='Creating account…';
     auth.createUserWithEmailAndPassword(email,password)
       .then(cred=>cred.user.updateProfile({displayName:name}))
@@ -1453,7 +1320,7 @@ function adminGateSignIn(){
   const doSignIn=()=>auth.signInWithEmailAndPassword(email,password).catch(err=>{showGateError(friendlyAuthError(err.code));btn.disabled=false;btn.textContent='Sign In to Admin';});
   if(APP.user&&!APP.isAdmin){
     const switchAccounts=()=>auth.signOut().then(doSignIn);
-    saveCart().then(switchAccounts,switchAccounts); // save the outgoing student's cart first, either way
+    saveCart().then(switchAccounts,switchAccounts);
   }else{
     doSignIn();
   }
@@ -1480,7 +1347,6 @@ auth.onAuthStateChanged(user=>{
     if(adminGateOpen){if(APP.isAdmin){closeAdminGate();navigate('admin');}else{showGateError('⛔ This account does not have admin access.');document.getElementById('admin-gate-submit').disabled=false;document.getElementById('admin-gate-submit').textContent='Sign In to Admin';}}
     startProductListener();
     startCartListener(user.uid);
-    loadActiveOrder(user.uid);
     loadOrderHistory();
     startInactivityWatcher();
   }else{
@@ -1490,10 +1356,8 @@ auth.onAuthStateChanged(user=>{
     document.getElementById('bottom-nav').style.display='none';
     document.getElementById('theme-toggle').style.display='none';
     stopCartListener();
-    stopActiveOrderListener();
     stopOrderHistoryListener();
     stopInactivityWatcher();
-    if(currentScreen==='tracking')renderTracking();
     if(currentScreen==='admin'){currentScreen='home';CUSTOMER_SCREENS.forEach(s=>{const el=document.getElementById(s+'-screen');if(el)el.classList.toggle('active',s==='home');});document.getElementById('admin-screen').style.display='none';}
   }
 });
@@ -1530,8 +1394,8 @@ function stopInactivityWatcher(){
 }
 
 /* ── NAVIGATION ───────────────────────────────────────────── */
-const CUSTOMER_SCREENS=['home','auth','shop','cart','checkout','confirm','tracking','history','receipt'];
-const BNAV_MAP={home:'bnav-home',shop:'bnav-shop',cart:'bnav-cart',tracking:'bnav-tracking',auth:'bnav-auth'};
+const CUSTOMER_SCREENS=['home','auth','shop','cart','checkout','confirm','history','receipt'];
+const BNAV_MAP={home:'bnav-home',shop:'bnav-shop',cart:'bnav-cart',history:'bnav-history',auth:'bnav-auth'};
 let currentScreen='home';
 function navigate(screen,filterCat){
   if(screen==='admin'&&!APP.isAdmin){openAdminGate();return;}
@@ -1548,7 +1412,6 @@ function navigate(screen,filterCat){
   if(screen==='shop'){if(filterCat)setFilterByKey(filterCat);renderProductGrid('shop-products',false);}
   if(screen==='cart')renderCart();
   if(screen==='checkout')renderCheckoutSummary();
-  if(screen==='tracking')renderTracking();
   if(screen==='history')loadOrderHistory();
   if(screen==='admin'){renderAdminPanel();startOrdersListener();}
   window.scrollTo(0,0);
@@ -1572,47 +1435,6 @@ function saveCart(){
   if(!APP.user)return Promise.resolve();
   const items=APP.cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty,emoji:i.emoji||'',imageUrl:i.imageUrl||'',brand:i.brand||''}));
   return db.collection('carts').doc(APP.user.uid).set({items,userId:APP.user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(err=>console.error('Cart save failed:',err.code));
-}
-
-/* ── ACTIVE ORDER LISTENER ────────────────────────────────── */
-function loadActiveOrder(uid){
-  if(APP.activeOrderQueryUnsub){APP.activeOrderQueryUnsub();APP.activeOrderQueryUnsub=null;}
-  const ACTIVE_STATUSES=['pending','confirmed','packing','delivering'];
-  APP.activeOrderQueryUnsub=db.collection('orders').where('userId','==',uid).orderBy('createdAt','desc').limit(15).onSnapshot(snap=>{
-    const dot=document.getElementById('track-live-dot');
-    const activeDoc=snap.docs.find(d=>ACTIVE_STATUSES.includes(d.data().status));
-    if(activeDoc){
-      const data={id:activeDoc.id,...activeDoc.data()};
-      APP.activeOrderId=data.id;
-      APP.orderNum=data.orderNum;
-      if(data.adminEta)APP.etaTime=new Date(data.adminEta);
-      else if(data.eta)APP.etaTime=new Date(data.eta);
-      APP.lastOrder={items:data.items||[],total:data.total||0};
-      if(dot)dot.style.display='block';
-      if(currentScreen==='tracking')renderTracking();
-      if(!APP.autoOpenedTracking){
-        APP.autoOpenedTracking=true;
-        if(currentScreen==='home')navigate('tracking');
-      }
-    }else{
-      APP.activeOrderId=null;
-      APP.orderNum=null;
-      APP.lastOrder=null;
-      if(dot)dot.style.display='none';
-      if(currentScreen==='tracking')renderTracking();
-    }
-  },err=>{
-    console.error('Active order listener:',err);
-  });
-}
-function stopActiveOrderListener(){
-  if(APP.activeOrderQueryUnsub){APP.activeOrderQueryUnsub();APP.activeOrderQueryUnsub=null;}
-  if(APP.activeOrderUnsub){APP.activeOrderUnsub();APP.activeOrderUnsub=null;}
-  APP.activeOrderId=null;
-  APP.orderNum=null;
-  APP.etaTime=null;
-  APP.lastOrder=null;
-  APP.autoOpenedTracking=false;
 }
 
 /* ── PRODUCTS ─────────────────────────────────────────────── */
@@ -1693,12 +1515,12 @@ function setFilter(cat,el){
   APP.currentFilter=cat;
   document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
-  if(APP.currentSearch)filterProducts(APP.currentSearch); // keep search text applied when switching category
+  if(APP.currentSearch)filterProducts(APP.currentSearch);
   else renderProductGrid('shop-products',false);
 }
 function setFilterByKey(cat){APP.currentFilter=cat;document.querySelectorAll('.filter-chip').forEach(c=>{c.classList.remove('active');if(c.textContent.toLowerCase().includes(cat))c.classList.add('active');});if(cat==='all')document.querySelector('.filter-chip').classList.add('active');}
 function filterProducts(val){
-  APP.currentSearch=val; // remember the active search so live updates don't wipe it
+  APP.currentSearch=val;
   const v=val.toLowerCase(),container=document.getElementById('shop-products');
   let prods=APP.products.filter(p=>p.inStock!==false);
   if(APP.currentFilter!=='all')prods=prods.filter(p=>p.category===APP.currentFilter);
@@ -1887,155 +1709,10 @@ function placeOrder(){
   });
 }
 
-/* ── TRACKING ─────────────────────────────────────────────── */
-const STATUS_CONFIG={
-  pending:  {emoji:'📦',title:'Order Received',desc:'Waiting for confirmation',prog:'10%',step:0},
-  confirmed:{emoji:'✅',title:'Order Confirmed',desc:'Your order has been confirmed',prog:'30%',step:1},
-  packing:  {emoji:'📦',title:'Being Packed',desc:'Your snacks are being packed',prog:'55%',step:2},
-  delivering:{emoji:'🛵',title:'On Its Way!',desc:'Your delivery is heading to you',prog:'80%',step:3},
-  delivered:{emoji:'🎉',title:'Delivered!',desc:'Enjoy your snacks!',prog:'100%',step:4},
-  cancelled:{emoji:'❌',title:'Order Cancelled',desc:'This order was cancelled',prog:'0%',step:-1},
-};
-let cdInterval=null;
-
-function renderTracking(){
-  if(cdInterval){clearInterval(cdInterval);cdInterval=null;}
-  if(!APP.activeOrderId&&!APP.orderNum){
-    document.getElementById('tracking-no-order').style.display='block';
-    document.getElementById('tracking-active').style.display='none';
-    return;
-  }
-  document.getElementById('tracking-no-order').style.display='none';
-  document.getElementById('tracking-active').style.display='block';
-  if(APP.orderNum)document.getElementById('track-order-num').textContent=APP.orderNum;
-  if(APP.activeOrderId){
-    if(APP.activeOrderUnsub)APP.activeOrderUnsub();
-    APP.activeOrderUnsub=db.collection('orders').doc(APP.activeOrderId).onSnapshot(doc=>{
-      if(!doc.exists){
-        if(APP.activeOrderUnsub){APP.activeOrderUnsub();APP.activeOrderUnsub=null;}
-        APP.activeOrderId=null;APP.orderNum=null;APP.lastOrder=null;
-        if(currentScreen==='tracking')renderTracking();
-        return;
-      }
-      updateTrackingUI(doc.data());
-    },err=>console.error('Order live:',err));
-  }
-}
-
-function showEtaSkeleton(){
-  const box=document.getElementById('t-eta-box');
-  box.classList.add('eta-pending');
-  document.getElementById('t-eta-left').innerHTML=`<div class="eta-lbl">ARRIVING AROUND</div><div class="eta-skeleton"><div class="eta-skel-line wide"></div><div class="eta-skel-line narrow"></div></div><div class="eta-pending-label">Confirming your ETA…</div>`;
-  document.getElementById('t-eta-right').innerHTML=`<div class="eta-cd-lbl">Time remaining</div><div class="eta-cd" style="color:var(--dim);">--:--</div>`;
-}
-
-function showEtaLive(eta){
-  if(cdInterval){clearInterval(cdInterval);cdInterval=null;}
-  const box=document.getElementById('t-eta-box');
-  box.classList.remove('eta-pending');
-  document.getElementById('t-eta-left').innerHTML=`<div class="eta-lbl">ARRIVING AROUND</div><div class="eta-t">${eta.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})}</div>`;
-  document.getElementById('t-eta-right').innerHTML=`<div class="eta-cd-lbl">Time remaining</div><div class="eta-cd" id="t-countdown">-- min left</div>`;
-  const tick=()=>{
-    const sec=Math.max(0,Math.floor((eta-new Date())/1000));
-    const el=document.getElementById('t-countdown');
-    if(!el)return;
-    if(sec<=0){
-      el.textContent='Arriving now';
-      if(cdInterval){clearInterval(cdInterval);cdInterval=null;}
-      return;
-    }
-    const mins=Math.ceil(sec/60);
-    el.textContent=mins+' min left';
-  };
-  tick();cdInterval=setInterval(tick,1000);
-}
-
-function renderDriverCard(order){
-  const el=document.getElementById('t-driver-card');
-  if(!el)return;
-  const dp=order&&order.deliveryPerson;
-  if(!dp||!dp.name){
-    el.innerHTML=`<div class="driver-avatar">🧑</div><div class="driver-info"><div class="driver-name">Not assigned yet</div><div class="driver-sub">We'll assign someone shortly</div></div>`;
-    return;
-  }
-  const waNum=formatSAIntl(dp.phone);
-  const waMsg=encodeURIComponent(`Hi ${dp.name}, this is about my UNIBITE order ${order.orderNum||''}.`);
-  el.innerHTML=`
-    <div class="driver-avatar">🧑</div>
-    <div class="driver-info"><div class="driver-name">${esc(dp.name)}</div><div class="driver-sub">UNIBITE Delivery</div></div>
-    <div class="driver-btns">
-      <a class="call-btn" href="tel:${esc(dp.phone)}">📞 Call</a>
-      <a class="wa-btn" href="https://wa.me/${esc(waNum)}?text=${waMsg}" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>WhatsApp</a>
-    </div>`;
-}
-function updateTrackingUI(data){
-  APP.activeOrderData=data;
-  APP.activeOrderStatus=data.status;
-  renderDriverCard(data);
-  const cfg=STATUS_CONFIG[data.status]||STATUS_CONFIG.pending;
-  document.getElementById('t-emoji').textContent=cfg.emoji;
-  document.getElementById('t-title').textContent=cfg.title;
-  document.getElementById('t-desc').textContent=cfg.desc;
-  document.getElementById('t-prog').style.width=cfg.prog;
-  for(let i=0;i<5;i++){const dot=document.getElementById('td-'+i);const lbl=document.getElementById('tl-'+i);dot.className='step-dot';lbl.className='step-label';if(i<cfg.step){dot.classList.add('done');dot.textContent='✓';lbl.classList.add('done-lbl');}else if(i===cfg.step){dot.classList.add('current');dot.textContent=(['📦','✅','📦','🛵','🎉'])[i];lbl.classList.add('current-lbl');}else{dot.textContent=i+1;}}
-  const cancelBtn=document.getElementById('t-cancel-btn');
-  const cancelledNote=document.getElementById('t-cancelled-note');
-  const etaBox=document.getElementById('t-eta-box');
-  if(data.status==='cancelled'){
-    if(cdInterval){clearInterval(cdInterval);cdInterval=null;}
-    etaBox.style.display='none';
-    cancelBtn.style.display='none';
-    cancelledNote.style.display='block';
-  }else{
-    etaBox.style.display='';
-    cancelledNote.style.display='none';
-    cancelBtn.style.display=(data.status==='pending')?'block':'none';
-    const etaStr=data.adminEta||null;
-    if(etaStr){const eta=new Date(etaStr);if(!isNaN(eta.getTime()))showEtaLive(eta);else showEtaSkeleton();}else{showEtaSkeleton();}
-  }
-  const items=(data.items&&data.items.length)?data.items:[{emoji:'🍜',name:'Your snacks',price:0,qty:1}];
-  document.getElementById('tracking-items').innerHTML=items.map(i=>`<div class="ord-item"><div class="ord-thumb">${i.imageUrl?`<img src="${esc(i.imageUrl)}" alt="${esc(i.name)}">`:`<span style="font-size:18px">${esc(i.emoji)||'🍬'}</span>`}</div><div class="ord-name">${esc(i.name)} × ${i.qty}</div><div class="ord-price">R${esc(i.price*i.qty)}</div></div>`).join('')+`<div class="ord-item" style="background:var(--s2)"><span style="flex:1;font-size:12px;font-weight:700">Total paid</span><div class="ord-price">R${data.total||0}</div></div>`;
-  document.getElementById('track-time').textContent=data.createdAt?.toDate?'Placed '+data.createdAt.toDate().toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'}):'—';
-}
-
-function cancelActiveOrder(){
-  const orderId=APP.activeOrderId;
-  if(!orderId)return;
-  if(!confirm('Cancel this order? This can\'t be undone.'))return;
-  const btn=document.getElementById('t-cancel-btn');
-  btn.disabled=true;btn.textContent='Cancelling…';
-  const orderRef=db.collection('orders').doc(orderId);
-  db.runTransaction(txn=>{
-    return txn.get(orderRef).then(orderDoc=>{
-      if(!orderDoc.exists)throw new Error('Order not found.');
-      const order=orderDoc.data();
-      if(order.userId!==APP.user.uid)throw new Error('You can only cancel your own orders.');
-      if(order.status!=='pending')throw new Error('This order can no longer be cancelled — it\'s already being prepared.');
-      const items=order.items||[];
-      const productRefs=items.map(i=>db.collection('products').doc(i.id));
-      return Promise.all(productRefs.map(ref=>txn.get(ref))).then(productDocs=>{
-        productRefs.forEach((ref,i)=>{
-          const doc=productDocs[i];
-          if(!doc.exists)return;
-          const data=doc.data();
-          if(typeof data.stockQty==='number'){
-            const newQty=data.stockQty+items[i].qty;
-            txn.update(ref,{stockQty:newQty,inStock:newQty>0});
-          }
-        });
-        txn.delete(orderRef);
-      });
-    });
-  }).then(()=>{
-    btn.disabled=false;btn.textContent='Cancel order';
-  }).catch(err=>{
-    console.error('Cancel order failed:',err);
-    alert(err.message||'Could not cancel this order. Please try again.');
-    btn.disabled=false;btn.textContent='Cancel order';
-  });
-}
-
 /* ── ORDER HISTORY (customer) ────────────────────────────── */
+// Order status is no longer tracked live client-side; customers see status
+// updates via email (see notifyCustomerStatusUpdate, sent by admin actions)
+// and can check status labels here in their order history list.
 let historyOrdersUnsub=null,APP_HISTORY_ORDERS=[];
 function loadOrderHistory(){
   if(!APP.user){document.getElementById('history-list').innerHTML='<div class="empty-state"><span class="empty-state-icon">🔒</span><div class="empty-state-title">Sign in to see your orders</div></div>';return;}
@@ -2086,7 +1763,6 @@ function renderOrderHistory(){
           <div class="order-totals-row big"><span>Total</span><span style="color:var(--lav)">R${esc(o.total||0)}</span></div>
           <div style="display:flex;gap:8px;margin-top:10px;">
             <button class="btn btn-ghost" style="flex:1;margin:0;" onclick="openReceiptById('${esc(o.id)}')">🧾 Receipt</button>
-            ${(o.status!=='cancelled'&&o.status!=='delivered')?`<button class="btn btn-ghost" style="flex:1;margin:0;" onclick="navigate('tracking')">Track order →</button>`:''}
           </div>
         </div>
       </div>
@@ -2168,6 +1844,8 @@ function toggleProductField(id,field,currentVal){db.collection('products').doc(i
 function deleteProduct(id){if(!confirm('Delete this product?'))return;db.collection('products').doc(id).delete().catch(err=>alert('Delete failed: '+err.message));}
 
 /* ── ADMIN ORDERS ─────────────────────────────────────────── */
+// Admin still manages order status here (used for the customer status-update
+// emails); only the customer-facing live tracking screen has been removed.
 let adminOrdersUnsub=null,APP_ORDERS_FILTER='all';
 const expandedOrders=new Set();
 const ORDER_STATUS_NEXT={pending:'confirmed',confirmed:'packing',packing:'delivering',delivering:'delivered',delivered:null,cancelled:null};
@@ -2254,7 +1932,7 @@ function advanceOrder(orderId,newStatus){
   const order=(APP.orders||[]).find(o=>o.id===orderId);
   db.collection('orders').doc(orderId).update({status:newStatus}).then(()=>{
     if(order){
-      const label=(STATUS_CONFIG[newStatus]||{}).title||newStatus;
+      const label=ORDER_STATUS_LABELS[newStatus]||newStatus;
       notifyCustomerStatusUpdate(order,`Your order ${order.orderNum} is now: ${label}`);
     }
   }).catch(err=>alert('Update failed: '+err.message));
