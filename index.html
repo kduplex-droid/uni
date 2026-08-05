@@ -1745,6 +1745,28 @@ function loadOrderHistory(){
   });
 }
 function stopOrderHistoryListener(){if(historyOrdersUnsub){historyOrdersUnsub();historyOrdersUnsub=null;}APP_HISTORY_ORDERS=[];}
+function renderHistoryDeliveryBlock(o){
+  if(o.status==='cancelled')return '';
+  const etaStr=o.adminEta?new Date(o.adminEta):null;
+  const etaText=etaStr&&!isNaN(etaStr.getTime())
+    ? etaStr.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})
+    : (o.status==='delivered'?'—':'Not set yet');
+  const dp=o.deliveryPerson;
+  let driverHtml;
+  if(dp&&dp.name){
+    const waNum=formatSAIntl(dp.phone);
+    const waMsg=encodeURIComponent(`Hi ${dp.name}, this is about my UNIBITE order ${o.orderNum||''}.`);
+    driverHtml=`<b style="color:var(--text);">${esc(dp.name)}</b>
+      <a href="tel:${esc(dp.phone)}" style="margin-left:8px;color:var(--lav);font-weight:800;">📞 Call</a>
+      <a href="https://wa.me/${esc(waNum)}?text=${waMsg}" target="_blank" rel="noopener" style="margin-left:8px;color:#25D366;font-weight:800;">WhatsApp</a>`;
+  }else{
+    driverHtml=o.status==='delivered'?'—':'Not assigned yet';
+  }
+  return `<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:11px;color:var(--muted);line-height:2;">
+    🕐 ETA: <span style="color:var(--candy-mint);font-weight:800;">${etaText}</span><br>
+    🛵 Driver: ${driverHtml}
+  </div>`;
+}
 function renderOrderHistory(){
   const container=document.getElementById('history-list');
   if(!APP_HISTORY_ORDERS.length){container.innerHTML='<div class="empty-state"><span class="empty-state-icon">📭</span><div class="empty-state-title">No orders yet</div></div>';return;}
@@ -1771,6 +1793,7 @@ function renderOrderHistory(){
       </div>
       <div class="order-card-body">
         <div class="order-body-inner">
+          ${renderHistoryDeliveryBlock(o)}
           <div class="order-items-list">${itemRows||'<div class="order-item-row"><span class="order-item-name" style="color:var(--muted)">No items</span></div>'}</div>
           <div class="order-totals-row"><span>Subtotal</span><span>R${esc(o.subtotal||o.total||0)}</span></div>
           <div class="order-totals-row"><span>Delivery</span><span style="color:var(--candy-mint)">FREE</span></div>
