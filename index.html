@@ -1021,12 +1021,22 @@ function notifyAdminOfOrder(order){
     return;
   }
   const itemsText=(order.items||[]).map(i=>`${i.qty}× ${i.name} (R${i.price} ea)`).join('\n');
+  // Pre-built HTML rows (inline-styled, table-based) so the EmailJS template
+  // can render a themed items table without needing HTML editing per order.
+  const escHtml=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const itemsHtml=(order.items||[]).map(i=>`
+    <tr>
+      <td style="padding:10px 0;border-bottom:1px solid #2A2A3D;color:#F5F3FF;font-family:Arial,sans-serif;font-size:14px;">${escHtml(i.name)}</td>
+      <td style="padding:10px 0;border-bottom:1px solid #2A2A3D;color:#7C7CA8;font-family:Arial,sans-serif;font-size:13px;text-align:center;">×${escHtml(i.qty)}</td>
+      <td style="padding:10px 0;border-bottom:1px solid #2A2A3D;color:#C084FC;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;text-align:right;">R${escHtml(i.price*i.qty)}</td>
+    </tr>`).join('');
   emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{
     order_num:order.orderNum,
     items_text:itemsText,
+    items_html:itemsHtml,
     subtotal:order.subtotal,
     total:order.total,
-    campus:order.campus,
+    campus:order.campus==='upper'?'Upper Campus':order.campus==='middle'?'Middle Campus':order.campus,
     residence:order.residence,
     phone:order.phone,
     delivery_time:order.deliveryTimeMode==='sched'?order.scheduledTime:'ASAP',
@@ -1768,11 +1778,44 @@ function renderOrderHistory(){
           <div class="order-totals-row big"><span>Total</span><span style="color:var(--lav)">R${esc(o.total||0)}</span></div>
           <div style="display:flex;gap:8px;margin-top:10px;">
             <button class="btn btn-ghost" style="flex:1;margin:0;" onclick="openReceiptById('${esc(o.id)}')">🧾 Receipt</button>
+            ${o.status==='pending'?`<button class="btn btn-ghost" style="flex:1;margin:0;color:var(--red);border-color:var(--red);" onclick="cancelOrderByCustomer('${esc(o.id)}')">✕ Cancel</button>`:''}
           </div>
         </div>
       </div>
     </div>`;
   }).join('');
+}
+
+function cancelOrderByCustomer(orderId){
+  if(!confirm('Cancel this order? This can\'t be undone.'))return;
+  const orderRef=db.collection('orders').doc(orderId);
+  db.runTransaction(txn=>{
+    return txn.get(orderRef).then(orderDoc=>{
+      if(!orderDoc.exists)throw new Error('Order not found.');
+      const order=orderDoc.data();
+      if(order.userId!==APP.user.uid)throw new Error('You can only cancel your own orders.');
+      if(order.status!=='pending')throw new Error('This order can no longer be cancelled — it\'s already being prepared. Contact us if you need help.');
+      const items=order.items||[];
+      const productRefs=items.map(i=>db.collection('products').doc(i.id));
+      return Promise.all(productRefs.map(ref=>txn.get(ref))).then(productDocs=>{
+        productRefs.forEach((ref,i)=>{
+          const doc=productDocs[i];
+          if(!doc.exists)return;
+          const data=doc.data();
+          if(typeof data.stockQty==='number'){
+            const newQty=data.stockQty+items[i].qty;
+            txn.update(ref,{stockQty:newQty,inStock:newQty>0});
+          }
+        });
+        // Mark cancelled rather than delete, so it stays visible in history
+        // and in the admin "CANCELLED" filter instead of vanishing silently.
+        txn.update(orderRef,{status:'cancelled'});
+      });
+    });
+  }).catch(err=>{
+    console.error('Cancel order failed:',err);
+    alert(err.message||'Could not cancel this order. Please try again.');
+  });
 }
 
 /* ── RECEIPT ──────────────────────────────────────────────── */
@@ -1925,7 +1968,10 @@ function renderAdminOrders(){
           <div class="eta-current-val">Currently: <b style="color:${accent}">${currentEtaDisplay}</b></div>
           <div class="order-card-actions">
             <span style="font-size:11px;color:var(--muted);">${timeStr}</span>
-            ${next?`<button class="order-action-btn" style="background:linear-gradient(135deg,${accent}cc,${accent})" onclick="advanceOrder('${esc(o.id)}','${next}')">${ORDER_NEXT_LABELS[o.status]} →</button>`:(o.status==='cancelled'?`<span class="order-complete-tag" style="background:var(--red)1a;color:var(--red);">❌ CANCELLED</span>`:`<span class="order-complete-tag">✅ COMPLETE</span>`)}
+            <div style="display:flex;gap:6px;">
+              ${(o.status!=='delivered'&&o.status!=='cancelled')?`<button class="order-action-btn" style="background:var(--s2);color:var(--red);border:1.5px solid var(--red);box-shadow:none;" onclick="cancelOrderByAdmin('${esc(o.id)}')">✕ Cancel</button>`:''}
+              ${next?`<button class="order-action-btn" style="background:linear-gradient(135deg,${accent}cc,${accent})" onclick="advanceOrder('${esc(o.id)}','${next}')">${ORDER_NEXT_LABELS[o.status]} →</button>`:(o.status==='cancelled'?`<span class="order-complete-tag" style="background:var(--red)1a;color:var(--red);">❌ CANCELLED</span>`:`<span class="order-complete-tag">✅ COMPLETE</span>`)}
+            </div>
           </div>
         </div>
       </div>
@@ -1941,6 +1987,37 @@ function advanceOrder(orderId,newStatus){
       notifyCustomerStatusUpdate(order,`Your order ${order.orderNum} is now: ${label}`);
     }
   }).catch(err=>alert('Update failed: '+err.message));
+}
+function cancelOrderByAdmin(orderId){
+  if(!confirm('Cancel this order? Stock will be restored and the customer notified.'))return;
+  const orderRef=db.collection('orders').doc(orderId);
+  db.runTransaction(txn=>{
+    return txn.get(orderRef).then(orderDoc=>{
+      if(!orderDoc.exists)throw new Error('Order not found.');
+      const order=orderDoc.data();
+      if(order.status==='delivered'||order.status==='cancelled')throw new Error('This order can no longer be cancelled.');
+      const items=order.items||[];
+      const productRefs=items.map(i=>db.collection('products').doc(i.id));
+      return Promise.all(productRefs.map(ref=>txn.get(ref))).then(productDocs=>{
+        productRefs.forEach((ref,i)=>{
+          const doc=productDocs[i];
+          if(!doc.exists)return;
+          const data=doc.data();
+          if(typeof data.stockQty==='number'){
+            const newQty=data.stockQty+items[i].qty;
+            txn.update(ref,{stockQty:newQty,inStock:newQty>0});
+          }
+        });
+        txn.update(orderRef,{status:'cancelled'});
+        return order;
+      });
+    });
+  }).then(order=>{
+    if(order)notifyCustomerStatusUpdate(order,`Your order ${order.orderNum} has been cancelled. Please contact us if you have any questions.`);
+  }).catch(err=>{
+    console.error('Admin cancel order failed:',err);
+    alert(err.message||'Could not cancel this order. Please try again.');
+  });
 }
 function setAdminEta(orderId){
   const inp=document.getElementById('eta-inp-'+orderId);
