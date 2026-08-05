@@ -1720,12 +1720,17 @@ function loadOrderHistory(){
     if(currentScreen==='history')renderOrderHistory();
     return;
   }
-  historyOrdersUnsub=db.collection('orders').where('userId','==',APP.user.uid).orderBy('createdAt','desc').limit(50).onSnapshot(snap=>{
-    APP_HISTORY_ORDERS=snap.docs.map(doc=>({id:doc.id,...doc.data()}));
+  historyOrdersUnsub=db.collection('orders').where('userId','==',APP.user.uid).limit(50).onSnapshot(snap=>{
+    APP_HISTORY_ORDERS=snap.docs.map(doc=>({id:doc.id,...doc.data()}))
+      .sort((a,b)=>{
+        const ta=a.createdAt?.toDate?a.createdAt.toDate().getTime():0;
+        const tb=b.createdAt?.toDate?b.createdAt.toDate().getTime():0;
+        return tb-ta; // newest first, sorted client-side to avoid needing a composite index
+      });
     if(currentScreen==='history')renderOrderHistory();
     renderRecentlyPurchased();
   },err=>{
-    console.error('Order history listener (check for a "requires an index" link below):',err);
+    console.error('Order history listener:',err);
     document.getElementById('history-list').innerHTML='<div class="empty-state"><span class="empty-state-icon">⚠️</span><div class="empty-state-title">Couldn\'t load your orders</div></div>';
   });
 }
