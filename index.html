@@ -118,6 +118,7 @@ a{color:inherit;text-decoration:none;}
 .aw-success{background:#34D3991a;color:var(--candy-mint);border:1.5px solid #34D39930;border-radius:12px;padding:10px 12px;font-size:12px;margin-bottom:14px;display:none;line-height:1.5;}
 .aw-success.show{display:block;}
 .aw-terms{font-size:10px;color:var(--dim);text-align:center;margin-top:14px;line-height:1.6;border-top:1px solid var(--border);padding-top:14px;}
+.aw-terms a{color:var(--lav);font-weight:800;cursor:pointer;text-decoration:underline;}
 /* Auth tabs */
 .auth-tabs{display:flex;background:var(--s2);border-radius:14px;padding:4px;margin-bottom:20px;gap:4px;}
 .auth-tab{flex:1;padding:9px;border:none;border-radius:10px;font-size:12px;font-weight:800;font-family:var(--font);cursor:pointer;color:var(--muted);background:transparent;transition:all .15s;letter-spacing:.04em;}
@@ -163,6 +164,23 @@ a{color:inherit;text-decoration:none;}
 .pwm-success{background:#34D3991a;color:var(--candy-mint);border:1.5px solid #34D39930;border-radius:12px;padding:10px 12px;font-size:12px;margin-bottom:14px;display:none;line-height:1.5;}
 .pwm-success.show{display:block;}
 .pwm-close{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;font-family:var(--font);margin-top:14px;text-align:center;width:100%;display:block;}
+
+/* ─── LEGAL MODALS (Terms & Privacy) ─────────────────────── */
+.legal-modal{position:fixed;inset:0;z-index:9500;background:rgba(10,10,18,.94);backdrop-filter:blur(14px);display:none;align-items:flex-end;justify-content:center;padding:0;}
+.legal-modal.show{display:flex;}
+.legal-card{background:var(--surface);border:1.5px solid var(--border);border-radius:22px 22px 0 0;padding:0;width:100%;max-width:430px;max-height:88vh;box-shadow:0 0 40px #C084FC18;display:flex;flex-direction:column;}
+.legal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1.5px solid var(--border);flex-shrink:0;}
+.legal-title{font-size:16px;font-weight:800;}
+.legal-updated{font-size:10px;color:var(--muted);margin-top:2px;font-weight:700;}
+.legal-close{background:var(--s2);border:1.5px solid var(--border);border-radius:10px;width:30px;height:30px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;font-family:var(--font);color:var(--text);flex-shrink:0;}
+.legal-body{padding:18px 20px 28px;overflow-y:auto;font-size:12.5px;line-height:1.75;color:var(--text);}
+.legal-body h4{font-size:12px;font-weight:800;letter-spacing:.06em;color:var(--lav);margin:18px 0 6px;text-transform:uppercase;}
+.legal-body h4:first-child{margin-top:0;}
+.legal-body p{color:var(--muted);margin-bottom:8px;}
+.legal-body ul{padding-left:18px;margin-bottom:8px;color:var(--muted);}
+.legal-body li{margin-bottom:4px;}
+.legal-body b{color:var(--text);}
+.legal-body a{color:var(--lav);font-weight:700;text-decoration:underline;}
 
 /* ─── TOP NAV ────────────────────────────────────────────── */
 #top-nav{
@@ -633,7 +651,7 @@ select.form-input option{background:var(--surface);}
         <button class="btn btn-primary" id="signup-btn" onclick="doSignUp()">Create Account →</button>
       </div>
 
-      <div class="aw-terms">By continuing you agree to our Terms &amp; Privacy Policy.</div>
+      <div class="aw-terms">By continuing you agree to our <a onclick="openTerms()">Terms &amp; Conditions</a> and <a onclick="openPrivacy()">Privacy Policy</a>.</div>
     </div>
   </div>
 </div>
@@ -802,6 +820,8 @@ select.form-input option{background:var(--surface);}
     </div>
     <button class="btn btn-ghost" onclick="navigate('history')" style="margin-top:8px;margin-bottom:8px;">Order History</button>
     <button class="btn btn-ghost" id="change-pw-btn" onclick="doChangePassword()" style="margin-top:8px;margin-bottom:8px;">Change Password</button>
+    <button class="btn btn-ghost" onclick="openTerms()" style="margin-top:8px;margin-bottom:8px;">Terms &amp; Conditions</button>
+    <button class="btn btn-ghost" onclick="openPrivacy()" style="margin-top:8px;margin-bottom:8px;">Privacy Policy</button>
     <button class="btn btn-ghost" onclick="signOut()">Sign Out</button>
   </div>
 </div>
@@ -926,6 +946,125 @@ select.form-input option{background:var(--surface);}
     </div>
     <button class="btn btn-primary" id="pwm-submit-btn" onclick="submitPasswordChange()">Update Password</button>
     <button class="pwm-close" onclick="closePasswordModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ===================== TERMS & CONDITIONS MODAL ===================== -->
+<div class="legal-modal" id="terms-modal">
+  <div class="legal-card">
+    <div class="legal-header">
+      <div>
+        <div class="legal-title">Terms &amp; Conditions</div>
+        <div class="legal-updated">Last updated: 12 August 2026</div>
+      </div>
+      <button class="legal-close" onclick="closeTerms()">✕</button>
+    </div>
+    <div class="legal-body">
+      <h4>1. Who we are</h4>
+      <p>UNIBITE ("we", "us", "our") is a snack delivery service operated for students on the University of Cape Town (UCT) campus. UNIBITE is developed and maintained by INCLA (Bespoke Digital Design &amp; Web Architecture). By creating an account or placing an order, you ("you", "the customer") agree to these Terms &amp; Conditions.</p>
+
+      <h4>2. Delivery scope</h4>
+      <p>UNIBITE currently only delivers to designated venues on <b>UCT Upper Campus</b> and <b>UCT Middle Campus</b>, as listed in the delivery venue selector at checkout. We do not deliver to off-campus residences, private addresses, or other campuses.</p>
+      <ul>
+        <li>Orders are typically accepted between 7PM and midnight, subject to change without notice.</li>
+        <li>Delivery is on foot by a UNIBITE delivery person. Estimated arrival times (ASAP or scheduled) are best-effort estimates, not guarantees, and may be affected by order volume, weather, or campus conditions.</li>
+        <li>You are responsible for being reachable at the delivery venue at the selected/estimated time. If we can't reach you or locate you after reasonable attempts, the order may be treated as undelivered and is not eligible for automatic refund.</li>
+      </ul>
+
+      <h4>3. Payment</h4>
+      <p>All orders are paid <b>on delivery</b>, by card or cash, as selected at checkout. UNIBITE does not process online/upfront payments and does not store card details. You agree to have the selected payment method ready at the time of delivery.</p>
+
+      <h4>4. Cancellations</h4>
+      <p>You may cancel an order yourself, free of charge, <b>only while it is still in "Pending" status</b> — i.e. before we've confirmed and started preparing it. This can be done from the "Order History" screen.</p>
+      <ul>
+        <li>Once an order has moved to "Confirmed", "Packing", "Delivering" or beyond, it can no longer be cancelled by you, as preparation is already underway.</li>
+        <li>UNIBITE may cancel an order at any stage — for example due to stock issues, incorrect details, or delivery/access problems — in which case any stock deducted is restored and you will be notified.</li>
+        <li>Repeated no-shows or cancellations may result in restricted access to the service.</li>
+      </ul>
+
+      <h4>5. Stock &amp; pricing</h4>
+      <p>Product availability and stock levels are shown at time of browsing but are not guaranteed until your order is confirmed, as stock can change quickly. If an item becomes unavailable after you've ordered, we'll contact you to adjust or cancel the affected item. Prices are shown in South African Rand (ZAR) and may change without prior notice.</p>
+
+      <h4>6. Campus access &amp; liability</h4>
+      <p>UNIBITE has no control over UCT campus access rules, security procedures, load shedding, building closures, events, or other conditions on campus. <b>We are not liable for delays, non-delivery, or any loss or inconvenience arising from campus access restrictions, security checks, closures, power outages, or other circumstances beyond our reasonable control.</b></p>
+      <p>To the maximum extent permitted by law, UNIBITE's liability for any claim relating to an order is limited to the value of that order. We are not liable for indirect or consequential loss.</p>
+
+      <h4>7. Account &amp; conduct</h4>
+      <p>You must provide accurate contact details (email and WhatsApp number) so we can reach you about your order. You're responsible for keeping your account credentials secure. Abusive behaviour toward delivery staff will not be tolerated and may result in account suspension.</p>
+
+      <h4>8. Changes to these terms</h4>
+      <p>We may update these Terms &amp; Conditions from time to time as the service evolves. Continued use of UNIBITE after changes are posted means you accept the updated terms.</p>
+
+      <h4>9. Contact</h4>
+      <p>For questions about these terms, contact us via WhatsApp at <b>+27 68 311 6538</b> or reach INCLA at <b>+27 69 736 2195</b>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PRIVACY POLICY MODAL ===================== -->
+<div class="legal-modal" id="privacy-modal">
+  <div class="legal-card">
+    <div class="legal-header">
+      <div>
+        <div class="legal-title">Privacy Policy</div>
+        <div class="legal-updated">Last updated: 12 August 2026</div>
+      </div>
+      <button class="legal-close" onclick="closePrivacy()">✕</button>
+    </div>
+    <div class="legal-body">
+      <p>UNIBITE respects your privacy and is committed to processing your personal information responsibly, in line with South Africa's <b>Protection of Personal Information Act (POPIA)</b>.</p>
+
+      <h4>1. Information we collect</h4>
+      <ul>
+        <li><b>Account details:</b> name, email address, and (if you sign in with Google) your Google profile photo.</li>
+        <li><b>Contact details:</b> WhatsApp/phone number, provided at checkout.</li>
+        <li><b>Order history:</b> items ordered, prices, delivery venue, campus, delivery time preference, payment method chosen (card/cash — we don't collect or store card numbers), and order status.</li>
+        <li><b>Device/app data:</b> a light-mode/dark-mode preference and a local "last activity" timestamp used only to automatically sign you out after 30 minutes of inactivity — both stored on your device, not on our servers.</li>
+      </ul>
+
+      <h4>2. How we use your information</h4>
+      <ul>
+        <li>To create and manage your account and process your orders.</li>
+        <li>To contact you about order confirmations, ETA updates, driver assignment, and delivery issues (via email and/or WhatsApp).</li>
+        <li>To maintain accurate stock levels and improve the service.</li>
+        <li>To detect and prevent abuse of the platform (e.g. repeated cancellations).</li>
+      </ul>
+      <p>We do not sell your personal information, and we do not use it for third-party advertising.</p>
+
+      <h4>3. Who we share it with (processors)</h4>
+      <p>UNIBITE uses the following third-party service providers to operate the app. Each acts as a processor on our behalf and only receives the data needed to perform its function:</p>
+      <ul>
+        <li><b>Google Firebase</b> (Authentication &amp; Firestore database) — stores your account, order, and cart data, and secures sign-in (including Google Sign-In).</li>
+        <li><b>Cloudinary</b> — hosts product photos uploaded by admins. It does not receive your personal or order data.</li>
+        <li><b>EmailJS</b> — sends order-notification emails (to our admin team) and, where configured, delivery status-update emails to your email address.</li>
+      </ul>
+      <p>These providers may process data outside South Africa. We only use providers that maintain appropriate security safeguards for the data they handle.</p>
+
+      <h4>4. Data retention</h4>
+      <p>We retain your account and order history for as long as your account is active, so you can view past orders and receipts. You can request deletion of your account and associated data at any time (see "Your rights" below).</p>
+
+      <h4>5. Security</h4>
+      <p>Access to order and product data is controlled through Firebase security rules, and admin functions are restricted to authorised administrator accounts. No online system is 100% secure, but we take reasonable steps to protect your information.</p>
+
+      <h4>6. Your rights under POPIA</h4>
+      <p>You have the right to:</p>
+      <ul>
+        <li>Access the personal information we hold about you;</li>
+        <li>Request correction of inaccurate information (e.g. via the Account screen, or by contacting us);</li>
+        <li>Request deletion of your account and personal information, subject to any legal record-keeping requirements;</li>
+        <li>Object to certain processing, or withdraw consent where processing is based on consent;</li>
+        <li>Lodge a complaint with South Africa's <b>Information Regulator</b> if you believe your information has been mishandled.</li>
+      </ul>
+
+      <h4>7. Minors</h4>
+      <p>UNIBITE is intended for UCT students who are 18 years or older, or otherwise of legal age to enter into a binding agreement. We do not knowingly collect personal information from children.</p>
+
+      <h4>8. Changes to this policy</h4>
+      <p>We may update this Privacy Policy as the service evolves. We'll update the "Last updated" date above when we do.</p>
+
+      <h4>9. Contact</h4>
+      <p>For privacy-related questions or requests, contact us via WhatsApp at <b>+27 68 311 6538</b> or reach INCLA at <b>+27 69 736 2195</b>.</p>
+    </div>
   </div>
 </div>
 
@@ -1112,6 +1251,12 @@ function toggleTheme(){
   try{localStorage.setItem('ub_theme',isLightMode?'light':'dark');}catch(_){}
 }
 (function(){try{const t=localStorage.getItem('ub_theme');if(t==='light'){isLightMode=true;document.body.classList.add('light-mode');}}catch(_){}})();
+
+/* ── LEGAL MODALS ─────────────────────────────────────────── */
+function openTerms(){document.getElementById('terms-modal').classList.add('show');}
+function closeTerms(){document.getElementById('terms-modal').classList.remove('show');}
+function openPrivacy(){document.getElementById('privacy-modal').classList.add('show');}
+function closePrivacy(){document.getElementById('privacy-modal').classList.remove('show');}
 
 /* ── AUTH WALL — EMAIL + PASSWORD ────────────────────────── */
 let currentAuthTab='signin';
