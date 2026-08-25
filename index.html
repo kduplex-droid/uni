@@ -696,13 +696,8 @@ select.form-input option{background:var(--surface);}
     <div class="cat-chip" onclick="navigate('shop','meals')"><span class="cat-chip-icon">🍜</span><span class="cat-chip-label">MEALS</span></div>
     <div class="cat-chip" onclick="navigate('shop','all')"><span class="cat-chip-icon">🛒</span><span class="cat-chip-label">ALL</span></div>
   </div>
-  <div class="row-header"><span class="row-label">MOST ORDERED</span><button class="row-link" onclick="navigate('shop')">View all →</button></div>
+  <div class="row-header"><span class="row-label" id="home-top-row-label">RECENTLY PURCHASED</span><button class="row-link" onclick="navigate('shop')">View all →</button></div>
   <div id="home-products"><div class="loading-state">Loading snacks... 🍜</div></div>
-
-  <div id="home-recent-section" style="display:none;">
-    <div class="row-header"><span class="row-label">RECENTLY PURCHASED</span></div>
-    <div id="home-recent" class="home-row-scroll"></div>
-  </div>
 
   <div class="row-header"><span class="row-label">🥔 CHIPS</span><button class="row-link" onclick="navigate('shop','chips')">View all →</button></div>
   <div id="home-cat-chips" class="home-row-scroll"></div>
@@ -1630,10 +1625,38 @@ function productCardHTML(p){
 }
 function renderProductGrid(containerId,hotOnly){
   const container=document.getElementById(containerId);if(!container)return;
-  let prods=APP.products.filter(p=>p.inStock!==false);
-  if(hotOnly)prods=prods.filter(p=>p.isHot).slice(0,4);
+  const labelEl=document.getElementById('home-top-row-label');
+  let prods=[];
+  let usedRecent=false;
+
+  if(hotOnly){
+    // Personalized "Recently Purchased" — pulls from this user's own order
+    // history. Falls back to hot/popular items for users with no history yet.
+    prods=getRecentlyPurchasedProducts();
+    usedRecent=prods.length>0;
+    if(!usedRecent)prods=APP.products.filter(p=>p.inStock!==false&&p.isHot).slice(0,4);
+    if(labelEl)labelEl.textContent=usedRecent?'RECENTLY PURCHASED':'MOST ORDERED';
+  }else{
+    prods=APP.products.filter(p=>p.inStock!==false);
+  }
+
   if(APP.currentFilter!=='all'&&!hotOnly)prods=prods.filter(p=>p.category===APP.currentFilter);
   container.innerHTML=prods.length?'<div class="products-grid">'+prods.map(productCardHTML).join('')+'</div>':'<div class="empty-state"><span class="empty-state-icon">🕐</span><div class="empty-state-title">No snacks here yet</div><div class="empty-state-sub">Check back soon!</div></div>';
+}
+function getRecentlyPurchasedProducts(){
+  if(!APP.user||!APP_HISTORY_ORDERS.length)return [];
+  const seen=new Set();
+  const recentIds=[];
+  for(const order of APP_HISTORY_ORDERS){
+    if(order.status==='cancelled')continue;
+    for(const item of (order.items||[])){
+      if(!seen.has(item.id)){seen.add(item.id);recentIds.push(item.id);}
+      if(recentIds.length>=4)break;
+    }
+    if(recentIds.length>=4)break;
+  }
+  const byId=Object.fromEntries(APP.products.map(p=>[p.id,p]));
+  return recentIds.map(id=>byId[id]).filter(p=>p&&p.inStock!==false);
 }
 function renderHomeExtras(){
   const inStock=APP.products.filter(p=>p.inStock!==false);
@@ -1643,28 +1666,6 @@ function renderHomeExtras(){
     const items=inStock.filter(p=>p.category===cat).slice(0,10);
     el.innerHTML=items.length?items.map(productCardHTML).join(''):'<div class="empty-state" style="padding:16px 4px;"><div class="empty-state-sub">Nothing here yet</div></div>';
   });
-  renderRecentlyPurchased();
-}
-function renderRecentlyPurchased(){
-  const section=document.getElementById('home-recent-section');
-  const el=document.getElementById('home-recent');
-  if(!section||!el)return;
-  if(!APP.user||!APP_HISTORY_ORDERS.length){section.style.display='none';return;}
-  const seen=new Set();
-  const recentIds=[];
-  for(const order of APP_HISTORY_ORDERS){
-    if(order.status==='cancelled')continue;
-    for(const item of (order.items||[])){
-      if(!seen.has(item.id)){seen.add(item.id);recentIds.push(item.id);}
-      if(recentIds.length>=10)break;
-    }
-    if(recentIds.length>=10)break;
-  }
-  const byId=Object.fromEntries(APP.products.map(p=>[p.id,p]));
-  const items=recentIds.map(id=>byId[id]).filter(p=>p&&p.inStock!==false);
-  if(!items.length){section.style.display='none';return;}
-  section.style.display='block';
-  el.innerHTML=items.map(productCardHTML).join('');
 }
 function setFilter(cat,el){
   APP.currentFilter=cat;
@@ -1883,7 +1884,7 @@ function loadOrderHistory(){
         return tb-ta; // newest first, sorted client-side to avoid needing a composite index
       });
     if(currentScreen==='history')renderOrderHistory();
-    renderRecentlyPurchased();
+    if(currentScreen==='home')renderProductGrid('home-products',true);
   },err=>{
     console.error('Order history listener:',err);
     document.getElementById('history-list').innerHTML='<div class="empty-state"><span class="empty-state-icon">⚠️</span><div class="empty-state-title">Couldn\'t load your orders</div></div>';
