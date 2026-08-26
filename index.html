@@ -1625,22 +1625,18 @@ function productCardHTML(p){
 }
 function renderProductGrid(containerId,hotOnly){
   const container=document.getElementById(containerId);if(!container)return;
-  const labelEl=document.getElementById('home-top-row-label');
-  let prods=[];
-  let usedRecent=false;
 
   if(hotOnly){
     // Personalized "Recently Purchased" — pulls from this user's own order
-    // history. Falls back to hot/popular items for users with no history yet.
-    prods=getRecentlyPurchasedProducts();
-    usedRecent=prods.length>0;
-    if(!usedRecent)prods=APP.products.filter(p=>p.inStock!==false&&p.isHot).slice(0,4);
-    if(labelEl)labelEl.textContent=usedRecent?'RECENTLY PURCHASED':'MOST ORDERED';
-  }else{
-    prods=APP.products.filter(p=>p.inStock!==false);
+    // history. Falls back to hot/popular items for users with no history yet,
+    // but the row label always stays "RECENTLY PURCHASED".
+    let prods=getRecentlyPurchasedProducts();
+    if(!prods.length)prods=APP.products.filter(p=>p.inStock!==false&&p.isHot).slice(0,4);
+    container.innerHTML=prods.length?'<div class="products-grid">'+prods.map(productCardHTML).join('')+'</div>':'<div class="empty-state"><span class="empty-state-icon">🕐</span><div class="empty-state-title">No snacks here yet</div><div class="empty-state-sub">Check back soon!</div></div>';
+    return;
   }
-
-  if(APP.currentFilter!=='all'&&!hotOnly)prods=prods.filter(p=>p.category===APP.currentFilter);
+  let prods=APP.products.filter(p=>p.inStock!==false);
+  if(APP.currentFilter!=='all')prods=prods.filter(p=>p.category===APP.currentFilter);
   container.innerHTML=prods.length?'<div class="products-grid">'+prods.map(productCardHTML).join('')+'</div>':'<div class="empty-state"><span class="empty-state-icon">🕐</span><div class="empty-state-title">No snacks here yet</div><div class="empty-state-sub">Check back soon!</div></div>';
 }
 function getRecentlyPurchasedProducts(){
