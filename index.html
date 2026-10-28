@@ -4,6 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UNIBITE — UCT Campus Snacks</title>
+
+<!-- Google tag (gtag.js) with Consent Mode v2 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7XMNV4K3R9"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied'
+  });
+  try {
+    if (localStorage.getItem('ub_cookie_consent') === 'granted') {
+      gtag('consent', 'update', { analytics_storage: 'granted' });
+    }
+  } catch (e) {}
+  gtag('js', new Date());
+  // UNIBITE is a single-page app, so page views are sent manually (see trackScreen)
+  gtag('config', 'G-7XMNV4K3R9', { send_page_view: false });
+</script>
+
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -532,6 +554,21 @@ select.form-input option{background:var(--surface);}
 .eta-set-btn:hover{background:var(--lav);color:#fff;}
 .eta-current-val{font-size:10px;color:var(--muted);margin-top:5px;text-align:right;}
 
+/* ─── COOKIE CONSENT ─────────────────────────────────────── */
+#cookie-banner{
+  position:fixed;left:50%;bottom:0;transform:translateX(-50%);
+  width:100%;max-width:430px;z-index:10000;
+  background:var(--surface);border:1.5px solid var(--border);border-bottom:none;
+  border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));
+  box-shadow:0 -8px 30px rgba(0,0,0,.35);
+}
+#cookie-banner[hidden]{display:none;}
+.cookie-title{font-size:14px;font-weight:800;margin-bottom:6px;}
+.cookie-text{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px;}
+.cookie-text a{color:var(--lav);font-weight:800;text-decoration:underline;cursor:pointer;}
+.cookie-actions{display:flex;gap:10px;}
+.cookie-actions .btn{margin:0;padding:11px;font-size:13px;}
+
 /* ===================== CINEMATIC LOADER ===================== */
 #cinematic-loader{position:fixed;inset:0;z-index:99999;background:#0A0A12;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;opacity:1;transition:opacity .7s cubic-bezier(.4,0,.2,1);}
 #cinematic-loader.fade-out{opacity:0;pointer-events:none;}
@@ -817,6 +854,7 @@ select.form-input option{background:var(--surface);}
     <button class="btn btn-ghost" id="change-pw-btn" onclick="doChangePassword()" style="margin-top:8px;margin-bottom:8px;">Change Password</button>
     <button class="btn btn-ghost" onclick="openTerms()" style="margin-top:8px;margin-bottom:8px;">Terms &amp; Conditions</button>
     <button class="btn btn-ghost" onclick="openPrivacy()" style="margin-top:8px;margin-bottom:8px;">Privacy Policy</button>
+    <button class="btn btn-ghost" onclick="showCookieBanner()" style="margin-top:8px;margin-bottom:8px;">Cookie Settings</button>
     <button class="btn btn-ghost" onclick="signOut()">Sign Out</button>
   </div>
 </div>
@@ -1002,7 +1040,7 @@ select.form-input option{background:var(--surface);}
     <div class="legal-header">
       <div>
         <div class="legal-title">Privacy Policy</div>
-        <div class="legal-updated">Last updated: 12 August 2026</div>
+        <div class="legal-updated">Last updated: 28 October 2026</div>
       </div>
       <button class="legal-close" onclick="closePrivacy()">✕</button>
     </div>
@@ -1014,7 +1052,7 @@ select.form-input option{background:var(--surface);}
         <li><b>Account details:</b> name, email address, and (if you sign in with Google) your Google profile photo.</li>
         <li><b>Contact details:</b> WhatsApp/phone number, provided at checkout.</li>
         <li><b>Order history:</b> items ordered, prices, delivery venue, campus, delivery time preference, payment method chosen (card/cash — we don't collect or store card numbers), and order status.</li>
-        <li><b>Device/app data:</b> a light-mode/dark-mode preference and a local "last activity" timestamp used only to automatically sign you out after 30 minutes of inactivity — both stored on your device, not on our servers.</li>
+        <li><b>Device/app data:</b> a light-mode/dark-mode preference, your cookie/analytics consent choice, and a local "last activity" timestamp used only to automatically sign you out after 30 minutes of inactivity — all stored on your device, not on our servers.</li>
       </ul>
 
       <h4>2. How we use your information</h4>
@@ -1032,6 +1070,7 @@ select.form-input option{background:var(--surface);}
         <li><b>Google Firebase</b> (Authentication &amp; Firestore database) — stores your account, order, and cart data, and secures sign-in (including Google Sign-In).</li>
         <li><b>Cloudinary</b> — hosts product photos uploaded by admins. It does not receive your personal or order data.</li>
         <li><b>EmailJS</b> — sends order-notification emails (to our admin team) and, where configured, delivery status-update emails to your email address.</li>
+        <li><b>Google Analytics</b> — collects anonymous usage data (screens viewed, device/browser type, approximate location) to help us improve the app. This only runs if you click "Accept" on the cookie banner, and you can change your choice any time under Account → Cookie Settings.</li>
       </ul>
       <p>These providers may process data outside South Africa. We only use providers that maintain appropriate security safeguards for the data they handle.</p>
 
@@ -1107,6 +1146,31 @@ select.form-input option{background:var(--surface);}
     <button class="btn btn-ghost" onclick="closeDrawer()" style="margin-top:8px;">Cancel</button>
   </div>
 </div>
+
+<!-- ===================== COOKIE CONSENT ===================== -->
+<div id="cookie-banner" role="dialog" aria-label="Cookie consent" hidden>
+  <div class="cookie-title">🍪 Cookies &amp; analytics</div>
+  <p class="cookie-text">We use Google Analytics to see which screens and snacks are popular so we can improve UNIBITE. You can accept or decline. See our <a onclick="openPrivacy()">Privacy Policy</a>.</p>
+  <div class="cookie-actions">
+    <button class="btn btn-secondary" type="button" onclick="setCookieConsent('denied')">Decline</button>
+    <button class="btn btn-primary" type="button" onclick="setCookieConsent('granted')">Accept</button>
+  </div>
+</div>
+
+<script>
+function showCookieBanner(){document.getElementById('cookie-banner').hidden=false;}
+function setCookieConsent(value){
+  try{localStorage.setItem('ub_cookie_consent',value);}catch(_){}
+  gtag('consent','update',{analytics_storage:value});
+  document.getElementById('cookie-banner').hidden=true;
+  if(value==='granted')trackScreen(currentScreen);
+}
+(function(){
+  let stored=null;
+  try{stored=localStorage.getItem('ub_cookie_consent');}catch(_){}
+  if(!stored)showCookieBanner();
+})();
+</script>
 
 <script>
 /* ============================================================
@@ -1543,6 +1607,11 @@ function stopInactivityWatcher(){
   try{localStorage.removeItem(ACTIVITY_KEY);}catch(_){}
 }
 
+function trackScreen(screen){
+  if(screen==='admin'||typeof gtag!=='function')return; // never track the admin panel
+  gtag('event','page_view',{page_title:'UNIBITE – '+screen,page_path:'/'+screen,page_location:location.origin+'/'+screen});
+}
+
 /* ── NAVIGATION ───────────────────────────────────────────── */
 const CUSTOMER_SCREENS=['home','auth','shop','cart','checkout','confirm','history','receipt'];
 const BNAV_MAP={home:'bnav-home',shop:'bnav-shop',cart:'bnav-cart',history:'bnav-history',auth:'bnav-auth'};
@@ -1550,6 +1619,7 @@ let currentScreen='home';
 function navigate(screen,filterCat){
   if(screen==='admin'&&!APP.isAdmin){openAdminGate();return;}
   currentScreen=screen;
+  trackScreen(screen);
   const isAdmin=screen==='admin';
   document.getElementById('top-nav').style.display=isAdmin?'none':'';
   document.getElementById('marquee-bar').style.display=isAdmin?'none':'';
@@ -1853,6 +1923,7 @@ function placeOrder(){
     document.getElementById('confirm-eta').textContent="We'll confirm your ETA shortly ⏳";
     btn.disabled=false;btn.textContent='Place order →';
     notifyAdminOfOrder({orderNum,items:orderItems,subtotal,total,campus:APP.currentCampus,residence,phone,deliveryTimeMode:APP.deliveryTimeMode,scheduledTime,userEmail:APP.user.email||''});
+    gtag('event','purchase',{transaction_id:orderNum,value:total,currency:'ZAR',items:orderItems.map(i=>({item_id:i.id,item_name:i.name,price:i.price,quantity:i.qty}))});
     navigate('confirm');
   }).catch(err=>{
     console.error('Order transaction failed:',err);
@@ -2261,6 +2332,7 @@ function getDefaultEmoji(cat){return{chips:'🥔',drinks:'⚡',sweets:'🍫',mea
 
 /* ── INIT ─────────────────────────────────────────────────── */
 setCampus('upper');
+trackScreen('home');
 </script>
 </body>
 </html>
